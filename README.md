@@ -2,14 +2,26 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
 
+<img src="custom_components/broetje_heatpump/images/logo.png" alt="Brötje Logo" width="200">
+
 Home Assistant integration for Brötje heatpumps via Modbus TCP.
+
+## Supported Models
+
+<img src="custom_components/broetje_heatpump/images/Broetje-BLW-Eco-10.1.png" alt="Brötje BLW Eco" width="300">
+
+- **Brötje BLW Eco 10.1** (tested)
+
+*Other Brötje heatpumps with Modbus interface may also work.*
 
 ## Features
 
 - **Read-only monitoring** (v0.1)
-  - Temperature sensors (outdoor, flow, return, DHW)
-  - System pressure
-  - Operational states (compressor, defrost, errors)
+  - Heating circuit temperatures and setpoints
+  - Operating mode (Protection/Auto/Reduced/Comfort)
+  - Heating curve parameters
+  - Pump and mixer states
+  - Room temperature and setpoints
 
 ## Requirements
 
@@ -46,32 +58,50 @@ Home Assistant integration for Brötje heatpumps via Modbus TCP.
    - **Port**: Modbus TCP port (default: 502)
    - **Unit ID**: Modbus slave ID (default: 1)
 
-## Supported Models
+## Dashboard
 
-This integration is designed for Brötje heatpumps with Modbus interface. Tested models:
+The integration automatically copies images to `/local/broetje_heatpump/` for use in your dashboard.
 
-- *(To be added based on user feedback)*
+### Picture Glance Card Example
+
+```yaml
+type: picture-glance
+image: /local/broetje_heatpump/Broetje-BLW-Eco-10.1.png
+title: Brötje Wärmepumpe
+entities:
+  - entity: sensor.broetje_heatpump_hc1_flow_temperature
+    name: Vorlauf
+  - entity: sensor.broetje_heatpump_hc1_room_temperature
+    name: Raum
+  - entity: binary_sensor.broetje_heatpump_hc1_pump
+    name: Pumpe
+```
 
 ## Entities
 
-### Sensors
+### Sensors (Heating Circuit 1)
 
 | Entity | Description | Unit |
 |--------|-------------|------|
-| Outdoor temperature | Outside air temperature | °C |
-| Flow temperature | Heating circuit flow temperature | °C |
-| Return temperature | Heating circuit return temperature | °C |
-| DHW temperature | Domestic hot water temperature | °C |
-| System pressure | Heating system pressure | bar |
+| HC1 Operating mode | Protection/Auto/Reduced/Comfort | - |
+| HC1 Flow temperature | Current flow temperature | °C |
+| HC1 Flow setpoint | Target flow temperature | °C |
+| HC1 Room temperature | Current room temperature | °C |
+| HC1 Room setpoint | Target room temperature | °C |
+| HC1 Comfort setpoint | Comfort mode setpoint | °C |
+| HC1 Reduced setpoint | Reduced mode setpoint | °C |
+| HC1 Heating curve slope | Heating curve steepness | - |
+| HC1 Heating curve offset | Heating curve shift | °C |
+| HC1 Pump speed | Current pump speed | % |
 
 ### Binary Sensors
 
 | Entity | Description |
 |--------|-------------|
-| Compressor | Compressor running state |
-| Defrost | Defrost mode active |
-| DHW demand | Hot water demand active |
-| Error | Error state indicator |
+| HC1 Enabled | Heating circuit active |
+| HC1 Pump | Circulation pump running |
+| HC1 Mixer open/close | Mixer valve state |
+| HC1 Room thermostat demand | Heat demand from thermostat |
 
 ## Troubleshooting
 
