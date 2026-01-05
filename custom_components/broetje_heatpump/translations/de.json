@@ -1,0 +1,117 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Mit Brötje Wärmepumpe verbinden",
+        "description": "Geben Sie die Modbus TCP Verbindungsdaten für Ihre Brötje Wärmepumpe ein.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Geräte-ID"
+        },
+        "data_description": {
+          "host": "IP-Adresse Ihres Modbus TCP Gateways",
+          "port": "Modbus TCP Port (Standard: 502)",
+          "unit_id": "Modbus Geräte-/Slave-ID (Standard: 1)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum Modbus-Gerät fehlgeschlagen. Bitte überprüfen Sie Host, Port und Geräte-ID.",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "abort": {
+      "already_configured": "Dieses Gerät ist bereits konfiguriert."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "hc1_operating_mode": {
+        "name": "HK1 Betriebsart",
+        "state": {
+          "protection": "Schutzbetrieb",
+          "auto": "Automatik",
+          "reduced": "Reduziert",
+          "comfort": "Komfort"
+        }
+      },
+      "hc1_comfort_setpoint": {
+        "name": "HK1 Komfortsollwert"
+      },
+      "hc1_reduced_setpoint": {
+        "name": "HK1 Reduziertsollwert"
+      },
+      "hc1_frost_protection_setpoint": {
+        "name": "HK1 Frostschutzsollwert"
+      },
+      "hc1_heating_curve_slope": {
+        "name": "HK1 Kennlinie Steilheit"
+      },
+      "hc1_heating_curve_offset": {
+        "name": "HK1 Kennlinie Verschiebung"
+      },
+      "hc1_summer_winter_threshold": {
+        "name": "HK1 Sommer-/Winterheizgrenze"
+      },
+      "hc1_day_heating_threshold": {
+        "name": "HK1 Tagesheizgrenze"
+      },
+      "hc1_flow_setpoint_min": {
+        "name": "HK1 Vorlaufsollwert Minimum"
+      },
+      "hc1_flow_setpoint_max": {
+        "name": "HK1 Vorlaufsollwert Maximum"
+      },
+      "hc1_flow_setpoint_room_thermostat": {
+        "name": "HK1 Vorlaufsollwert Raumthermostat"
+      },
+      "hc1_room_influence": {
+        "name": "HK1 Raumeinfluss"
+      },
+      "hc1_room_temperature": {
+        "name": "HK1 Raumtemperatur"
+      },
+      "hc1_room_setpoint": {
+        "name": "HK1 Raumsollwert"
+      },
+      "hc1_flow_temperature": {
+        "name": "HK1 Vorlauftemperatur"
+      },
+      "hc1_flow_setpoint": {
+        "name": "HK1 Vorlaufsollwert"
+      },
+      "hc1_status": {
+        "name": "HK1 Status"
+      },
+      "hc1_mixer_boost": {
+        "name": "HK1 Mischerüberhöhung"
+      },
+      "hc1_pump_speed": {
+        "name": "HK1 Pumpendrehzahl"
+      },
+      "hc1_pump_speed_min": {
+        "name": "HK1 Pumpendrehzahl Minimum"
+      },
+      "hc1_pump_speed_max": {
+        "name": "HK1 Pumpendrehzahl Maximum"
+      }
+    },
+    "binary_sensor": {
+      "hc1_room_thermostat_demand": {
+        "name": "HK1 Raumthermostat Bedarf"
+      },
+      "hc1_enabled": {
+        "name": "HK1 Aktiviert"
+      },
+      "hc1_pump": {
+        "name": "HK1 Heizkreispumpe"
+      },
+      "hc1_mixer_open": {
+        "name": "HK1 Mischer Auf"
+      },
+      "hc1_mixer_close": {
+        "name": "HK1 Mischer Zu"
+      }
+    }
+  }
+}
