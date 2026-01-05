@@ -95,11 +95,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             # Using input register 0 as a basic connectivity test
             try:
                 async with asyncio.timeout(5):
-                    result = await client.read_input_registers(
-                        address=0,
-                        count=1,
-                        unit=unit_id,
-                    )
+                    result = await client.read_input_registers(0, 1, unit_id)
                 
                 if hasattr(result, 'isError') and result.isError():
                     _LOGGER.warning(
