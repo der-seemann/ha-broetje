@@ -12,7 +12,7 @@ from homeassistant.const import UnitOfPressure, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import SENSORS
+from .const import OPERATING_MODES, SENSORS
 from .coordinator import BroetjeModbusCoordinator
 from .entity import BroetjeEntity
 
@@ -24,6 +24,7 @@ DEVICE_CLASS_MAP = {
     "power": SensorDeviceClass.POWER,
     "energy": SensorDeviceClass.ENERGY,
     "frequency": SensorDeviceClass.FREQUENCY,
+    "enum": SensorDeviceClass.ENUM,
 }
 
 # Map unit strings to actual units
@@ -82,6 +83,10 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         if device_class:
             self._attr_device_class = DEVICE_CLASS_MAP.get(device_class)
         
+        # Set options for enum sensors
+        if device_class == "enum":
+            self._attr_options = list(OPERATING_MODES.values())
+        
         # Set unit
         unit = sensor_config.get("unit")
         if unit:
@@ -97,7 +102,7 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             self._attr_icon = icon
 
     @property
-    def native_value(self) -> float | None:
+    def native_value(self) -> float | str | None:
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
@@ -107,12 +112,20 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         if value is None:
             return None
         
+        # Handle enum device class (operating mode)
+        if self._attr_device_class == SensorDeviceClass.ENUM:
+            return OPERATING_MODES.get(int(value), f"unknown_{int(value)}")
+        
         # Round temperature values to 1 decimal
         if self._attr_device_class == SensorDeviceClass.TEMPERATURE:
             return round(value, 1)
         
         # Round pressure values to 2 decimals
         if self._attr_device_class == SensorDeviceClass.PRESSURE:
+            return round(value, 2)
+        
+        # Round other numeric values to 2 decimals
+        if isinstance(value, float):
             return round(value, 2)
         
         return value

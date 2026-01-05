@@ -26,34 +26,91 @@
   },
   "entity": {
     "sensor": {
-      "outdoor_temperature": {
-        "name": "Outdoor temperature"
+      "hc1_operating_mode": {
+        "name": "HC1 Operating mode",
+        "state": {
+          "protection": "Protection",
+          "auto": "Automatic",
+          "reduced": "Reduced",
+          "comfort": "Comfort"
+        }
       },
-      "flow_temperature": {
-        "name": "Flow temperature"
+      "hc1_comfort_setpoint": {
+        "name": "HC1 Comfort setpoint"
       },
-      "return_temperature": {
-        "name": "Return temperature"
+      "hc1_reduced_setpoint": {
+        "name": "HC1 Reduced setpoint"
       },
-      "dhw_temperature": {
-        "name": "DHW temperature"
+      "hc1_frost_protection_setpoint": {
+        "name": "HC1 Frost protection setpoint"
       },
-      "system_pressure": {
-        "name": "System pressure"
+      "hc1_heating_curve_slope": {
+        "name": "HC1 Heating curve slope"
+      },
+      "hc1_heating_curve_offset": {
+        "name": "HC1 Heating curve offset"
+      },
+      "hc1_summer_winter_threshold": {
+        "name": "HC1 Summer/Winter threshold"
+      },
+      "hc1_day_heating_threshold": {
+        "name": "HC1 Day heating threshold"
+      },
+      "hc1_flow_setpoint_min": {
+        "name": "HC1 Flow setpoint minimum"
+      },
+      "hc1_flow_setpoint_max": {
+        "name": "HC1 Flow setpoint maximum"
+      },
+      "hc1_flow_setpoint_room_thermostat": {
+        "name": "HC1 Flow setpoint room thermostat"
+      },
+      "hc1_room_influence": {
+        "name": "HC1 Room influence"
+      },
+      "hc1_room_temperature": {
+        "name": "HC1 Room temperature"
+      },
+      "hc1_room_setpoint": {
+        "name": "HC1 Room setpoint"
+      },
+      "hc1_flow_temperature": {
+        "name": "HC1 Flow temperature"
+      },
+      "hc1_flow_setpoint": {
+        "name": "HC1 Flow setpoint"
+      },
+      "hc1_status": {
+        "name": "HC1 Status"
+      },
+      "hc1_mixer_boost": {
+        "name": "HC1 Mixer boost"
+      },
+      "hc1_pump_speed": {
+        "name": "HC1 Pump speed"
+      },
+      "hc1_pump_speed_min": {
+        "name": "HC1 Pump speed minimum"
+      },
+      "hc1_pump_speed_max": {
+        "name": "HC1 Pump speed maximum"
       }
     },
     "binary_sensor": {
-      "compressor_running": {
-        "name": "Compressor"
+      "hc1_room_thermostat_demand": {
+        "name": "HC1 Room thermostat demand"
       },
-      "defrost_active": {
-        "name": "Defrost"
+      "hc1_enabled": {
+        "name": "HC1 Enabled"
       },
-      "dhw_demand": {
-        "name": "DHW demand"
+      "hc1_pump": {
+        "name": "HC1 Pump"
       },
-      "error_state": {
-        "name": "Error"
+      "hc1_mixer_open": {
+        "name": "HC1 Mixer open"
+      },
+      "hc1_mixer_close": {
+        "name": "HC1 Mixer close"
       }
     }
   }
