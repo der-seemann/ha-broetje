@@ -87,17 +87,6 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Read device identification information."""
         # TODO: Implement reading device info from Modbus registers
         # This will be populated once we have the register addresses from the PDF
-        #
-        # Example implementation:
-        # serial_reg = REGISTER_MAP.get("serial_number")
-        # if serial_reg:
-        #     result = await self._read_registers(
-        #         serial_reg["address"],
-        #         serial_reg["count"],
-        #         serial_reg["type"]
-        #     )
-        #     if result:
-        #         self.device_serial = self._decode_string(result)
         pass
 
     async def _read_registers(
@@ -113,11 +102,11 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 
                 if register_type == REG_INPUT:
                     result = await self._client.read_input_registers(
-                        address, count, self._unit_id
+                        address=address, count=count, device_id=self._unit_id
                     )
                 elif register_type == REG_HOLDING:
                     result = await self._client.read_holding_registers(
-                        address, count, self._unit_id
+                        address=address, count=count, device_id=self._unit_id
                     )
                 else:
                     _LOGGER.error("Unknown register type: %s", register_type)
