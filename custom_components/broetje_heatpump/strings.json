@@ -1,0 +1,60 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Brötje Heatpump",
+        "description": "Enter the Modbus TCP connection details for your Brötje heatpump.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID"
+        },
+        "data_description": {
+          "host": "IP address of your Modbus TCP gateway",
+          "port": "Modbus TCP port (default: 502)",
+          "unit_id": "Modbus unit/slave ID (default: 1)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the Modbus device. Please check the host, port, and unit ID.",
+      "unknown": "An unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This device is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "outdoor_temperature": {
+        "name": "Outdoor temperature"
+      },
+      "flow_temperature": {
+        "name": "Flow temperature"
+      },
+      "return_temperature": {
+        "name": "Return temperature"
+      },
+      "dhw_temperature": {
+        "name": "DHW temperature"
+      },
+      "system_pressure": {
+        "name": "System pressure"
+      }
+    },
+    "binary_sensor": {
+      "compressor_running": {
+        "name": "Compressor"
+      },
+      "defrost_active": {
+        "name": "Defrost"
+      },
+      "dhw_demand": {
+        "name": "DHW demand"
+      },
+      "error_state": {
+        "name": "Error"
+      }
+    }
+  }
+}
