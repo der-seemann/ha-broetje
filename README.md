@@ -13,7 +13,7 @@ Home Assistant integration for Brötje heatpumps (and other heating systems) via
 
 <img src="custom_components/broetje_heatpump/images/Broetje-BLW-Eco-10.1.png" alt="Brötje BLW Eco" width="300">
 
-- **Brötje BLW Eco 10.1** (tested)
+**Brötje BLW Eco 10.1** (tested)
 
 *Other Brötje heatpumps with Modbus interface may also work.*
 
