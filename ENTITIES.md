@@ -149,6 +149,52 @@ This document lists all entities provided by the Brötje Heatpump integration.
 | Buffer generator valve | Generator blocking valve Y4 (Erzeugersperrventil) | 17458 | 0=Off, 1=On |
 | Buffer return valve | Buffer return valve Y15 | 17468 | 0=Off, 1=On |
 
+## Boiler (Kessel)
+
+### Sensors
+
+| Entity | Description | Register | Unit | R/W |
+|--------|-------------|----------|------|-----|
+| Boiler manual setpoint | Manual operation setpoint (Sollwert Handbetrieb) | 24576 | °C | R/W |
+| Boiler nominal temp lift | Nominal temperature lift (Temperaturhub Nenn) | 24577 | °C | R/W |
+| Boiler nominal power | Nominal power (Leistung Nenn) | 24581 | kW | R/W |
+| Boiler base stage power | Base stage power (Leistung Grundstufe) | 24582 | kW | R/W |
+| Burner hours maintenance interval | Maintenance interval in hours | 24583 | h | R/W |
+| Burner hours since maintenance | Hours since last maintenance | 24585 | h | R |
+| Burner starts interval | Burner starts interval | 24586 | - | R/W |
+| Burner starts since maintenance | Starts since last maintenance | 24588 | - | R |
+| Fan speed service threshold | Fan speed threshold for service message | 24589 | 1/min | R/W |
+| Boiler status | Boiler status code | 24592 | - | R |
+| Burner status | Burner status code | 24593 | - | R |
+| Boiler pump speed | Boiler pump speed (Drehzahl Kesselpumpe) | 24596 | % | R |
+| Boiler temperature | Current boiler temperature (Kesseltemperatur) | 24600 | °C | R |
+| Boiler setpoint | Current boiler setpoint (Kesselsollwert) | 24604 | °C | R |
+| Boiler return temperature | Return temperature (Kesselrücklauftemperatur) | 24608 | °C | R |
+| Boiler fan speed | Current fan speed (Gebläsedrehzahl) | 24612 | 1/min | R |
+| Boiler fan setpoint | Fan setpoint (Brennergebläsesollwert) | 24613 | 1/min | R |
+| Boiler fan control | Current fan control (Aktuelle Gebläseansteuerung) | 24614 | % | R |
+| Boiler relative power | Relative power (Relative Leistung) | 24616 | % | R |
+| Ionization current | Ionization current (Ionisationsstrom) | 24618 | µA | R |
+| Operating hours stage 1 | Operating hours stage 1 (Betriebsstunden 1. Stufe) | 24620 | h | R/W |
+| Start counter stage 1 | Start counter stage 1 (Startzähler 1. Stufe) | 24621 | - | R/W |
+| Operating hours heating | Operating hours heating mode | 24623 | h | R/W |
+| Operating hours DHW | Operating hours DHW mode | 24625 | h | R/W |
+| Total gas energy heating | Total gas energy for heating | 24629 | kWh | R/W |
+| Total gas energy DHW | Total gas energy for DHW | 24631 | kWh | R/W |
+| Total gas energy | Total gas energy | 24633 | kWh | R/W |
+| Gas energy heating | Gas energy for heating | 24635 | kWh | R/W |
+| Gas energy DHW | Gas energy for DHW | 24637 | kWh | R/W |
+| Gas energy | Gas energy | 24639 | kWh | R |
+| Firing automaton phase | Current firing automaton phase (1-21) | 24641 | - | R |
+
+### Binary Sensors
+
+| Entity | Description | Register | Values |
+|--------|-------------|----------|--------|
+| Ion current message | Ion current message (Meldung Ion Strom) | 24591 | 0=Off, 1=On |
+| Boiler pump Q1 | Boiler pump state (Kesselpumpe Q1) | 24594 | 0=Off, 1=On |
+| Generator lock | Generator lock via H-contact (Erzeugersperre) | 24644 | 0=Off, 1=On |
+
 ## Scale Factors
 
 The following scale factors are used to convert raw register values:
@@ -157,6 +203,9 @@ The following scale factors are used to convert raw register values:
 |--------|-------|----------|
 | Temperature | 1/64 (0.015625) | All temperature values |
 | Heating curve slope | 1/50 (0.02) | Heating curve steepness |
+| Power | 1/10 (0.1) | Power in kW |
+| Percent (scaled) | 1/100 (0.01) | Fan control %, ionization current |
+| Hours | 1/3600 | Operating hours (stored as seconds) |
 
 ## Entity Naming
 
@@ -170,7 +219,6 @@ Example: `sensor.broetje_heatpump_hc1_flow_temperature`
 
 The following entities are planned for future versions:
 
-- Boiler (Kessel) sensors
 - Heatpump specific sensors (compressor, outdoor unit)
 - Additional heating circuits (HC2, HC3)
 - Error codes and diagnostics

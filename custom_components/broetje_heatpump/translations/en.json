@@ -202,6 +202,99 @@
       },
       "buffer_setpoint": {
         "name": "Buffer setpoint"
+      },
+      "boiler_manual_setpoint": {
+        "name": "Boiler manual setpoint"
+      },
+      "boiler_temp_lift_nominal": {
+        "name": "Boiler nominal temperature lift"
+      },
+      "boiler_power_nominal": {
+        "name": "Boiler nominal power"
+      },
+      "boiler_power_base": {
+        "name": "Boiler base stage power"
+      },
+      "boiler_burner_hours_interval": {
+        "name": "Burner hours maintenance interval"
+      },
+      "boiler_burner_hours_since_maint": {
+        "name": "Burner hours since maintenance"
+      },
+      "boiler_burner_starts_interval": {
+        "name": "Burner starts interval"
+      },
+      "boiler_burner_starts_since_maint": {
+        "name": "Burner starts since maintenance"
+      },
+      "boiler_fan_speed_service_threshold": {
+        "name": "Fan speed service threshold"
+      },
+      "boiler_status": {
+        "name": "Boiler status"
+      },
+      "boiler_burner_status": {
+        "name": "Burner status"
+      },
+      "boiler_pump_speed": {
+        "name": "Boiler pump speed"
+      },
+      "boiler_temperature": {
+        "name": "Boiler temperature"
+      },
+      "boiler_setpoint": {
+        "name": "Boiler setpoint"
+      },
+      "boiler_return_temp": {
+        "name": "Boiler return temperature"
+      },
+      "boiler_fan_speed": {
+        "name": "Boiler fan speed"
+      },
+      "boiler_fan_setpoint": {
+        "name": "Boiler fan setpoint"
+      },
+      "boiler_fan_control": {
+        "name": "Boiler fan control"
+      },
+      "boiler_power_relative": {
+        "name": "Boiler relative power"
+      },
+      "boiler_ionization_current": {
+        "name": "Ionization current"
+      },
+      "boiler_operating_hours_stage1": {
+        "name": "Operating hours stage 1"
+      },
+      "boiler_start_count_stage1": {
+        "name": "Start counter stage 1"
+      },
+      "boiler_operating_hours_heating": {
+        "name": "Operating hours heating"
+      },
+      "boiler_operating_hours_dhw": {
+        "name": "Operating hours DHW"
+      },
+      "boiler_gas_energy_heating_total": {
+        "name": "Total gas energy heating"
+      },
+      "boiler_gas_energy_dhw_total": {
+        "name": "Total gas energy DHW"
+      },
+      "boiler_gas_energy_total": {
+        "name": "Total gas energy"
+      },
+      "boiler_gas_energy_heating": {
+        "name": "Gas energy heating"
+      },
+      "boiler_gas_energy_dhw": {
+        "name": "Gas energy DHW"
+      },
+      "boiler_gas_energy": {
+        "name": "Gas energy"
+      },
+      "boiler_firing_phase": {
+        "name": "Firing automaton phase"
       }
     },
     "binary_sensor": {
@@ -234,6 +327,15 @@
       },
       "buffer_return_valve": {
         "name": "Buffer return valve Y15"
+      },
+      "boiler_ion_message": {
+        "name": "Ion current message"
+      },
+      "boiler_pump": {
+        "name": "Boiler pump Q1"
+      },
+      "boiler_generator_lock": {
+        "name": "Generator lock via H-contact"
       }
     }
   }

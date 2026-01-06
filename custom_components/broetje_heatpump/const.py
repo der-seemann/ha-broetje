@@ -23,6 +23,9 @@ REG_HOLDING: Final = "holding"
 # Scale factors from Brötje documentation
 SCALE_TEMP: Final = 1 / 64  # 0.015625 - for temperature values
 SCALE_CURVE: Final = 1 / 50  # 0.02 - for heating curve slope
+SCALE_POWER: Final = 1 / 10  # 0.1 - for power in kW
+SCALE_PERCENT_100: Final = 1 / 100  # 0.01 - for percentages scaled by 100
+SCALE_HOURS: Final = 1 / 3600  # for hours stored as seconds
 
 # Operating mode enumeration (Betriebsart)
 OPERATING_MODES: Final = {
@@ -548,6 +551,281 @@ REGISTER_MAP: Final = {
         "data_type": "uint16",
         "scale": 1,
     },
+    
+    # ===== KESSEL (Boiler) =====
+    
+    # Manual setpoint - Register 24576
+    "boiler_manual_setpoint": {
+        "address": 24576,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Nominal temperature lift - Register 24577
+    "boiler_temp_lift_nominal": {
+        "address": 24577,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Nominal power - Register 24581
+    "boiler_power_nominal": {
+        "address": 24581,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_POWER,
+    },
+    # Base stage power - Register 24582
+    "boiler_power_base": {
+        "address": 24582,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_POWER,
+    },
+    # Burner hours maintenance interval - Register 24583
+    "boiler_burner_hours_interval": {
+        "address": 24583,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Burner hours since maintenance - Register 24585
+    "boiler_burner_hours_since_maint": {
+        "address": 24585,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Burner starts interval - Register 24586
+    "boiler_burner_starts_interval": {
+        "address": 24586,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Burner starts since maintenance - Register 24588
+    "boiler_burner_starts_since_maint": {
+        "address": 24588,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Fan speed threshold for service - Register 24589
+    "boiler_fan_speed_service_threshold": {
+        "address": 24589,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Ion current message - Register 24591 (binary)
+    "boiler_ion_message": {
+        "address": 24591,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Boiler status - Register 24592 (read-only)
+    "boiler_status": {
+        "address": 24592,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Burner status - Register 24593 (read-only)
+    "boiler_burner_status": {
+        "address": 24593,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Boiler pump Q1 - Register 24594 (read-only)
+    "boiler_pump": {
+        "address": 24594,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Boiler pump speed - Register 24596 (read-only)
+    "boiler_pump_speed": {
+        "address": 24596,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Boiler temperature - Register 24600 (read-only)
+    "boiler_temperature": {
+        "address": 24600,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Boiler setpoint - Register 24604 (read-only)
+    "boiler_setpoint": {
+        "address": 24604,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Boiler return temperature - Register 24608 (read-only)
+    "boiler_return_temp": {
+        "address": 24608,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Fan speed - Register 24612 (read-only)
+    "boiler_fan_speed": {
+        "address": 24612,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Burner fan setpoint - Register 24613 (read-only)
+    "boiler_fan_setpoint": {
+        "address": 24613,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Current fan control - Register 24614 (read-only)
+    "boiler_fan_control": {
+        "address": 24614,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_PERCENT_100,
+    },
+    # Relative power - Register 24616 (read-only)
+    "boiler_power_relative": {
+        "address": 24616,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Ionization current - Register 24618 (read-only)
+    "boiler_ionization_current": {
+        "address": 24618,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_PERCENT_100,
+    },
+    # Operating hours stage 1 - Register 24620
+    "boiler_operating_hours_stage1": {
+        "address": 24620,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Start counter stage 1 - Register 24621 (uint32, 2 registers)
+    "boiler_start_count_stage1": {
+        "address": 24621,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Operating hours heating - Register 24623 (uint32, 2 registers)
+    "boiler_operating_hours_heating": {
+        "address": 24623,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": SCALE_HOURS,
+    },
+    # Operating hours DHW - Register 24625 (uint32, 2 registers)
+    "boiler_operating_hours_dhw": {
+        "address": 24625,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": SCALE_HOURS,
+    },
+    # Total gas energy heating - Register 24629 (uint32, 2 registers)
+    "boiler_gas_energy_heating_total": {
+        "address": 24629,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Total gas energy DHW - Register 24631 (uint32, 2 registers)
+    "boiler_gas_energy_dhw_total": {
+        "address": 24631,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Total gas energy - Register 24633 (uint32, 2 registers)
+    "boiler_gas_energy_total": {
+        "address": 24633,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Gas energy heating - Register 24635 (uint32, 2 registers)
+    "boiler_gas_energy_heating": {
+        "address": 24635,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Gas energy DHW - Register 24637 (uint32, 2 registers)
+    "boiler_gas_energy_dhw": {
+        "address": 24637,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Gas energy - Register 24639 (uint32, 2 registers)
+    "boiler_gas_energy": {
+        "address": 24639,
+        "type": REG_HOLDING,
+        "count": 2,
+        "data_type": "uint32",
+        "scale": 1,
+    },
+    # Firing automaton phase - Register 24641 (read-only)
+    "boiler_firing_phase": {
+        "address": 24641,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Generator lock via H-contact - Register 24644 (read-only)
+    "boiler_generator_lock": {
+        "address": 24644,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
 }
 
 # Sensor definitions
@@ -927,6 +1205,244 @@ SENSORS: Final = {
         "unit": "°C",
         "state_class": "measurement",
     },
+    
+    # ===== Boiler (Kessel) Sensors =====
+    
+    "boiler_manual_setpoint": {
+        "register": "boiler_manual_setpoint",
+        "translation_key": "boiler_manual_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "boiler_temp_lift_nominal": {
+        "register": "boiler_temp_lift_nominal",
+        "translation_key": "boiler_temp_lift_nominal",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "boiler_power_nominal": {
+        "register": "boiler_power_nominal",
+        "translation_key": "boiler_power_nominal",
+        "device_class": "power",
+        "unit": "kW",
+        "state_class": "measurement",
+    },
+    "boiler_power_base": {
+        "register": "boiler_power_base",
+        "translation_key": "boiler_power_base",
+        "device_class": "power",
+        "unit": "kW",
+        "state_class": "measurement",
+    },
+    "boiler_burner_hours_interval": {
+        "register": "boiler_burner_hours_interval",
+        "translation_key": "boiler_burner_hours_interval",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "measurement",
+        "icon": "mdi:clock-outline",
+    },
+    "boiler_burner_hours_since_maint": {
+        "register": "boiler_burner_hours_since_maint",
+        "translation_key": "boiler_burner_hours_since_maint",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "total_increasing",
+        "icon": "mdi:clock-alert-outline",
+    },
+    "boiler_burner_starts_interval": {
+        "register": "boiler_burner_starts_interval",
+        "translation_key": "boiler_burner_starts_interval",
+        "device_class": None,
+        "unit": None,
+        "state_class": "measurement",
+        "icon": "mdi:counter",
+    },
+    "boiler_burner_starts_since_maint": {
+        "register": "boiler_burner_starts_since_maint",
+        "translation_key": "boiler_burner_starts_since_maint",
+        "device_class": None,
+        "unit": None,
+        "state_class": "total_increasing",
+        "icon": "mdi:counter",
+    },
+    "boiler_fan_speed_service_threshold": {
+        "register": "boiler_fan_speed_service_threshold",
+        "translation_key": "boiler_fan_speed_service_threshold",
+        "device_class": None,
+        "unit": "1/min",
+        "state_class": "measurement",
+        "icon": "mdi:fan",
+    },
+    "boiler_status": {
+        "register": "boiler_status",
+        "translation_key": "boiler_status",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:information-outline",
+    },
+    "boiler_burner_status": {
+        "register": "boiler_burner_status",
+        "translation_key": "boiler_burner_status",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:fire",
+    },
+    "boiler_pump_speed": {
+        "register": "boiler_pump_speed",
+        "translation_key": "boiler_pump_speed",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:pump",
+    },
+    "boiler_temperature": {
+        "register": "boiler_temperature",
+        "translation_key": "boiler_temperature",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "boiler_setpoint": {
+        "register": "boiler_setpoint",
+        "translation_key": "boiler_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "boiler_return_temp": {
+        "register": "boiler_return_temp",
+        "translation_key": "boiler_return_temp",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "boiler_fan_speed": {
+        "register": "boiler_fan_speed",
+        "translation_key": "boiler_fan_speed",
+        "device_class": None,
+        "unit": "1/min",
+        "state_class": "measurement",
+        "icon": "mdi:fan",
+    },
+    "boiler_fan_setpoint": {
+        "register": "boiler_fan_setpoint",
+        "translation_key": "boiler_fan_setpoint",
+        "device_class": None,
+        "unit": "1/min",
+        "state_class": "measurement",
+        "icon": "mdi:fan",
+    },
+    "boiler_fan_control": {
+        "register": "boiler_fan_control",
+        "translation_key": "boiler_fan_control",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:fan",
+    },
+    "boiler_power_relative": {
+        "register": "boiler_power_relative",
+        "translation_key": "boiler_power_relative",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:gauge",
+    },
+    "boiler_ionization_current": {
+        "register": "boiler_ionization_current",
+        "translation_key": "boiler_ionization_current",
+        "device_class": None,
+        "unit": "µA",
+        "state_class": "measurement",
+        "icon": "mdi:flash",
+    },
+    "boiler_operating_hours_stage1": {
+        "register": "boiler_operating_hours_stage1",
+        "translation_key": "boiler_operating_hours_stage1",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "total_increasing",
+        "icon": "mdi:clock-outline",
+    },
+    "boiler_start_count_stage1": {
+        "register": "boiler_start_count_stage1",
+        "translation_key": "boiler_start_count_stage1",
+        "device_class": None,
+        "unit": None,
+        "state_class": "total_increasing",
+        "icon": "mdi:counter",
+    },
+    "boiler_operating_hours_heating": {
+        "register": "boiler_operating_hours_heating",
+        "translation_key": "boiler_operating_hours_heating",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "total_increasing",
+        "icon": "mdi:clock-outline",
+    },
+    "boiler_operating_hours_dhw": {
+        "register": "boiler_operating_hours_dhw",
+        "translation_key": "boiler_operating_hours_dhw",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "total_increasing",
+        "icon": "mdi:clock-outline",
+    },
+    "boiler_gas_energy_heating_total": {
+        "register": "boiler_gas_energy_heating_total",
+        "translation_key": "boiler_gas_energy_heating_total",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_gas_energy_dhw_total": {
+        "register": "boiler_gas_energy_dhw_total",
+        "translation_key": "boiler_gas_energy_dhw_total",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_gas_energy_total": {
+        "register": "boiler_gas_energy_total",
+        "translation_key": "boiler_gas_energy_total",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_gas_energy_heating": {
+        "register": "boiler_gas_energy_heating",
+        "translation_key": "boiler_gas_energy_heating",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_gas_energy_dhw": {
+        "register": "boiler_gas_energy_dhw",
+        "translation_key": "boiler_gas_energy_dhw",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_gas_energy": {
+        "register": "boiler_gas_energy",
+        "translation_key": "boiler_gas_energy",
+        "device_class": "energy",
+        "unit": "kWh",
+        "state_class": "total_increasing",
+    },
+    "boiler_firing_phase": {
+        "register": "boiler_firing_phase",
+        "translation_key": "boiler_firing_phase",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:fire-circle",
+    },
 }
 
 # Binary sensor definitions
@@ -990,5 +1506,24 @@ BINARY_SENSORS: Final = {
         "translation_key": "buffer_return_valve",
         "device_class": None,
         "icon": "mdi:valve",
+    },
+    
+    # ===== Boiler (Kessel) Binary Sensors =====
+    
+    "boiler_ion_message": {
+        "register": "boiler_ion_message",
+        "translation_key": "boiler_ion_message",
+        "device_class": "problem",
+    },
+    "boiler_pump": {
+        "register": "boiler_pump",
+        "translation_key": "boiler_pump",
+        "device_class": "running",
+    },
+    "boiler_generator_lock": {
+        "register": "boiler_generator_lock",
+        "translation_key": "boiler_generator_lock",
+        "device_class": None,
+        "icon": "mdi:lock",
     },
 }

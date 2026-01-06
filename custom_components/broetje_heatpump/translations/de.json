@@ -202,6 +202,99 @@
       },
       "buffer_setpoint": {
         "name": "Pufferspeichersollwert"
+      },
+      "boiler_manual_setpoint": {
+        "name": "Kessel Sollwert Handbetrieb"
+      },
+      "boiler_temp_lift_nominal": {
+        "name": "Kessel Temperaturhub Nenn"
+      },
+      "boiler_power_nominal": {
+        "name": "Kessel Leistung Nenn"
+      },
+      "boiler_power_base": {
+        "name": "Kessel Leistung Grundstufe"
+      },
+      "boiler_burner_hours_interval": {
+        "name": "Brennerstunden Wartungsintervall"
+      },
+      "boiler_burner_hours_since_maint": {
+        "name": "Brennerstunden seit Wartung"
+      },
+      "boiler_burner_starts_interval": {
+        "name": "Brennerstarts Intervall"
+      },
+      "boiler_burner_starts_since_maint": {
+        "name": "Brennerstarts seit Wartung"
+      },
+      "boiler_fan_speed_service_threshold": {
+        "name": "Gebläsedrehzahlschwelle Servicemeldung"
+      },
+      "boiler_status": {
+        "name": "Status Kessel"
+      },
+      "boiler_burner_status": {
+        "name": "Status Brenner"
+      },
+      "boiler_pump_speed": {
+        "name": "Drehzahl Kesselpumpe"
+      },
+      "boiler_temperature": {
+        "name": "Kesseltemperatur"
+      },
+      "boiler_setpoint": {
+        "name": "Kesselsollwert"
+      },
+      "boiler_return_temp": {
+        "name": "Kesselrücklauftemperatur"
+      },
+      "boiler_fan_speed": {
+        "name": "Gebläsedrehzahl"
+      },
+      "boiler_fan_setpoint": {
+        "name": "Brennergebläsesollwert"
+      },
+      "boiler_fan_control": {
+        "name": "Aktuelle Gebläseansteuerung"
+      },
+      "boiler_power_relative": {
+        "name": "Relative Leistung"
+      },
+      "boiler_ionization_current": {
+        "name": "Ionisationsstrom"
+      },
+      "boiler_operating_hours_stage1": {
+        "name": "Betriebsstunden 1. Stufe"
+      },
+      "boiler_start_count_stage1": {
+        "name": "Startzähler 1. Stufe"
+      },
+      "boiler_operating_hours_heating": {
+        "name": "Betriebsstunden Heizbetrieb"
+      },
+      "boiler_operating_hours_dhw": {
+        "name": "Betriebsstunden TWW"
+      },
+      "boiler_gas_energy_heating_total": {
+        "name": "Gesamt Gasenergie Heizen"
+      },
+      "boiler_gas_energy_dhw_total": {
+        "name": "Gesamt Gasenergie TWW"
+      },
+      "boiler_gas_energy_total": {
+        "name": "Gesamt Gasenergie"
+      },
+      "boiler_gas_energy_heating": {
+        "name": "Gasenergie Heizen"
+      },
+      "boiler_gas_energy_dhw": {
+        "name": "Gasenergie TWW"
+      },
+      "boiler_gas_energy": {
+        "name": "Gasenergie"
+      },
+      "boiler_firing_phase": {
+        "name": "Aktuelle Phase Feuerungsautomat"
       }
     },
     "binary_sensor": {
@@ -234,6 +327,15 @@
       },
       "buffer_return_valve": {
         "name": "Puffer Rücklaufventil Y15"
+      },
+      "boiler_ion_message": {
+        "name": "Meldung Ion Strom"
+      },
+      "boiler_pump": {
+        "name": "Kesselpumpe Q1"
+      },
+      "boiler_generator_lock": {
+        "name": "Erzeugersperre via H-Kontakt"
       }
     }
   }
