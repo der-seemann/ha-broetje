@@ -20,6 +20,9 @@ Home Assistant integration for Brötje heatpumps (and other heating systems) via
 
 ## Features
 
+> **Note:** All information is derived from this Brötje document:
+[de-de_ma_modbm.pdf](https://polo.broetje.de/pdf/7715040=6=pdf_(bdr_a4_manual)=de-de_ma_modbm.pdf)
+
 - **Read-only monitoring** (v0.2)
 - **ca. 100 entities** across 6 categories
 - **German and English translations**
