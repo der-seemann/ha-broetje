@@ -49,6 +49,61 @@ This document lists all entities provided by the Brötje Heatpump integration.
 | 2 | Reduziert | Reduced |
 | 3 | Komfort | Comfort |
 
+## Domestic Hot Water (Trinkwasser / TWW)
+
+### Sensors
+
+| Entity | Description | Register | Unit | R/W |
+|--------|-------------|----------|------|-----|
+| DHW Operating mode | Operating mode (Off/On/Eco) | 10240 | - | R/W |
+| DHW Setpoint | Nominal setpoint temperature (8-80°C) | 10241 | °C | R/W |
+| DHW Reduced setpoint | Reduced setpoint temperature (8-80°C) | 10242 | °C | R/W |
+| DHW Release mode | Release mode (24h/heating program/DHW program) | 10243 | - | R/W |
+| DHW Legionella mode | Legionella function (Off/Periodic/Fixed day) | 10244 | - | R/W |
+| DHW Legionella interval | Legionella periodic interval (1-7 days) | 10245 | days | R/W |
+| DHW Legionella weekday | Fixed weekday (Monday-Sunday) | 10246 | - | R/W |
+| DHW Legionella time | Time of day for legionella function (0-1430 min) | 10247 | min | R/W |
+| DHW Legionella setpoint | Legionella temperature setpoint (55-95°C) | 10249 | °C | R/W |
+| DHW Legionella dwell time | Dwell time at setpoint (2-360 min) | 10250 | min | R/W |
+| DHW Circulation setpoint | Circulation temperature setpoint (8-80°C) | 10263 | °C | R/W |
+| DHW Status | DHW status code | 10273 | - | R |
+
+### DHW Operating Modes (TWW Betriebsart)
+
+| Value | German | English |
+|-------|--------|---------|
+| 0 | Aus | Off |
+| 1 | Ein | On |
+| 2 | Eco | Eco |
+
+### DHW Release Modes (TWW Freigabe)
+
+| Value | German | English |
+|-------|--------|---------|
+| 0 | 24h/Tag | 24h/day |
+| 1 | Zeitprogramme Heizkreise | Heating circuit program |
+| 2 | Zeitprogramm 4/TWW | DHW program |
+
+### Legionella Modes
+
+| Value | German | English |
+|-------|--------|---------|
+| 0 | Aus | Off |
+| 1 | Periodisch | Periodic |
+| 2 | Fixer Wochentag | Fixed weekday |
+
+### Weekdays
+
+| Value | German | English |
+|-------|--------|---------|
+| 1 | Montag | Monday |
+| 2 | Dienstag | Tuesday |
+| 3 | Mittwoch | Wednesday |
+| 4 | Donnerstag | Thursday |
+| 5 | Freitag | Friday |
+| 6 | Samstag | Saturday |
+| 7 | Sonntag | Sunday |
+
 ## Scale Factors
 
 The following scale factors are used to convert raw register values:
@@ -70,7 +125,7 @@ Example: `sensor.broetje_heatpump_hc1_flow_temperature`
 
 The following entities are planned for future versions:
 
-- Domestic Hot Water (DHW / Warmwasser)
+- Boiler (Kessel) sensors
 - Heatpump specific sensors (compressor, outdoor unit)
 - Additional heating circuits (HC2, HC3)
 - Error codes and diagnostics

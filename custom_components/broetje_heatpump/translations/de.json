@@ -94,6 +94,66 @@
       },
       "hc1_pump_speed_max": {
         "name": "HK1 Pumpendrehzahl Maximum"
+      },
+      "dhw_operating_mode": {
+        "name": "TWW Betriebsart",
+        "state": {
+          "off": "Aus",
+          "on": "Ein",
+          "eco": "Eco"
+        }
+      },
+      "dhw_setpoint": {
+        "name": "TWW Nennsollwert"
+      },
+      "dhw_reduced_setpoint": {
+        "name": "TWW Reduziertsollwert"
+      },
+      "dhw_release_mode": {
+        "name": "TWW Freigabe",
+        "state": {
+          "24h": "24h/Tag",
+          "heating_program": "Zeitprogramme Heizkreise",
+          "dhw_program": "Zeitprogramm 4/TWW"
+        }
+      },
+      "dhw_legionella_mode": {
+        "name": "TWW Legionellenfunktion",
+        "state": {
+          "off": "Aus",
+          "periodic": "Periodisch",
+          "fixed_day": "Fixer Wochentag"
+        }
+      },
+      "dhw_legionella_interval": {
+        "name": "TWW Legionellenfkt Periodisch"
+      },
+      "dhw_legionella_weekday": {
+        "name": "TWW Legionellenfkt Wochentag",
+        "state": {
+          "monday": "Montag",
+          "tuesday": "Dienstag",
+          "wednesday": "Mittwoch",
+          "thursday": "Donnerstag",
+          "friday": "Freitag",
+          "saturday": "Samstag",
+          "sunday": "Sonntag"
+        }
+      },
+      "dhw_legionella_time": {
+        "name": "TWW Legionellenfunktion Zeitpunkt"
+      },
+      "dhw_legionella_setpoint": {
+        "name": "TWW Legionellenfunktion Sollwert"
+      },
+      "dhw_legionella_dwell_time": {
+        "name": "TWW Legionellenfkt Verweildauer"
+      },
+      "dhw_circulation_setpoint": {
+        "name": "TWW Zirkulationssollwert"
+      },
+      "dhw_status": {
+        "name": "TWW Status"
       }
     },
     "binary_sensor": {

@@ -32,6 +32,38 @@ OPERATING_MODES: Final = {
     3: "comfort",     # Komfort
 }
 
+# DHW Operating mode enumeration (Trinkwasser Betriebsart)
+DHW_OPERATING_MODES: Final = {
+    0: "off",   # Aus
+    1: "on",    # Ein
+    2: "eco",   # Eco
+}
+
+# DHW Release mode enumeration (Freigabe)
+DHW_RELEASE_MODES: Final = {
+    0: "24h",              # 24h/Tag
+    1: "heating_program",  # Zeitprogramme Heizkreise
+    2: "dhw_program",      # Zeitprogramm 4/TWW
+}
+
+# Legionella function mode enumeration
+LEGIONELLA_MODES: Final = {
+    0: "off",        # Aus
+    1: "periodic",   # Periodisch
+    2: "fixed_day",  # Fixer Wochentag
+}
+
+# Weekday enumeration
+WEEKDAYS: Final = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday",
+    6: "saturday",
+    7: "sunday",
+}
+
 # Modbus register map from Brötje documentation
 # Heizkreis 1 (Heating Circuit 1)
 REGISTER_MAP: Final = {
@@ -243,6 +275,105 @@ REGISTER_MAP: Final = {
         "data_type": "uint16",
         "scale": 1,
     },
+    
+    # ===== TRINKWASSER (DHW - Domestic Hot Water) =====
+    
+    # DHW Operating mode - Register 10240
+    "dhw_operating_mode": {
+        "address": 10240,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # DHW Setpoint - Register 10241
+    "dhw_setpoint": {
+        "address": 10241,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # DHW Reduced setpoint - Register 10242
+    "dhw_reduced_setpoint": {
+        "address": 10242,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # DHW Release mode - Register 10243
+    "dhw_release_mode": {
+        "address": 10243,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Legionella function mode - Register 10244
+    "dhw_legionella_mode": {
+        "address": 10244,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Legionella periodic interval (days) - Register 10245
+    "dhw_legionella_interval": {
+        "address": 10245,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Legionella weekday - Register 10246
+    "dhw_legionella_weekday": {
+        "address": 10246,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Legionella time (minutes from 00:00) - Register 10247
+    "dhw_legionella_time": {
+        "address": 10247,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Legionella setpoint - Register 10249
+    "dhw_legionella_setpoint": {
+        "address": 10249,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # Legionella dwell time (minutes) - Register 10250
+    "dhw_legionella_dwell_time": {
+        "address": 10250,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # Circulation setpoint - Register 10263
+    "dhw_circulation_setpoint": {
+        "address": 10263,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": SCALE_TEMP,
+    },
+    # DHW Status - Register 10273 (read-only)
+    "dhw_status": {
+        "address": 10273,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
 }
 
 # Sensor definitions
@@ -400,6 +531,105 @@ SENSORS: Final = {
         "unit": "%",
         "state_class": "measurement",
         "icon": "mdi:pump",
+    },
+    
+    # ===== DHW (Trinkwasser) Sensors =====
+    
+    "dhw_operating_mode": {
+        "register": "dhw_operating_mode",
+        "translation_key": "dhw_operating_mode",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:water-boiler",
+        "enum_map": "dhw_operating_modes",
+    },
+    "dhw_setpoint": {
+        "register": "dhw_setpoint",
+        "translation_key": "dhw_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "dhw_reduced_setpoint": {
+        "register": "dhw_reduced_setpoint",
+        "translation_key": "dhw_reduced_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "dhw_release_mode": {
+        "register": "dhw_release_mode",
+        "translation_key": "dhw_release_mode",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:clock-outline",
+        "enum_map": "dhw_release_modes",
+    },
+    "dhw_legionella_mode": {
+        "register": "dhw_legionella_mode",
+        "translation_key": "dhw_legionella_mode",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:bacteria",
+        "enum_map": "legionella_modes",
+    },
+    "dhw_legionella_interval": {
+        "register": "dhw_legionella_interval",
+        "translation_key": "dhw_legionella_interval",
+        "device_class": None,
+        "unit": "d",
+        "state_class": "measurement",
+        "icon": "mdi:calendar-refresh",
+    },
+    "dhw_legionella_weekday": {
+        "register": "dhw_legionella_weekday",
+        "translation_key": "dhw_legionella_weekday",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:calendar-week",
+        "enum_map": "weekdays",
+    },
+    "dhw_legionella_time": {
+        "register": "dhw_legionella_time",
+        "translation_key": "dhw_legionella_time",
+        "device_class": None,
+        "unit": "min",
+        "state_class": None,
+        "icon": "mdi:clock-outline",
+    },
+    "dhw_legionella_setpoint": {
+        "register": "dhw_legionella_setpoint",
+        "translation_key": "dhw_legionella_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "dhw_legionella_dwell_time": {
+        "register": "dhw_legionella_dwell_time",
+        "translation_key": "dhw_legionella_dwell_time",
+        "device_class": None,
+        "unit": "min",
+        "state_class": "measurement",
+        "icon": "mdi:timer-outline",
+    },
+    "dhw_circulation_setpoint": {
+        "register": "dhw_circulation_setpoint",
+        "translation_key": "dhw_circulation_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "dhw_status": {
+        "register": "dhw_status",
+        "translation_key": "dhw_status",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:information-outline",
     },
 }
 

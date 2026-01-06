@@ -94,6 +94,66 @@
       },
       "hc1_pump_speed_max": {
         "name": "HC1 Pump speed maximum"
+      },
+      "dhw_operating_mode": {
+        "name": "DHW Operating mode",
+        "state": {
+          "off": "Off",
+          "on": "On",
+          "eco": "Eco"
+        }
+      },
+      "dhw_setpoint": {
+        "name": "DHW Setpoint"
+      },
+      "dhw_reduced_setpoint": {
+        "name": "DHW Reduced setpoint"
+      },
+      "dhw_release_mode": {
+        "name": "DHW Release mode",
+        "state": {
+          "24h": "24h/day",
+          "heating_program": "Heating circuit program",
+          "dhw_program": "DHW program"
+        }
+      },
+      "dhw_legionella_mode": {
+        "name": "DHW Legionella mode",
+        "state": {
+          "off": "Off",
+          "periodic": "Periodic",
+          "fixed_day": "Fixed weekday"
+        }
+      },
+      "dhw_legionella_interval": {
+        "name": "DHW Legionella interval"
+      },
+      "dhw_legionella_weekday": {
+        "name": "DHW Legionella weekday",
+        "state": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        }
+      },
+      "dhw_legionella_time": {
+        "name": "DHW Legionella time"
+      },
+      "dhw_legionella_setpoint": {
+        "name": "DHW Legionella setpoint"
+      },
+      "dhw_legionella_dwell_time": {
+        "name": "DHW Legionella dwell time"
+      },
+      "dhw_circulation_setpoint": {
+        "name": "DHW Circulation setpoint"
+      },
+      "dhw_status": {
+        "name": "DHW Status"
       }
     },
     "binary_sensor": {

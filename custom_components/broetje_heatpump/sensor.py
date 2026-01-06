@@ -12,10 +12,25 @@ from homeassistant.const import UnitOfPressure, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import OPERATING_MODES, SENSORS
+from .const import (
+    DHW_OPERATING_MODES,
+    DHW_RELEASE_MODES,
+    LEGIONELLA_MODES,
+    OPERATING_MODES,
+    SENSORS,
+    WEEKDAYS,
+)
 from .coordinator import BroetjeModbusCoordinator
 from .entity import BroetjeEntity
 
+# Enum maps by name
+ENUM_MAPS = {
+    "operating_modes": OPERATING_MODES,
+    "dhw_operating_modes": DHW_OPERATING_MODES,
+    "dhw_release_modes": DHW_RELEASE_MODES,
+    "legionella_modes": LEGIONELLA_MODES,
+    "weekdays": WEEKDAYS,
+}
 
 # Map device class strings to actual classes
 DEVICE_CLASS_MAP = {
@@ -84,8 +99,11 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             self._attr_device_class = DEVICE_CLASS_MAP.get(device_class)
         
         # Set options for enum sensors
+        self._enum_map = None
         if device_class == "enum":
-            self._attr_options = list(OPERATING_MODES.values())
+            enum_map_name = sensor_config.get("enum_map", "operating_modes")
+            self._enum_map = ENUM_MAPS.get(enum_map_name, OPERATING_MODES)
+            self._attr_options = list(self._enum_map.values())
         
         # Set unit
         unit = sensor_config.get("unit")
@@ -112,9 +130,9 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         if value is None:
             return None
         
-        # Handle enum device class (operating mode)
-        if self._attr_device_class == SensorDeviceClass.ENUM:
-            return OPERATING_MODES.get(int(value), f"unknown_{int(value)}")
+        # Handle enum device class
+        if self._attr_device_class == SensorDeviceClass.ENUM and self._enum_map:
+            return self._enum_map.get(int(value), f"unknown_{int(value)}")
         
         # Round temperature values to 1 decimal
         if self._attr_device_class == SensorDeviceClass.TEMPERATURE:
