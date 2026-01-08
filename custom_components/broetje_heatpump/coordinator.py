@@ -11,11 +11,13 @@ from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import CONF_HOST, CONF_PORT
+from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    BINARY_SENSORS,
     CONF_UNIT_ID,
     DEFAULT_MODEL,
     DEFAULT_SCAN_INTERVAL,
@@ -25,6 +27,7 @@ from .const import (
     REG_HOLDING,
     REG_INPUT,
     REGISTER_MAP,
+    SENSORS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -127,13 +130,75 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 await self._disconnect()
                 return None
 
+    def _get_needed_registers(self) -> set[str]:
+        """Get the set of register keys needed by enabled entities.
+
+        This checks the entity registry to determine which entities are enabled.
+        If an entity is not yet in the registry (first refresh), it's assumed needed.
+        Only entities explicitly disabled by the user are skipped.
+        """
+        entity_registry = er.async_get(self.hass)
+        device_id = self.config_entry.unique_id or self.config_entry.entry_id
+
+        needed_registers: set[str] = set()
+
+        # Check sensors
+        for sensor_key, sensor_config in SENSORS.items():
+            unique_id = f"{device_id}_{sensor_key}"
+            entity_id = entity_registry.async_get_entity_id(
+                Platform.SENSOR, DOMAIN, unique_id
+            )
+
+            # If entity doesn't exist in registry yet, assume we need it
+            if entity_id is None:
+                needed_registers.add(sensor_config["register"])
+                continue
+
+            entry = entity_registry.async_get(entity_id)
+            # If entity exists and is NOT disabled, we need this register
+            if entry and not entry.disabled:
+                needed_registers.add(sensor_config["register"])
+
+        # Check binary sensors
+        for sensor_key, sensor_config in BINARY_SENSORS.items():
+            unique_id = f"{device_id}_{sensor_key}"
+            entity_id = entity_registry.async_get_entity_id(
+                Platform.BINARY_SENSOR, DOMAIN, unique_id
+            )
+
+            # If entity doesn't exist in registry yet, assume we need it
+            if entity_id is None:
+                needed_registers.add(sensor_config["register"])
+                continue
+
+            entry = entity_registry.async_get(entity_id)
+            # If entity exists and is NOT disabled, we need this register
+            if entry and not entry.disabled:
+                needed_registers.add(sensor_config["register"])
+
+        return needed_registers
+
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Modbus device."""
         data: dict[str, Any] = {}
 
+        # Get only the registers needed by enabled entities
+        needed_registers = self._get_needed_registers()
+
+        if not needed_registers:
+            _LOGGER.debug("No enabled entities, skipping Modbus read")
+            return data
+
+        _LOGGER.debug(
+            "Reading %d registers for enabled entities (of %d total)",
+            len(needed_registers),
+            len(REGISTER_MAP),
+        )
+
         try:
             async with asyncio.timeout(10):
-                for key, reg_config in REGISTER_MAP.items():
+                for key in needed_registers:
+                    reg_config = REGISTER_MAP[key]
                     result = await self._read_registers(
                         reg_config["address"],
                         reg_config.get("count", 1),
