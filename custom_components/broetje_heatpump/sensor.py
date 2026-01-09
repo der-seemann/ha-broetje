@@ -19,6 +19,7 @@ from .const import (
     LEGIONELLA_MODES,
     OPERATING_MODES,
     SENSORS,
+    STATUS_CODES,
     WEEKDAYS,
 )
 from .coordinator import BroetjeModbusCoordinator
@@ -32,6 +33,7 @@ ENUM_MAPS = {
     "legionella_modes": LEGIONELLA_MODES,
     "weekdays": WEEKDAYS,
     "burner_power_modes": BURNER_POWER_MODES,
+    "status_codes": STATUS_CODES,
 }
 
 # Map device class strings to actual classes
