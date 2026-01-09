@@ -272,6 +272,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             len(batches),
         )
 
+        # Disconnect before starting to clear any stale data in the buffer
+        # This prevents transaction ID mismatch errors from leftover responses
+        await self._disconnect()
+
         try:
             async with asyncio.timeout(30):
                 for batch in batches:
