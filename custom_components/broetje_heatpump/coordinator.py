@@ -194,10 +194,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Modbus limits: max 125 registers per read, we use 100 for safety
         MAX_BATCH_SIZE = 100
         # Max gap between registers to still batch them together.
-        # Keep this small (2-3) because many Modbus devices return errors
-        # when trying to read non-existent register addresses in the middle
-        # of a batch read range.
-        MAX_GAP = 2
+        # Must be 1 (consecutive only) because the Brötje device has gaps
+        # in its register map (e.g., 24594 exists, 24595 doesn't, 24596 exists).
+        # Reading non-existent addresses causes batch read failures.
+        MAX_GAP = 1
 
         # Build list of register info and sort by type, then address
         registers: list[dict[str, Any]] = []
