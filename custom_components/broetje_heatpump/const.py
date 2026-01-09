@@ -1516,10 +1516,11 @@ SENSORS: Final = {
     "boiler_status": {
         "register": "boiler_status",
         "translation_key": "boiler_status",
-        "device_class": None,
+        "device_class": "enum",
         "unit": None,
         "state_class": None,
         "icon": "mdi:information-outline",
+        "enum_map": "status_codes",
     },
     "boiler_burner_status": {
         "register": "boiler_burner_status",
