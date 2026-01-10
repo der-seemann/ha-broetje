@@ -97,7 +97,6 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         self._register_key = sensor_config["register"]
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
 
-
         self._attr_device_class = None
         self._enum_map = None
 

@@ -205,13 +205,15 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         registers: list[dict[str, Any]] = []
         for key in register_keys:
             config = REGISTER_MAP[key]
-            registers.append({
-                "key": key,
-                "address": config["address"],
-                "count": config.get("count", 1),
-                "type": config["type"],
-                "config": config,
-            })
+            registers.append(
+                {
+                    "key": key,
+                    "address": config["address"],
+                    "count": config.get("count", 1),
+                    "type": config["type"],
+                    "config": config,
+                }
+            )
 
         # Sort by register type first (to group holding/input), then by address
         registers.sort(key=lambda x: (x["type"], x["address"]))
@@ -238,7 +240,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ):
                 # Add to current batch
                 current_batch["registers"].append(reg)
-                current_batch["end_address"] = max(current_batch["end_address"], reg_end)
+                current_batch["end_address"] = max(
+                    current_batch["end_address"], reg_end
+                )
             else:
                 # Finish current batch and start new one
                 batches.append(current_batch)
