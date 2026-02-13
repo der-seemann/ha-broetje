@@ -18,7 +18,6 @@ from .const import (
     DHW_RELEASE_MODES,
     LEGIONELLA_MODES,
     OPERATING_MODES,
-    SENSORS,
     STATUS_CODES,
     WEEKDAYS,
 )
@@ -70,7 +69,7 @@ async def async_setup_entry(
 
     entities: list[BroetjeSensor] = []
 
-    for sensor_key, sensor_config in SENSORS.items():
+    for sensor_key, sensor_config in coordinator.sensors.items():
         entities.append(
             BroetjeSensor(
                 coordinator=coordinator,

@@ -2,8 +2,30 @@
   "config": {
     "step": {
       "user": {
-        "title": "Mit Brötje Wärmepumpe verbinden",
-        "description": "Geben Sie die Modbus TCP Verbindungsdaten für Ihre Brötje Wärmepumpe ein.",
+        "title": "Gerätetyp auswählen",
+        "description": "Wählen Sie den Brötje Modbus-Modultyp aus, den Sie konfigurieren möchten.",
+        "menu_options": {
+          "isr": "ISR (ISR Plus Modul)",
+          "iwr": "IWR / GTW-08 (Gateway Modul)"
+        }
+      },
+      "isr": {
+        "title": "Verbindung zu Brötje ISR",
+        "description": "Geben Sie die Modbus TCP Verbindungsdaten für Ihr Brötje ISR Modul ein.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Geräte-ID"
+        },
+        "data_description": {
+          "host": "IP-Adresse Ihres Modbus TCP Gateways",
+          "port": "Modbus TCP Port (Standard: 502)",
+          "unit_id": "Modbus Geräte-/Slave-ID (Standard: 1)"
+        }
+      },
+      "iwr": {
+        "title": "Verbindung zu Brötje IWR / GTW-08",
+        "description": "Geben Sie die Modbus TCP Verbindungsdaten für Ihr Brötje IWR / GTW-08 Gateway ein.",
         "data": {
           "host": "Host",
           "port": "Port",

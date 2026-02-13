@@ -2,8 +2,30 @@
   "config": {
     "step": {
       "user": {
-        "title": "Connect to Brötje Heatpump",
-        "description": "Enter the Modbus TCP connection details for your Brötje heatpump.",
+        "title": "Select device type",
+        "description": "Select the Brötje Modbus module type you want to configure.",
+        "menu_options": {
+          "isr": "ISR (ISR Plus Module)",
+          "iwr": "IWR / GTW-08 (Gateway Module)"
+        }
+      },
+      "isr": {
+        "title": "Connect to Brötje ISR",
+        "description": "Enter the Modbus TCP connection details for your Brötje ISR module.",
+        "data": {
+          "host": "Host",
+          "port": "Port",
+          "unit_id": "Unit ID"
+        },
+        "data_description": {
+          "host": "IP address of your Modbus TCP gateway",
+          "port": "Modbus TCP port (default: 502)",
+          "unit_id": "Modbus unit/slave ID (default: 1)"
+        }
+      },
+      "iwr": {
+        "title": "Connect to Brötje IWR / GTW-08",
+        "description": "Enter the Modbus TCP connection details for your Brötje IWR / GTW-08 gateway.",
         "data": {
           "host": "Host",
           "port": "Port",

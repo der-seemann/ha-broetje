@@ -34,7 +34,7 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
         """Return device information."""
         return DeviceInfo(
             identifiers={(DOMAIN, self.coordinator.config_entry.entry_id)},
-            name="Brötje Heatpump",
+            name=f"Brötje {self.coordinator.device_model}",
             manufacturer=self.coordinator.device_manufacturer,
             model=self.coordinator.device_model,
             serial_number=self.coordinator.device_serial,

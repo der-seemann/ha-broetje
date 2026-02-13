@@ -17,18 +17,15 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    BINARY_SENSORS,
     CONF_UNIT_ID,
-    DEFAULT_MODEL,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
     DOMAIN,
     MANUFACTURER,
     REG_HOLDING,
     REG_INPUT,
-    REGISTER_MAP,
-    SENSORS,
 )
+from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_config
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -53,9 +50,17 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._client: AsyncModbusTcpClient | None = None
         self._lock = asyncio.Lock()
 
+        # Load device-specific configuration
+        device_type_str = entry.data.get(CONF_DEVICE_TYPE, DeviceType.ISR)
+        self._device_type = DeviceType(device_type_str)
+        device_config = get_device_config(self._device_type)
+        self.register_map: dict[str, Any] = device_config["register_map"]
+        self.sensors: dict[str, Any] = device_config["sensors"]
+        self.binary_sensors: dict[str, Any] = device_config["binary_sensors"]
+
         # Device info
         self.device_serial: str | None = None
-        self.device_model: str = DEFAULT_MODEL
+        self.device_model: str = DEVICE_MODELS.get(self._device_type, "Heatpump")
         self.device_manufacturer: str = MANUFACTURER
         self.device_firmware: str | None = None
 
@@ -143,7 +148,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         needed_registers: set[str] = set()
 
         # Check sensors
-        for sensor_key, sensor_config in SENSORS.items():
+        for sensor_key, sensor_config in self.sensors.items():
             unique_id = f"{device_id}_{sensor_key}"
             entity_id = entity_registry.async_get_entity_id(
                 Platform.SENSOR, DOMAIN, unique_id
@@ -160,7 +165,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 needed_registers.add(sensor_config["register"])
 
         # Check binary sensors
-        for sensor_key, sensor_config in BINARY_SENSORS.items():
+        for sensor_key, sensor_config in self.binary_sensors.items():
             unique_id = f"{device_id}_{sensor_key}"
             entity_id = entity_registry.async_get_entity_id(
                 Platform.BINARY_SENSOR, DOMAIN, unique_id
@@ -204,7 +209,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Build list of register info and sort by type, then address
         registers: list[dict[str, Any]] = []
         for key in register_keys:
-            config = REGISTER_MAP[key]
+            config = self.register_map[key]
             registers.append(
                 {
                     "key": key,

@@ -10,7 +10,6 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import BINARY_SENSORS
 from .coordinator import BroetjeModbusCoordinator
 from .entity import BroetjeEntity
 
@@ -35,7 +34,7 @@ async def async_setup_entry(
 
     entities: list[BroetjeBinarySensor] = []
 
-    for sensor_key, sensor_config in BINARY_SENSORS.items():
+    for sensor_key, sensor_config in coordinator.binary_sensors.items():
         entities.append(
             BroetjeBinarySensor(
                 coordinator=coordinator,

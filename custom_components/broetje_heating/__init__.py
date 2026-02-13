@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 
 
 from .coordinator import BroetjeModbusCoordinator
+from .devices import CONF_DEVICE_TYPE, DeviceType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,6 +22,25 @@ PLATFORMS: list[Platform] = [
 ]
 
 type BroetjeConfigEntry = ConfigEntry[BroetjeModbusCoordinator]
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate old config entries to new format."""
+    if config_entry.version > 2:
+        return False
+
+    if config_entry.version == 1:
+        _LOGGER.debug("Migrating config entry from version 1 to 2")
+        new_data = {**config_entry.data, CONF_DEVICE_TYPE: DeviceType.ISR.value}
+        hass.config_entries.async_update_entry(
+            config_entry,
+            data=new_data,
+            version=2,
+            minor_version=1,
+        )
+        _LOGGER.info("Migration to version 2 successful: added device_type=isr")
+
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> bool:
