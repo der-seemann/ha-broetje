@@ -51,7 +51,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._lock = asyncio.Lock()
 
         # Load device-specific configuration
-        device_type_str = entry.data.get(CONF_DEVICE_TYPE, DeviceType.ISR)
+        device_type_str = entry.data.get(CONF_DEVICE_TYPE, DeviceType.ISR.value)
         self._device_type = DeviceType(device_type_str)
         device_config = get_device_config(self._device_type)
         self.register_map: dict[str, Any] = device_config["register_map"]

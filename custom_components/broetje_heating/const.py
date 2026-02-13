@@ -2,7 +2,7 @@
 
 from typing import Final
 
-DOMAIN: Final = "broetje_heatpump"
+DOMAIN: Final = "broetje_heating"
 
 # Default values
 DEFAULT_PORT: Final = 502
@@ -14,7 +14,6 @@ CONF_UNIT_ID: Final = "unit_id"
 
 # Manufacturer info
 MANUFACTURER: Final = "Brötje"
-DEFAULT_MODEL: Final = "Heatpump"
 
 # Register types
 REG_INPUT: Final = "input"
