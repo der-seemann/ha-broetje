@@ -337,6 +337,15 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return data
 
+    # Standard Modbus sentinel values indicating "not available" / "no data".
+    # These are checked against the raw decoded value BEFORE scaling.
+    _SENTINEL_VALUES: dict[str, set[int]] = {
+        "int16": {-1},  # 0xFFFF signed
+        "uint16": {0xFFFF},  # 65535
+        "int32": {-1},  # 0xFFFFFFFF signed
+        "uint32": {0xFFFFFFFF},  # 4294967295
+    }
+
     def _process_register_value(
         self,
         registers: list[int],
@@ -358,19 +367,28 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Convert to signed if necessary
             if value >= 32768:
                 value -= 65536
+            if value in self._SENTINEL_VALUES.get("int16", ()):
+                return None
             return value * scale
 
         if data_type == "uint16":
-            return registers[0] * scale
+            value = registers[0]
+            if value in self._SENTINEL_VALUES.get("uint16", ()):
+                return None
+            return value * scale
 
         if data_type == "int32":
             value = (registers[0] << 16) | registers[1]
             if value >= 2147483648:
                 value -= 4294967296
+            if value in self._SENTINEL_VALUES.get("int32", ()):
+                return None
             return value * scale
 
         if data_type == "uint32":
             value = (registers[0] << 16) | registers[1]
+            if value in self._SENTINEL_VALUES.get("uint32", ()):
+                return None
             return value * scale
 
         if data_type == "string":
