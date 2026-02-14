@@ -185,6 +185,35 @@ IWR_ERROR_SEVERITY: Final = {
     255: "no_error",
 }
 
+# Zone function type (Tab.25/26, CP02X, registers 641 etc.)
+IWR_ZONE_FUNCTION: Final = {
+    0: "disable",
+    1: "direct",
+    2: "mixing_circuit",
+    3: "swimming_pool",
+    4: "high_temperature",
+    5: "fan_convector",
+    6: "dhw_tank",
+    7: "electrical_dhw",
+    8: "time_program",
+    9: "process_heat",
+    10: "dhw_layered",
+    11: "dhw_internal_tank",
+    12: "dhw_commercial_tank",
+    13: "occupied",
+}
+
+# Device category lookup for 0xZZYY device type (Tab.26)
+IWR_DEVICE_CATEGORY: Final = {
+    0x00: "CU-GH",
+    0x01: "CU-OH",
+    0x02: "EHC",
+    0x14: "MK",
+    0x19: "SCB",
+    0x1B: "EEC",
+    0x1E: "Gateway",
+}
+
 # Zone control mode (CP32X, Tab.36/42, registers 649 etc.)
 IWR_ZONE_CONTROL_MODE: Final = {
     0: "scheduling",
@@ -219,6 +248,7 @@ IWR_ENUM_MAPS: Final = {
     "iwr_algorithm_type": IWR_ALGORITHM_TYPE,
     "iwr_heat_demand_type": IWR_HEAT_DEMAND_TYPE,
     "iwr_zone_control_mode": IWR_ZONE_CONTROL_MODE,
+    "iwr_zone_function": IWR_ZONE_FUNCTION,
 }
 
 # ===== Zone Address Tables =====
@@ -237,6 +267,10 @@ ZONE_ADDRESSES: Final = {
     # Tab.35 - Zone counter registers (read-only)
     "CC001": [1115, 1627, 2139, 2651, 3163, 3675, 4187, 4699, 5211, 5723, 6235, 6747],
     "CC010": [1117, 1629, 2141, 2652, 3165, 3677, 4189, 4771, 5213, 5725, 6237, 6749],
+    # Tab.25 - Zone function type CP02X (R, base 641, +512/zone)
+    "CP02X": [641, 1153, 1665, 2177, 2689, 3201, 3713, 4225, 4737, 5249, 5761, 6273],
+    # Tab.25 - Zone device type (R, base 645, +512/zone)
+    "DEV": [645, 1157, 1669, 2181, 2693, 3205, 3717, 4229, 4741, 5253, 5765, 6277],
     # Tab.36/42 - Zone control mode CP32X (R/W, base 649, +512/zone)
     "CP32X": [649, 1161, 1673, 2185, 2697, 3209, 3721, 4233, 4745, 5257, 5769, 6281],
     # Tab.37 - Zone fixed flow setpoint CP01X (R/W, base 648, +512/zone)
@@ -1486,6 +1520,22 @@ def _build_zone_registers(zone_count: int) -> dict[str, Any]:
             "data_type": "uint32",
             "scale": 1,
         }
+        # CP02X - Zone function type (ENUM8, Tab.25/26)
+        registers[f"{prefix}_function"] = {
+            "address": ZONE_ADDRESSES["CP02X"][z],
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # DEV - Zone device type (UINT16 as 0xZZYY, Tab.25/26)
+        registers[f"{prefix}_device_type"] = {
+            "address": ZONE_ADDRESSES["DEV"][z],
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
         # CP32X - Zone control mode (ENUM8, Tab.36/42)
         registers[f"{prefix}_control_mode"] = {
             "address": ZONE_ADDRESSES["CP32X"][z],
@@ -1597,6 +1647,25 @@ def _build_zone_sensors(zone_count: int) -> dict[str, Any]:
             "unit": None,
             "state_class": "total_increasing",
             "icon": "mdi:counter",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_function"] = {
+            "register": f"{prefix}_function",
+            "translation_key": "zone_function",
+            "device_class": "enum",
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:information-outline",
+            "enum_map": "iwr_zone_function",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_device_type"] = {
+            "register": f"{prefix}_device_type",
+            "translation_key": "zone_device_type",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:developer-board",
             "zone_number": zn,
         }
         sensors[f"{prefix}_control_mode"] = {

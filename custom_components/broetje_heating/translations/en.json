@@ -1236,6 +1236,28 @@
       "zone_pump_starts": {
         "name": "Zone {zone} pump starts"
       },
+      "zone_function": {
+        "name": "Zone {zone} function",
+        "state": {
+          "disable": "Disabled",
+          "direct": "Direct",
+          "mixing_circuit": "Mixing circuit",
+          "swimming_pool": "Swimming pool",
+          "high_temperature": "High temperature",
+          "fan_convector": "Fan convector",
+          "dhw_tank": "DHW tank",
+          "electrical_dhw": "Electrical DHW",
+          "time_program": "Time program",
+          "process_heat": "Process heat",
+          "dhw_layered": "DHW layered",
+          "dhw_internal_tank": "DHW internal tank",
+          "dhw_commercial_tank": "DHW commercial tank",
+          "occupied": "Occupied"
+        }
+      },
+      "zone_device_type": {
+        "name": "Zone {zone} device type"
+      },
       "zone_control_mode": {
         "name": "Zone {zone} control mode",
         "state": {

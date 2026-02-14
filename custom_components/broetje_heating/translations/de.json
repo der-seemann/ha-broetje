@@ -1236,6 +1236,28 @@
       "zone_pump_starts": {
         "name": "Heizkreis {zone} Pumpenstarts"
       },
+      "zone_function": {
+        "name": "Heizkreis {zone} Funktion",
+        "state": {
+          "disable": "Deaktiviert",
+          "direct": "Direkt",
+          "mixing_circuit": "Mischkreis",
+          "swimming_pool": "Schwimmbad",
+          "high_temperature": "Hochtemperatur",
+          "fan_convector": "Gebläsekonvektor",
+          "dhw_tank": "Warmwasserspeicher",
+          "electrical_dhw": "Elektrische Warmwasserbereitung",
+          "time_program": "Zeitprogramm",
+          "process_heat": "Prozesswärme",
+          "dhw_layered": "Warmwasser geschichtet",
+          "dhw_internal_tank": "Interner Warmwasserspeicher",
+          "dhw_commercial_tank": "Gewerblicher Warmwasserspeicher",
+          "occupied": "Belegt"
+        }
+      },
+      "zone_device_type": {
+        "name": "Heizkreis {zone} Gerätetyp"
+      },
       "zone_control_mode": {
         "name": "Heizkreis {zone} Steuerungsmodus",
         "state": {
