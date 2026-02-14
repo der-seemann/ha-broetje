@@ -870,6 +870,29 @@
       "controller_stop_setpoint": {
         "name": "Reglerstopp Sollwert"
       },
+      "control_power": {
+        "name": "Steuerung Leistungssollwert"
+      },
+      "control_temperature": {
+        "name": "Steuerung Temperatursollwert"
+      },
+      "control_algorithm_type": {
+        "name": "Steuerung Algorithmustyp",
+        "state": {
+          "remote_temp_and_power": "Fernsteuerung Temperatur und Leistung",
+          "remote_power": "Fernsteuerung Leistung",
+          "remote_temperature": "Fernsteuerung Temperatur",
+          "monitoring_only": "Nur Überwachung"
+        }
+      },
+      "control_heat_demand_type": {
+        "name": "Steuerung Wärmeanforderungstyp",
+        "state": {
+          "standby": "Bereitschaft",
+          "heating": "Heizen",
+          "cooling": "Kühlen"
+        }
+      },
       "system_power": {
         "name": "Systemleistung"
       },

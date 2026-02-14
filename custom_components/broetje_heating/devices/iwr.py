@@ -185,6 +185,21 @@ IWR_ERROR_SEVERITY: Final = {
     255: "no_error",
 }
 
+# Tab.19 - Algorithm type (register 258)
+IWR_ALGORITHM_TYPE: Final = {
+    0: "remote_temp_and_power",
+    1: "remote_power",
+    2: "remote_temperature",
+    3: "monitoring_only",
+}
+
+# Tab.20 - Heat demand type (register 259)
+IWR_HEAT_DEMAND_TYPE: Final = {
+    0: "standby",
+    7: "heating",
+    8: "cooling",
+}
+
 # Collected enum maps for IWR device
 IWR_ENUM_MAPS: Final = {
     "iwr_main_status": IWR_MAIN_STATUS,
@@ -194,6 +209,8 @@ IWR_ENUM_MAPS: Final = {
     "iwr_zone_operating_mode": IWR_ZONE_OPERATING_MODE,
     "iwr_service_notification": IWR_SERVICE_NOTIFICATION,
     "iwr_error_severity": IWR_ERROR_SEVERITY,
+    "iwr_algorithm_type": IWR_ALGORITHM_TYPE,
+    "iwr_heat_demand_type": IWR_HEAT_DEMAND_TYPE,
 }
 
 # ===== Zone Address Tables =====
@@ -217,6 +234,35 @@ ZONE_ADDRESSES: Final = {
 # ===== Static Register Map (non-zone registers) =====
 
 _IWR_STATIC_REGISTER_MAP: Final = {
+    # --- Temperature and Power Control (Tab.18) ---
+    "control_power": {
+        "address": 256,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "control_temperature": {
+        "address": 257,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": IWR_SCALE_TEMP,
+    },
+    "control_algorithm_type": {
+        "address": 258,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "control_heat_demand_type": {
+        "address": 259,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     # --- Main Appliance Information (Tab.12) ---
     "system_power": {
         "address": 272,
@@ -741,6 +787,40 @@ _IWR_STATIC_REGISTER_MAP: Final = {
 # ===== Static Sensor Definitions =====
 
 _IWR_STATIC_SENSORS: Final = {
+    # --- Temperature and Power Control Sensors (Tab.18) ---
+    "control_power": {
+        "register": "control_power",
+        "translation_key": "control_power",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:gauge",
+    },
+    "control_temperature": {
+        "register": "control_temperature",
+        "translation_key": "control_temperature",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+    },
+    "control_algorithm_type": {
+        "register": "control_algorithm_type",
+        "translation_key": "control_algorithm_type",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:cog-outline",
+        "enum_map": "iwr_algorithm_type",
+    },
+    "control_heat_demand_type": {
+        "register": "control_heat_demand_type",
+        "translation_key": "control_heat_demand_type",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:fire-circle",
+        "enum_map": "iwr_heat_demand_type",
+    },
     # --- Main Appliance Sensors ---
     "system_power": {
         "register": "system_power",

@@ -870,6 +870,29 @@
       "controller_stop_setpoint": {
         "name": "Controller stop setpoint"
       },
+      "control_power": {
+        "name": "Control power setpoint"
+      },
+      "control_temperature": {
+        "name": "Control temperature setpoint"
+      },
+      "control_algorithm_type": {
+        "name": "Control algorithm type",
+        "state": {
+          "remote_temp_and_power": "Remote temperature and power",
+          "remote_power": "Remote power",
+          "remote_temperature": "Remote temperature",
+          "monitoring_only": "Monitoring only"
+        }
+      },
+      "control_heat_demand_type": {
+        "name": "Control heat demand type",
+        "state": {
+          "standby": "Standby",
+          "heating": "Heating",
+          "cooling": "Cooling"
+        }
+      },
       "system_power": {
         "name": "System power"
       },
