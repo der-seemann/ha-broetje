@@ -36,6 +36,16 @@
           "port": "Modbus TCP Port (Standard: 502)",
           "unit_id": "Modbus Geräte-/Slave-ID (Standard: 1)"
         }
+      },
+      "iwr_zones": {
+        "title": "Zonenkonfiguration",
+        "description": "Wählen Sie die Anzahl der Zonen (Heizkreise, Warmwasser usw.), die in Ihrem System konfiguriert sind.",
+        "data": {
+          "zone_count": "Anzahl der Zonen"
+        },
+        "data_description": {
+          "zone_count": "Anzahl der zu überwachenden Zonen (1-12). Prüfen Sie Ihre Gerätekonfiguration."
+        }
       }
     },
     "error": {

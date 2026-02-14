@@ -36,6 +36,16 @@
           "port": "Modbus TCP port (default: 502)",
           "unit_id": "Modbus unit/slave ID (default: 1)"
         }
+      },
+      "iwr_zones": {
+        "title": "Zone Configuration",
+        "description": "Select the number of zones (heating circuits, DHW, etc.) configured on your system.",
+        "data": {
+          "zone_count": "Number of zones"
+        },
+        "data_description": {
+          "zone_count": "Number of zones to monitor (1-12). Check your appliance configuration."
+        }
       }
     },
     "error": {
@@ -859,6 +869,336 @@
       },
       "controller_stop_setpoint": {
         "name": "Controller stop setpoint"
+      },
+      "system_power": {
+        "name": "System power"
+      },
+      "outside_temperature": {
+        "name": "Outside temperature"
+      },
+      "seasonal_mode": {
+        "name": "Seasonal mode",
+        "state": {
+          "winter": "Winter",
+          "frost_protection": "Frost protection",
+          "summer_neutral": "Summer neutral band",
+          "summer": "Summer"
+        }
+      },
+      "flow_temperature": {
+        "name": "Flow temperature"
+      },
+      "return_temperature": {
+        "name": "Return temperature"
+      },
+      "exhaust_gas_temperature": {
+        "name": "Exhaust gas temperature"
+      },
+      "hp_flow_temperature": {
+        "name": "Heat pump flow temperature"
+      },
+      "hp_return_temperature": {
+        "name": "Heat pump return temperature"
+      },
+      "dhw_flow_setpoint": {
+        "name": "DHW flow setpoint"
+      },
+      "water_pressure": {
+        "name": "Water pressure"
+      },
+      "main_status": {
+        "name": "Main status",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Heat demand",
+          "generator_start": "Generator start",
+          "generator_ch": "Generator CH",
+          "generator_dhw": "Generator DHW",
+          "generator_stop": "Generator stop",
+          "pump_post_run": "Pump post run",
+          "cooling_active": "Cooling active",
+          "controlled_stop": "Controlled stop",
+          "blocking_mode": "Blocking mode",
+          "locking_mode": "Locking mode",
+          "load_test_min": "Load test min",
+          "load_test_ch_max": "Load test CH max",
+          "load_test_dhw_max": "Load test DHW max",
+          "manual_heat_demand": "Manual heat demand",
+          "frost_protection": "Frost protection",
+          "deaeration": "Deaeration",
+          "control_unit_cooling": "Control unit cooling",
+          "reset_in_progress": "Reset in progress",
+          "auto_filling": "Auto filling",
+          "halted": "Halted",
+          "forced_calibration": "Forced calibration",
+          "factory_test": "Factory test",
+          "hydronic_balancing": "Hydronic balancing",
+          "device_mode": "Device mode",
+          "unknown": "Unknown"
+        }
+      },
+      "sub_status": {
+        "name": "Sub status",
+        "state": {
+          "standby": "Standby",
+          "anti_cycling": "Anti-cycling",
+          "close_hydraulic_valve": "Close hydraulic valve",
+          "close_pump": "Close pump",
+          "waiting_for_start_cond": "Waiting for start conditions",
+          "close_ext_gas_valve": "Close ext. gas valve",
+          "start_to_glue_gas_valve": "Start to glue gas valve",
+          "close_flue_gas_valve": "Close flue gas valve",
+          "fan_to_pre_purge": "Fan to pre-purge",
+          "wait_for_release_signal": "Wait for release signal",
+          "burner_on_command": "Burner on command",
+          "vps_test": "VPS test",
+          "pre_ignition": "Pre-ignition",
+          "ignition": "Ignition",
+          "flame_check": "Flame check",
+          "interpurge": "Interpurge",
+          "generator_starting": "Generator starting",
+          "normal_int_setpoint": "Normal internal setpoint",
+          "limited_int_setpoint": "Limited internal setpoint",
+          "normal_power_control": "Normal power control",
+          "grad_level1_power_ctrl": "Gradient level 1 power control",
+          "grad_level2_power_ctrl": "Gradient level 2 power control",
+          "grad_level3_power_ctrl": "Gradient level 3 power control",
+          "protect_flame_pwr_ctrl": "Protect flame power control",
+          "stabilization_time": "Stabilization time",
+          "cold_start": "Cold start",
+          "ch_resume": "CH resume",
+          "su_remove_burner": "SU remove burner",
+          "fan_to_post_purge": "Fan to post-purge",
+          "open_ext_flue_gas_valve": "Open ext. flue gas valve",
+          "stop_fan_to_flue_gv_rpm": "Stop fan to flue GV RPM",
+          "stop_fan": "Stop fan",
+          "limited_pwr_on_tflue_gas": "Limited power on flue gas temp",
+          "auto_filling_install": "Auto filling installation",
+          "auto_filling_top_up": "Auto filling top up",
+          "reduced_set_point": "Reduced setpoint",
+          "offset_adaption": "Offset adaption",
+          "pump_post_running": "Pump post running",
+          "open_pump": "Open pump",
+          "open_hydraulic_valve": "Open hydraulic valve",
+          "start_anticycle_time": "Start anti-cycle time",
+          "compressor_relieved": "Compressor relieved",
+          "hp_tmax_backup_on": "HP Tmax, backup on",
+          "outdoor_limit_hp_off": "Outdoor limit, HP off",
+          "hp_stop_by_hybrid": "HP stop by hybrid",
+          "defrost_with_hp": "Defrost with HP",
+          "defrost_with_backup": "Defrost with backup",
+          "defrost_hp_backup": "Defrost HP backup",
+          "source_pump_backup": "Source pump backup",
+          "hp_flow_over_tmax": "HP flow over Tmax",
+          "source_pump_post_run": "Source pump post run",
+          "hp_off_high_humidity": "HP off, high humidity",
+          "hp_off_water_flow": "HP off, water flow",
+          "humidity_setpoint": "Humidity setpoint",
+          "generators_relieved": "Generators relieved",
+          "hp_relieved_cooling": "HP relieved cooling",
+          "hp_stop_outdoor_temp": "HP stop outdoor temp",
+          "hp_off_flow_tmax": "HP off, flow Tmax",
+          "deair_pump_valve_ch": "Deair pump valve CH",
+          "deair_pump_valve_dhw": "Deair pump valve DHW",
+          "deair_valve_ch": "Deair valve CH",
+          "deair_valve_dhw": "Deair valve DHW",
+          "bl_backup_off": "BL backup off",
+          "bl_hp_off": "BL HP off",
+          "bl_hp_backup_off": "BL HP backup off",
+          "low_tariff": "Low tariff",
+          "pv_with_hp": "PV with HP",
+          "pv_hp_and_backup": "PV HP and backup",
+          "smart_grid": "Smart grid",
+          "waiting_for_waterpress": "Waiting for water pressure",
+          "no_producer_available": "No producer available",
+          "increased_min_power": "Increased min power",
+          "decreased_max_power": "Decreased max power",
+          "free_cool_pump_off": "Free cool pump off",
+          "free_cool_pump_on": "Free cool pump on",
+          "source_pump_pre_run": "Source pump pre-run",
+          "calibration": "Calibration",
+          "blocking_active": "Blocking active",
+          "warm_up": "Warm up",
+          "defrost_curative": "Defrost curative",
+          "defrost_preventive": "Defrost preventive",
+          "initialising_done": "Initialising done",
+          "initialising_csu": "Initialising CSU",
+          "init_identifiers": "Init identifiers",
+          "init_bl_parameter": "Init BL parameter",
+          "init_safety_unit": "Init safety unit",
+          "init_blocking": "Init blocking",
+          "state_unknown": "State unknown",
+          "su_out_of_resets_wait": "SU out of resets, wait 1h"
+        }
+      },
+      "relative_power": {
+        "name": "Relative power"
+      },
+      "ionization_current": {
+        "name": "Ionization current"
+      },
+      "pump_speed": {
+        "name": "Pump speed"
+      },
+      "actual_power": {
+        "name": "Actual power"
+      },
+      "cop": {
+        "name": "COP"
+      },
+      "cop_threshold": {
+        "name": "COP threshold"
+      },
+      "total_starts": {
+        "name": "Total starts"
+      },
+      "total_operating_hours": {
+        "name": "Total operating hours"
+      },
+      "backup1_starts": {
+        "name": "Backup 1 starts"
+      },
+      "backup1_operating_hours": {
+        "name": "Backup 1 operating hours"
+      },
+      "backup2_starts": {
+        "name": "Backup 2 starts"
+      },
+      "backup2_operating_hours": {
+        "name": "Backup 2 operating hours"
+      },
+      "mains_power_hours": {
+        "name": "Mains power hours"
+      },
+      "energy_consumed_ch": {
+        "name": "Energy consumed CH"
+      },
+      "energy_consumed_dhw": {
+        "name": "Energy consumed DHW"
+      },
+      "energy_consumed_cooling": {
+        "name": "Energy consumed cooling"
+      },
+      "total_energy_consumed": {
+        "name": "Total energy consumed"
+      },
+      "energy_consumed_backup": {
+        "name": "Energy consumed backup"
+      },
+      "total_thermal_delivered": {
+        "name": "Total thermal energy delivered"
+      },
+      "thermal_delivered_ch": {
+        "name": "Thermal energy delivered CH"
+      },
+      "thermal_delivered_dhw": {
+        "name": "Thermal energy delivered DHW"
+      },
+      "thermal_delivered_cooling": {
+        "name": "Thermal energy delivered cooling"
+      },
+      "energy_delivered_backup": {
+        "name": "Energy delivered backup"
+      },
+      "service_notification": {
+        "name": "Service notification",
+        "state": {
+          "none": "None",
+          "a": "Service A",
+          "b": "Service B",
+          "c": "Service C",
+          "custom": "Custom",
+          "d": "Service D"
+        }
+      },
+      "hours_producing_since_service": {
+        "name": "Hours producing since service"
+      },
+      "hours_since_service": {
+        "name": "Hours since service"
+      },
+      "starts_since_service": {
+        "name": "Starts since service"
+      },
+      "devices_connected": {
+        "name": "Devices connected"
+      },
+      "board1_error_code": {
+        "name": "Board 1 error code"
+      },
+      "board1_error_severity": {
+        "name": "Board 1 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "warning": "Warning"
+        }
+      },
+      "board2_error_code": {
+        "name": "Board 2 error code"
+      },
+      "board2_error_severity": {
+        "name": "Board 2 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "warning": "Warning"
+        }
+      },
+      "board3_error_code": {
+        "name": "Board 3 error code"
+      },
+      "board3_error_severity": {
+        "name": "Board 3 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "warning": "Warning"
+        }
+      },
+      "board4_error_code": {
+        "name": "Board 4 error code"
+      },
+      "board4_error_severity": {
+        "name": "Board 4 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "warning": "Warning"
+        }
+      },
+      "zone_flow_temp": {
+        "name": "Zone {zone} flow temperature"
+      },
+      "zone_flow_setpoint": {
+        "name": "Zone {zone} flow setpoint"
+      },
+      "zone_room_setpoint": {
+        "name": "Zone {zone} room setpoint"
+      },
+      "zone_activity": {
+        "name": "Zone {zone} activity",
+        "state": {
+          "off": "Off",
+          "eco": "Eco",
+          "comfort": "Comfort",
+          "anti_legionella": "Anti-legionella"
+        }
+      },
+      "zone_operating_mode": {
+        "name": "Zone {zone} operating mode",
+        "state": {
+          "scheduling": "Scheduling",
+          "manual": "Manual",
+          "off": "Off",
+          "temporary": "Temporary"
+        }
+      },
+      "zone_pump_hours": {
+        "name": "Zone {zone} pump hours"
+      },
+      "zone_pump_starts": {
+        "name": "Zone {zone} pump starts"
       }
     },
     "binary_sensor": {
@@ -912,6 +1252,84 @@
       },
       "controller_stop_function": {
         "name": "Controller stop function"
+      },
+      "demand_direct_zones": {
+        "name": "Direct zones allowed"
+      },
+      "demand_mixing_circuits": {
+        "name": "Mixing circuits allowed"
+      },
+      "demand_valves_open_safety": {
+        "name": "Valves open / pump running (safety)"
+      },
+      "demand_manual_heat": {
+        "name": "Manual heat demand"
+      },
+      "demand_cooling_allowed": {
+        "name": "Cooling allowed"
+      },
+      "demand_dhw_allowed": {
+        "name": "DHW circuits allowed"
+      },
+      "demand_heat_engine_active": {
+        "name": "Heat engine active"
+      },
+      "status_flame_on": {
+        "name": "Flame on"
+      },
+      "status_heat_pump_on": {
+        "name": "Heat pump on"
+      },
+      "status_backup1_on": {
+        "name": "Electrical backup 1 on"
+      },
+      "status_backup2_on": {
+        "name": "Electrical backup 2 on"
+      },
+      "status_dhw_backup_on": {
+        "name": "DHW electrical backup on"
+      },
+      "status_service_required": {
+        "name": "Service required"
+      },
+      "status_power_down_needed": {
+        "name": "Power down / reset needed"
+      },
+      "status_water_pressure_low": {
+        "name": "Water pressure low"
+      },
+      "output_pump": {
+        "name": "Pump"
+      },
+      "output_3way_valve_open": {
+        "name": "3-way valve open"
+      },
+      "output_3way_valve": {
+        "name": "3-way valve"
+      },
+      "output_3way_valve_closed": {
+        "name": "3-way valve closed"
+      },
+      "output_dhw_active": {
+        "name": "DHW active"
+      },
+      "output_ch_active": {
+        "name": "CH active"
+      },
+      "output_cooling_active": {
+        "name": "Cooling active"
+      },
+      "service_required": {
+        "name": "Service required"
+      },
+      "error_present": {
+        "name": "Error present"
+      },
+      "zone_pump": {
+        "name": "Zone {zone} pump"
+      },
+      "zone_flow_measurement": {
+        "name": "Zone {zone} flow measurement"
       }
     }
   }

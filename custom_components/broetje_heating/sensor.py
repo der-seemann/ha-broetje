@@ -8,32 +8,19 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import UnitOfPressure, UnitOfTemperature
+from homeassistant.const import (
+    PERCENTAGE,
+    UnitOfEnergy,
+    UnitOfPower,
+    UnitOfPressure,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import (
-    BURNER_POWER_MODES,
-    DHW_OPERATING_MODES,
-    DHW_RELEASE_MODES,
-    LEGIONELLA_MODES,
-    OPERATING_MODES,
-    STATUS_CODES,
-    WEEKDAYS,
-)
 from .coordinator import BroetjeModbusCoordinator
 from .entity import BroetjeEntity
-
-# Enum maps by name
-ENUM_MAPS = {
-    "operating_modes": OPERATING_MODES,
-    "dhw_operating_modes": DHW_OPERATING_MODES,
-    "dhw_release_modes": DHW_RELEASE_MODES,
-    "legionella_modes": LEGIONELLA_MODES,
-    "weekdays": WEEKDAYS,
-    "burner_power_modes": BURNER_POWER_MODES,
-    "status_codes": STATUS_CODES,
-}
 
 # Map device class strings to actual classes
 DEVICE_CLASS_MAP = {
@@ -42,6 +29,7 @@ DEVICE_CLASS_MAP = {
     "power": SensorDeviceClass.POWER,
     "energy": SensorDeviceClass.ENERGY,
     "frequency": SensorDeviceClass.FREQUENCY,
+    "duration": SensorDeviceClass.DURATION,
     "enum": SensorDeviceClass.ENUM,
 }
 
@@ -49,6 +37,10 @@ DEVICE_CLASS_MAP = {
 UNIT_MAP = {
     "°C": UnitOfTemperature.CELSIUS,
     "bar": UnitOfPressure.BAR,
+    "kWh": UnitOfEnergy.KILO_WATT_HOUR,
+    "kW": UnitOfPower.KILO_WATT,
+    "h": UnitOfTime.HOURS,
+    "%": PERCENTAGE,
 }
 
 # Map state class strings to actual classes
@@ -96,6 +88,10 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         self._register_key = sensor_config["register"]
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
 
+        # Support zone number placeholders in translation strings
+        if zone_number := sensor_config.get("zone_number"):
+            self._attr_translation_placeholders = {"zone": str(zone_number)}
+
         self._attr_device_class = None
         self._enum_map = None
 
@@ -104,7 +100,7 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         if device_class == "enum":
             self._attr_device_class = SensorDeviceClass.ENUM
             enum_map_name = sensor_config.get("enum_map", "operating_modes")
-            self._enum_map = ENUM_MAPS.get(enum_map_name, OPERATING_MODES)
+            self._enum_map = coordinator.enum_maps.get(enum_map_name, {})
             self._attr_options = list(self._enum_map.values())
         elif device_class:
             self._attr_device_class = DEVICE_CLASS_MAP.get(device_class)

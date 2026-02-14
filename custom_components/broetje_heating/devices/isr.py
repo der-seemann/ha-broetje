@@ -13,6 +13,247 @@ from ..const import (
     SCALE_TEMP,
 )
 
+# ===== ISR Enum Maps =====
+
+# Operating mode enumeration (Betriebsart)
+ISR_OPERATING_MODES: Final = {
+    0: "protection",  # Schutzbetrieb
+    1: "auto",  # Automatik
+    2: "reduced",  # Reduziert
+    3: "comfort",  # Komfort
+}
+
+# DHW Operating mode enumeration (Trinkwasser Betriebsart)
+ISR_DHW_OPERATING_MODES: Final = {
+    0: "off",  # Aus
+    1: "on",  # Ein
+    2: "eco",  # Eco
+}
+
+# DHW Release mode enumeration (Freigabe)
+ISR_DHW_RELEASE_MODES: Final = {
+    0: "24h",  # 24h/Tag
+    1: "heating_program",  # Zeitprogramme Heizkreise
+    2: "dhw_program",  # Zeitprogramm 4/TWW
+}
+
+# Legionella function mode enumeration
+ISR_LEGIONELLA_MODES: Final = {
+    0: "off",  # Aus
+    1: "periodic",  # Periodisch
+    2: "fixed_day",  # Fixer Wochentag
+}
+
+# Weekday enumeration
+ISR_WEEKDAYS: Final = {
+    1: "monday",
+    2: "tuesday",
+    3: "wednesday",
+    4: "thursday",
+    5: "friday",
+    6: "saturday",
+    7: "sunday",
+}
+
+# Burner power enumeration (Brennerleistung)
+ISR_BURNER_POWER_MODES: Final = {
+    1: "partial_load",  # Teillast
+    2: "full_load",  # Volllast
+    3: "max_heating_load",  # Maximale Heizlast
+}
+
+# Status codes (Statuscodes) - used by HC1 Status, Buffer Status, Boiler Status
+# From Brötje ISR documentation Table 5 "Status codes (2 byte value)"
+ISR_STATUS_CODES: Final = {
+    0: "unknown",
+    1: "slt_tripped",
+    2: "fault",
+    3: "limiter_tripped",
+    4: "manual_control",
+    5: "chimney_sweep_high",
+    6: "chimney_sweep_low",
+    7: "chimney_sweep_active",
+    8: "locked_manual",
+    9: "locked_automatic",
+    10: "locked",
+    11: "protective_start",
+    12: "protective_start_low",
+    13: "return_limitation",
+    14: "return_limitation_low",
+    15: "released",
+    16: "released_low",
+    17: "overrun_active",
+    18: "in_operation",
+    19: "released_2",
+    20: "min_limitation",
+    21: "min_limitation_low",
+    22: "min_limitation_active",
+    23: "frost_prot_plant",
+    24: "frost_protection",
+    25: "off",
+    26: "emergency_operation",
+    27: "locked_externally",
+    51: "no_request",
+    52: "frost_prot_collector",
+    53: "recooling_active",
+    54: "max_tank_temp",
+    55: "evaporation_prot",
+    56: "overtemp_prot",
+    57: "max_charging_temp",
+    58: "charging_dhw",
+    59: "charging_buffer",
+    60: "charging_pool",
+    61: "min_charge_temp_not_reached",
+    62: "temp_diff_insufficient",
+    63: "radiation_insufficient",
+    67: "forced_charging",
+    68: "partial_charging",
+    69: "charging_active",
+    70: "charged_max_tank",
+    71: "charged_max_charging",
+    72: "charged_forced",
+    73: "charged_required",
+    74: "part_charged_required",
+    75: "charged",
+    76: "cold",
+    77: "recooling_collector",
+    78: "recooling_heat_gen",
+    79: "discharging_prot",
+    80: "charge_time_limit",
+    81: "charging_locked",
+    82: "charging_lock_active",
+    83: "forced_max_tank",
+    84: "forced_max_charging",
+    85: "forced_legionella",
+    86: "forced_nominal",
+    87: "el_charging_legionella",
+    88: "el_charging_nominal",
+    89: "el_charging_reduced",
+    90: "el_charging_frost",
+    91: "el_heater_released",
+    92: "push_legionella",
+    93: "push_nominal",
+    94: "push_active",
+    95: "charging_legionella",
+    96: "charging_nominal",
+    97: "charging_reduced",
+    98: "charged_legionella",
+    99: "charged_nominal_temp",
+    100: "charged_reduced_temp",
+    101: "frost_prot_room",
+    102: "floor_curing",
+    103: "restricted_boiler",
+    104: "restricted_dhw",
+    105: "restricted_buffer",
+    106: "heating_restricted",
+    107: "forced_draw_buffer",
+    108: "forced_draw_dhw",
+    109: "forced_draw_source",
+    110: "forced_draw",
+    111: "opt_start_boost",
+    112: "optimum_start",
+    113: "boost_heating",
+    114: "comfort_heating",
+    115: "optimum_stop",
+    116: "reduced_heating",
+    117: "frost_prot_flow",
+    118: "summer_operation",
+    119: "eco_24h",
+    120: "setback_reduced",
+    121: "setback_frost",
+    122: "room_temp_limit",
+    124: "charging_restricted",
+    137: "heating_mode",
+    141: "boiler_frost_prot",
+    142: "recooling_dhw_hc",
+    143: "charged_min_temp",
+    147: "hot",
+    151: "charging_dhw_buffer_pool",
+    152: "charging_dhw_buffer",
+    153: "charging_dhw_pool",
+    154: "charging_buffer_pool",
+    155: "heating_mode_source",
+    156: "heated_max_pool",
+    157: "heated_setpoint_source",
+    158: "heated_setpoint_solar",
+    159: "heated",
+    160: "heating_solar_off",
+    161: "heating_source_off",
+    162: "heating_off",
+    166: "operation_hc",
+    167: "part_load_hc",
+    168: "operation_dhw",
+    169: "part_load_dhw",
+    170: "operation_hc_dhw",
+    171: "part_load_hc_dhw",
+    172: "locked_solid_fuel",
+    173: "released_hc_dhw",
+    174: "released_dhw",
+    175: "released_hc",
+    176: "locked_outside_temp",
+    197: "electric_on",
+    198: "locked_economy",
+    199: "consumption",
+    200: "ready",
+    203: "full_charging",
+    204: "locked_heating",
+    205: "locked_source",
+    206: "locked_buffer",
+    207: "comp_runtime_min",
+    211: "lockout_position",
+    212: "start_prevention",
+    213: "shutdown",
+    214: "safety_time",
+    215: "startup",
+    216: "standby",
+    217: "home_run",
+    218: "prepurge",
+    219: "postpurge",
+    220: "controller_stop",
+    221: "keep_hot_on",
+    222: "keep_hot_active",
+    223: "frost_prot_instant",
+    224: "ignition",
+    225: "settling_time",
+    226: "exotic_gas",
+    227: "drift_test",
+    228: "special_operation",
+    231: "start_drift_test",
+    232: "flue_gas_switchoff",
+    233: "flue_gas_output_red",
+    234: "flue_gas_too_high",
+    235: "water_pressure_low",
+    236: "party_function",
+    237: "transfer_legionella",
+    238: "transfer_nominal",
+    239: "transfer_reduced",
+    240: "transfer_active",
+    241: "residual_heat",
+    242: "restratification",
+    243: "keep_hot_released",
+    244: "source_released",
+    245: "slt_limits_output",
+    246: "mains_undervoltage",
+    247: "temp_drop_prot",
+    248: "continuous_pump",
+    298: "warmer_function",
+    299: "cooler_function",
+    300: "adverse_wind",
+}
+
+# Collected enum maps for ISR device
+ISR_ENUM_MAPS: Final = {
+    "operating_modes": ISR_OPERATING_MODES,
+    "dhw_operating_modes": ISR_DHW_OPERATING_MODES,
+    "dhw_release_modes": ISR_DHW_RELEASE_MODES,
+    "legionella_modes": ISR_LEGIONELLA_MODES,
+    "weekdays": ISR_WEEKDAYS,
+    "burner_power_modes": ISR_BURNER_POWER_MODES,
+    "status_codes": ISR_STATUS_CODES,
+}
+
+# ===== Modbus Register Map =====
+
 # Modbus register map from Brötje documentation
 # Heizkreis 1 (Heating Circuit 1)
 ISR_REGISTER_MAP: Final = {

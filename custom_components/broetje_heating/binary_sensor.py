@@ -61,6 +61,10 @@ class BroetjeBinarySensor(BroetjeEntity, BinarySensorEntity):
         self._register_key = sensor_config["register"]
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
 
+        # Support zone number placeholders in translation strings
+        if zone_number := sensor_config.get("zone_number"):
+            self._attr_translation_placeholders = {"zone": str(zone_number)}
+
         # Set device class
         device_class = sensor_config.get("device_class")
         if device_class:

@@ -29,6 +29,14 @@ STEP_CONNECTION_DATA_SCHEMA = vol.Schema(
     }
 )
 
+STEP_IWR_ZONES_SCHEMA = vol.Schema(
+    {
+        vol.Required("zone_count", default=1): vol.All(
+            int, vol.Range(min=1, max=12)
+        ),
+    }
+)
+
 
 class CannotConnect(Exception):
     """Error to indicate we cannot connect."""
@@ -43,6 +51,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     def __init__(self) -> None:
         """Initialize the flow."""
         self._device_type: DeviceType | None = None
+        self._connection_data: dict[str, Any] = {}
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -86,23 +95,48 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
             else:
-                device_type = self._device_type.value
-                unique_id = f"broetje_{device_type}_{user_input[CONF_HOST]}_{user_input[CONF_UNIT_ID]}"
-                await self.async_set_unique_id(unique_id)
-                self._abort_if_unique_id_configured()
+                # For IWR, proceed to zone configuration step
+                if self._device_type == DeviceType.IWR:
+                    self._connection_data = user_input
+                    return await self.async_step_iwr_zones()
 
-                model_name = DEVICE_MODELS[self._device_type]
-                data = {**user_input, CONF_DEVICE_TYPE: device_type}
-
-                return self.async_create_entry(
-                    title=f"Brötje {model_name} ({user_input[CONF_HOST]})",
-                    data=data,
-                )
+                # For ISR, create entry directly
+                return await self._async_create_entry(user_input)
 
         return self.async_show_form(
             step_id=self._device_type.value,
             data_schema=STEP_CONNECTION_DATA_SCHEMA,
             errors=errors,
+        )
+
+    async def async_step_iwr_zones(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle IWR zone count selection."""
+        if user_input is not None:
+            self._connection_data["zone_count"] = user_input["zone_count"]
+            return await self._async_create_entry(self._connection_data)
+
+        return self.async_show_form(
+            step_id="iwr_zones",
+            data_schema=STEP_IWR_ZONES_SCHEMA,
+        )
+
+    async def _async_create_entry(
+        self, connection_data: dict[str, Any]
+    ) -> ConfigFlowResult:
+        """Create a config entry from validated connection data."""
+        device_type = self._device_type.value
+        unique_id = f"broetje_{device_type}_{connection_data[CONF_HOST]}_{connection_data[CONF_UNIT_ID]}"
+        await self.async_set_unique_id(unique_id)
+        self._abort_if_unique_id_configured()
+
+        model_name = DEVICE_MODELS[self._device_type]
+        data = {**connection_data, CONF_DEVICE_TYPE: device_type}
+
+        return self.async_create_entry(
+            title=f"Brötje {model_name} ({connection_data[CONF_HOST]})",
+            data=data,
         )
 
     async def _test_connection(self, host: str, port: int, unit_id: int) -> None:
