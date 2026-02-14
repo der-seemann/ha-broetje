@@ -87,6 +87,8 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
 
         self._register_key = sensor_config["register"]
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
+        self._value_format = sensor_config.get("value_format")
+        self._device_categories = sensor_config.get("device_categories", {})
 
         # Support zone number placeholders in translation strings
         if zone_number := sensor_config.get("zone_number"):
@@ -134,6 +136,16 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         # to avoid HA rejecting states not in the options list
         if self._attr_device_class == SensorDeviceClass.ENUM and self._enum_map:
             return self._enum_map.get(int(value))
+
+        # Handle device type format: decode 0xZZYY into "CATEGORY-YY"
+        if self._value_format == "device_type":
+            raw = int(value)
+            category_code = (raw >> 8) & 0xFF
+            variant = raw & 0xFF
+            category_name = self._device_categories.get(
+                category_code, f"0x{category_code:02X}"
+            )
+            return f"{category_name}-{variant:02d}"
 
         # Round temperature values to 1 decimal
         if self._attr_device_class == SensorDeviceClass.TEMPERATURE:

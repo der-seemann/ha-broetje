@@ -1667,6 +1667,8 @@ def _build_zone_sensors(zone_count: int) -> dict[str, Any]:
             "state_class": None,
             "icon": "mdi:developer-board",
             "zone_number": zn,
+            "value_format": "device_type",
+            "device_categories": IWR_DEVICE_CATEGORY,
         }
         sensors[f"{prefix}_control_mode"] = {
             "register": f"{prefix}_control_mode",
