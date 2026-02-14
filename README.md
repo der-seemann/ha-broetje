@@ -7,32 +7,64 @@
 
 <img src="custom_components/broetje_heatpump/images/logo.png" alt="Brötje Logo" width="200">
 
-Home Assistant integration for Brötje heatpumps (and other heating systems) via Modbus TCP (ISR MBM, IWR under check)
+Home Assistant integration for Brötje heating systems via Modbus TCP, supporting both the **IWR/GTW-08** gateway (heat pumps) and the **ISR Plus** module (gas boilers and older systems).
 
-Currently only the ISR controller (mainly for gas heating) is supported. IWR, used in heatpumps will follow. 
-In my tests so far, I had a ISR controller connected to the heatpump BLW Eco 10.1. It generally works, but misses a few heatpump specific measurements. IWR connection is going to come soon (GTW-08).
+## Supported Modules
+
+This integration supports two Brötje Modbus modules. During installation, you select which module your system uses. Both can be installed in parallel if you have multiple heating appliances.
+
+| Module | Type | Typical Use | Status |
+|--------|------|-------------|--------|
+| **IWR / GTW-08** | Gateway module | Heat pumps, newer systems | Supported |
+| **ISR Plus** | Modbus module | Gas boilers, older systems | Supported |
+
+### IWR / GTW-08 (Gateway Module)
+
+The IWR/GTW-08 is the current-generation Modbus gateway used by Brötje heat pumps and newer heating systems. It provides comprehensive monitoring including:
+
+- Appliance temperatures, pressures, and power
+- Heat pump status (main status + sub status with 100+ codes)
+- Energy counters (consumed and delivered, per CH/DHW/cooling)
+- COP monitoring
+- Up to 12 configurable zones with per-zone temperatures, setpoints, and pump status
+- Bitfield-based status indicators (flame, heat pump, backup heaters, valves)
+- Service and error diagnostics per board
+
+Register specification: GTW-08 Modbus (7854678 - v.01)
+
+### ISR Plus (Legacy Module)
+
+The ISR Plus module is the older Modbus interface found on Brötje gas boilers and some heat pump installations. It provides:
+
+- Heating circuit 1 temperatures and setpoints
+- DHW (domestic hot water) settings and tank status
+- Buffer storage monitoring
+- Boiler/burner status and energy counters
+- General functions (outdoor temperature, alarm relay)
+
+Register specification: [de-de_ma_modbm.pdf](https://polo.broetje.de/pdf/7715040=6=pdf_(bdr_a4_manual)=de-de_ma_modbm.pdf)
 
 ## Supported Models
 
 <img src="custom_components/broetje_heatpump/images/Broetje-BLW-Eco-10.1.png" alt="Brötje BLW Eco" width="300">
 
-**Brötje BLW Eco 10.1** (tested)
+**Brötje BLW Eco 10.1** (tested with ISR and IWR)
 
-*Other Brötje heatpumps with Modbus interface may also work.*
-
+*Other Brötje heating systems with Modbus interface should also work.*
 
 ## Features
 
-> **Note:** All information is derived from this Brötje document:
-[de-de_ma_modbm.pdf](https://polo.broetje.de/pdf/7715040=6=pdf_(bdr_a4_manual)=de-de_ma_modbm.pdf)
-
-- **ISR module only**
-- **Read-only monitoring** (v0.2)
-- **about 100 entities** across 6 categories
+- **Two module types**: IWR/GTW-08 and ISR Plus, selectable during setup
+- **Parallel operation**: Both modules can run side by side for different appliances
+- **Read-only monitoring**
+- **IWR**: ~80+ entities (main appliance, zones, service, error diagnostics)
+- **ISR**: ~100 entities across 6 categories
+- **Configurable zones** (IWR): 1–12 zones selectable during setup
 - **German and English translations**
+- **Sentinel value filtering**: Invalid Modbus readings (0xFFFF, 0xFFFFFFFF) are shown as "Unavailable" instead of bogus numbers
 - 30-second polling interval
 
-### Supported Categories
+### ISR Categories
 
 | Category | Sensors | Binary Sensors | Description |
 |----------|---------|----------------|-------------|
@@ -43,12 +75,24 @@ In my tests so far, I had a ISR controller connected to the heatpump BLW Eco 10.
 | **Boiler** (Kessel) | 31 | 3 | Burner, fan, energy counters |
 | **General Functions** (Allgemein) | 3 | 4 | Outdoor temp, alarm, manual mode |
 
-> ⚠️ **Note:** Currently only **Heating Circuit 1 (Heizkreis 1)** is supported. Support for HC2/HC3 may be added in future versions.
+> **Note:** Currently only **Heating Circuit 1 (HK1)** is supported for ISR. Support for HC2/HC3 may be added in future versions.
+
+### IWR Categories
+
+| Category | Sensors | Binary Sensors | Description |
+|----------|---------|----------------|-------------|
+| **Main Appliance** | ~25 | 7 | Temperatures, pressures, status, power, COP |
+| **Output Status** | - | 7 | Pump, valves, DHW/CH/cooling active |
+| **Heat Demand** | - | 7 | Zone demand, cooling, DHW, manual heat |
+| **Energy & Counters** | ~20 | - | Consumed/delivered kWh, starts, hours |
+| **Zone** (per zone) | 7 | 2 | Flow temp, setpoint, activity, pump |
+| **Service** | 4 | 1 | Service notification, hours/starts since service |
+| **Error Diagnostics** | ~9 | 1 | Per-board error codes and severity |
 
 ## Requirements
 
-- Brötje heatpump with Modbus interface
-- Modbus TCP gateway connected to the heatpump
+- Brötje heating system with Modbus interface
+- Modbus TCP gateway connected to the heating system
 - Home Assistant 2024.1.0 or newer
 
 ## Installation
@@ -61,12 +105,12 @@ In my tests so far, I had a ISR controller connected to the heatpump BLW Eco 10.
 4. Select "Custom repositories"
 5. Add `https://github.com/henrywiechert/ha-broetje` and select "Integration" as the category
 6. Click "Add"
-7. Search for "Brötje Heatpump" and install it
+7. Search for "Brötje" and install it
 8. Restart Home Assistant
 
 ### Manual Installation
 
-1. Download the `custom_components/broetje_heatpump` folder
+1. Download the `custom_components/broetje_heating` folder
 2. Copy it to your Home Assistant `config/custom_components/` directory
 3. Restart Home Assistant
 
@@ -74,26 +118,30 @@ In my tests so far, I had a ISR controller connected to the heatpump BLW Eco 10.
 
 1. Go to **Settings** → **Devices & Services**
 2. Click **Add Integration**
-3. Search for "Brötje Heatpump"
-4. Enter the connection details:
+3. Search for "Brötje"
+4. **Select your module type**: ISR or IWR
+5. Enter the connection details:
    - **Host**: IP address of your Modbus TCP gateway
    - **Port**: Modbus TCP port (default: 502)
    - **Unit ID**: Modbus slave ID (default: 1)
+6. **IWR only**: Select the number of zones (1–12) configured on your system
+
+To add a second module (e.g., both ISR and IWR), simply add the integration again and select the other module type.
 
 ## Entities
 
-See [ENTITIES.md](ENTITIES.md) for a complete list of all 100 entities with their Modbus register addresses and descriptions.
+See [ENTITIES.md](ENTITIES.md) for a complete list of ISR entities with their Modbus register addresses and descriptions.
 
 ### Highlights
 
+- **Temperatures**: Flow, return, room, outdoor, exhaust gas, heat pump
+- **Energy counters**: Consumed and delivered energy for CH, DHW, and cooling (kWh)
+- **Operating hours**: Total hours, backup heater hours, pump hours per zone
+- **Status information**: Main/sub status, pump states, valve positions, flame/heat pump on
+- **COP**: Coefficient of performance monitoring (IWR)
+- **Diagnostics**: Per-board error codes and severity, service notifications
 
-- **Temperatures**: Flow, return, room, boiler, buffer, DHW
-- **Energy counters**: Gas consumption for heating and DHW (kWh)
-- **Operating hours**: Burner hours, heating hours, DHW hours
-- **Status information**: Boiler status, burner status, pump states
-- **Configuration**: Heating curve, setpoints, operating modes
-
-Not every sensor is available on every heating system! E.g. gas consumption on heat pumps :-)
+Not every sensor is available on every heating system! E.g., gas consumption on heat pumps, or COP on gas boilers.
 
 ## Dashboard Example
 
@@ -125,9 +173,9 @@ entities:
 
 - The register addresses may need adjustment for your specific model
 - Check Home Assistant logs for Modbus communication errors
+- Some sensors show "Unavailable" when the appliance reports sentinel values (0xFFFF) — this is normal for unused features
 
 ## Development
-
 
 This integration uses:
 
@@ -142,13 +190,10 @@ Contributions are welcome! Please:
 2. Create a feature branch
 3. Submit a pull request
 
-
 ## Roadmap
 
 - [ ] Write support for R/W registers
-- [ ] Additional heating circuits (HC2, HC3)
-- [ ] Heatpump specific sensors
-- [ ] Error codes and diagnostics
+- [ ] Additional heating circuits for ISR (HC2, HC3)
 - [ ] Brötje logo in official HA brand repo
 
 ## License
