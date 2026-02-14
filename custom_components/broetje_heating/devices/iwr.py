@@ -234,6 +234,14 @@ ZONE_ADDRESSES: Final = {
 # ===== Static Register Map (non-zone registers) =====
 
 _IWR_STATIC_REGISTER_MAP: Final = {
+    # --- Zone Detection (Tab.24) ---
+    "zone_count": {
+        "address": 189,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     # --- Temperature and Power Control (Tab.18) ---
     "control_power": {
         "address": 256,
@@ -802,6 +810,15 @@ _IWR_STATIC_REGISTER_MAP: Final = {
 # ===== Static Sensor Definitions =====
 
 _IWR_STATIC_SENSORS: Final = {
+    # --- Zone Detection (Tab.24) ---
+    "zone_count": {
+        "register": "zone_count",
+        "translation_key": "zone_count",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
     # --- Temperature and Power Control Sensors (Tab.18) ---
     "control_power": {
         "register": "control_power",

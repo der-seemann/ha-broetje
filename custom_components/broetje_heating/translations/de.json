@@ -38,13 +38,13 @@
         }
       },
       "iwr_zones": {
-        "title": "Zonenkonfiguration",
-        "description": "Wählen Sie die Anzahl der Zonen (Heizkreise, Warmwasser usw.), die in Ihrem System konfiguriert sind.",
+        "title": "Heizkreiskonfiguration",
+        "description": "Wählen Sie die Anzahl der Heizkreise (Heizkreise, Warmwasser usw.), die in Ihrem System konfiguriert sind.",
         "data": {
-          "zone_count": "Anzahl der Zonen"
+          "zone_count": "Anzahl der Heizkreise"
         },
         "data_description": {
-          "zone_count": "Anzahl der zu überwachenden Zonen (1-12). Prüfen Sie Ihre Gerätekonfiguration."
+          "zone_count": "Anzahl der zu überwachenden Heizkreise (1-12). Prüfen Sie Ihre Gerätekonfiguration."
         }
       }
     },
@@ -870,6 +870,9 @@
       "controller_stop_setpoint": {
         "name": "Reglerstopp Sollwert"
       },
+      "zone_count": {
+        "name": "Erkannte Heizkreise"
+      },
       "control_power": {
         "name": "Steuerung Leistungssollwert"
       },
@@ -1201,16 +1204,16 @@
         }
       },
       "zone_flow_temp": {
-        "name": "Zone {zone} Vorlauftemperatur"
+        "name": "Heizkreis {zone} Vorlauftemperatur"
       },
       "zone_flow_setpoint": {
-        "name": "Zone {zone} Temperatursollwert"
+        "name": "Heizkreis {zone} Temperatursollwert"
       },
       "zone_room_setpoint": {
-        "name": "Zone {zone} Raumtemperatursollwert"
+        "name": "Heizkreis {zone} Raumtemperatursollwert"
       },
       "zone_activity": {
-        "name": "Zone {zone} Einstellung",
+        "name": "Heizkreis {zone} Einstellung",
         "state": {
           "off": "Aus",
           "eco": "Eco",
@@ -1219,7 +1222,7 @@
         }
       },
       "zone_operating_mode": {
-        "name": "Zone {zone} Betriebsart",
+        "name": "Heizkreis {zone} Betriebsart",
         "state": {
           "scheduling": "Zeitprogramm",
           "manual": "Manuell",
@@ -1228,10 +1231,10 @@
         }
       },
       "zone_pump_hours": {
-        "name": "Zone {zone} Pumpenbetriebsstunden"
+        "name": "Heizkreis {zone} Pumpenbetriebsstunden"
       },
       "zone_pump_starts": {
-        "name": "Zone {zone} Pumpenstarts"
+        "name": "Heizkreis {zone} Pumpenstarts"
       }
     },
     "binary_sensor": {
@@ -1359,10 +1362,10 @@
         "name": "Fehler vorhanden"
       },
       "zone_pump": {
-        "name": "Zone {zone} Pumpe"
+        "name": "Heizkreis {zone} Pumpe"
       },
       "zone_flow_measurement": {
-        "name": "Zone {zone} Vorlaufmessung"
+        "name": "Heizkreis {zone} Vorlaufmessung"
       }
     }
   }
