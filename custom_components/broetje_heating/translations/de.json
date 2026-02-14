@@ -869,6 +869,336 @@
       },
       "controller_stop_setpoint": {
         "name": "Reglerstopp Sollwert"
+      },
+      "system_power": {
+        "name": "Systemleistung"
+      },
+      "outside_temperature": {
+        "name": "Außentemperatur"
+      },
+      "seasonal_mode": {
+        "name": "Jahreszeitenbetrieb",
+        "state": {
+          "winter": "Winter",
+          "frost_protection": "Frostschutz",
+          "summer_neutral": "Übergangszeit",
+          "summer": "Sommer"
+        }
+      },
+      "flow_temperature": {
+        "name": "Vorlauftemperatur"
+      },
+      "return_temperature": {
+        "name": "Rücklauftemperatur"
+      },
+      "exhaust_gas_temperature": {
+        "name": "Abgastemperatur"
+      },
+      "hp_flow_temperature": {
+        "name": "Vorlauftemperatur Wärmepumpe"
+      },
+      "hp_return_temperature": {
+        "name": "Rücklauftemperatur Wärmepumpe"
+      },
+      "dhw_flow_setpoint": {
+        "name": "Vorlauftemperatur-Sollwert TWW"
+      },
+      "water_pressure": {
+        "name": "Wasserdruck"
+      },
+      "main_status": {
+        "name": "Hauptstatus",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Wärmeanforderung",
+          "generator_start": "Erzeugerstart",
+          "generator_ch": "Erzeuger HZG",
+          "generator_dhw": "Erzeuger TWW",
+          "generator_stop": "Erzeugerstopp",
+          "pump_post_run": "Nachlauf Pumpe",
+          "cooling_active": "Kühlbetrieb",
+          "controlled_stop": "Regelabschaltung",
+          "blocking_mode": "Startverhinderung",
+          "locking_mode": "Verriegelungsmodus",
+          "load_test_min": "Lasttest min.",
+          "load_test_ch_max": "Lasttest HZG max.",
+          "load_test_dhw_max": "Lasttest TWW max.",
+          "manual_heat_demand": "Manuelle Wärmeanf.",
+          "frost_protection": "Kesselfrostschutz",
+          "deaeration": "Entlüftung",
+          "control_unit_cooling": "Regelungseinh. Kühlen",
+          "reset_in_progress": "Zurücksetzen läuft",
+          "auto_filling": "Autom. Befüllung",
+          "halted": "Angehalten",
+          "forced_calibration": "Kalibrierung",
+          "factory_test": "Werkstest",
+          "hydronic_balancing": "Hydr. Abgleich",
+          "device_mode": "Gerätemodus",
+          "unknown": "Unbekannt"
+        }
+      },
+      "sub_status": {
+        "name": "Substatus",
+        "state": {
+          "standby": "Standby",
+          "anti_cycling": "Pausenzeit",
+          "close_hydraulic_valve": "Schließe Hydr.Ventil",
+          "close_pump": "Stop Pumpe",
+          "waiting_for_start_cond": "Warte auf Startfreig.",
+          "close_ext_gas_valve": "Ext.Gasvent.schließ.",
+          "start_to_glue_gas_valve": "Start Brenner",
+          "close_flue_gas_valve": "Schließe Abgasvent.",
+          "fan_to_pre_purge": "Vorbelüftung",
+          "wait_for_release_signal": "Wartet Freigabesig.",
+          "burner_on_command": "BrennerEinBefehl an SE",
+          "vps_test": "VPS-Prüfung",
+          "pre_ignition": "Vorzündung",
+          "ignition": "Zündung",
+          "flame_check": "Sicherheitszeit",
+          "interpurge": "Zwischenbelüftung",
+          "generator_starting": "Erzeuger startet",
+          "normal_int_setpoint": "Interner Sollwert",
+          "limited_int_setpoint": "Begr. int. Sollwert",
+          "normal_power_control": "Leistungsgeregelt",
+          "grad_level1_power_ctrl": "GradStufe1 Leist.-Reg.",
+          "grad_level2_power_ctrl": "GradStufe2 Leist.-Reg.",
+          "grad_level3_power_ctrl": "GradStufe3 Leist.-Reg.",
+          "protect_flame_pwr_ctrl": "Flammsch. Leist.-Reg.",
+          "stabilization_time": "Stabilisierungszeit",
+          "cold_start": "Kaltstart",
+          "ch_resume": "Heizung fortsetzen",
+          "su_remove_burner": "Stop Brenner",
+          "fan_to_post_purge": "Gebläsenachlauf",
+          "open_ext_flue_gas_valve": "Ext.Abgasvent.öffnen",
+          "stop_fan_to_flue_gv_rpm": "Stop Gebläse Drehzahl",
+          "stop_fan": "Stop Gebläse",
+          "limited_pwr_on_tflue_gas": "Leist.begr. Abgastemp.",
+          "auto_filling_install": "AutoBefüll. Install.",
+          "auto_filling_top_up": "Auto-Nachbefüllung",
+          "reduced_set_point": "Reduzierter Sollwert",
+          "offset_adaption": "Anpass. Verschiebung",
+          "pump_post_running": "Pumpennachlauf",
+          "open_pump": "Start Pumpe",
+          "open_hydraulic_valve": "Hydr.Ventil öffnen",
+          "start_anticycle_time": "Pausenzeit starten",
+          "compressor_relieved": "Verdichter entlastet",
+          "hp_tmax_backup_on": "WP Tmax Zusatz ein",
+          "outdoor_limit_hp_off": "Grenze AußenT WP aus",
+          "hp_stop_by_hybrid": "WP-Stopp durch Hybrid",
+          "defrost_with_hp": "Abtauen mit WP",
+          "defrost_with_backup": "Abtauen mit ZusErz.",
+          "defrost_hp_backup": "Abtauen WP ZusErz.",
+          "source_pump_backup": "Quellenpumpe ZusErz.",
+          "hp_flow_over_tmax": "WP Vorlauf über Tmax",
+          "source_pump_post_run": "Nachlauf QuellPumpe",
+          "hp_off_high_humidity": "WP aus hohe Feuchte",
+          "hp_off_water_flow": "WP aus Durchfluss",
+          "humidity_setpoint": "Sollwert Luftfeuchte",
+          "generators_relieved": "Erzeuger entlastet",
+          "hp_relieved_cooling": "WP entlastet Kühlung",
+          "hp_stop_outdoor_temp": "WP Stopp Außentemp.",
+          "hp_off_flow_tmax": "WP aus Vorlauf Tmax",
+          "deair_pump_valve_ch": "Entl. Pump Vent. HZG",
+          "deair_pump_valve_dhw": "Entl. Pump Vent. TWW",
+          "deair_valve_ch": "Entlüft. Ventil HZG",
+          "deair_valve_dhw": "Entlüft. Ventil TWW",
+          "bl_backup_off": "BL Zusatzerz. aus",
+          "bl_hp_off": "BL WP aus",
+          "bl_hp_backup_off": "BL WP Zusatzerz. aus",
+          "low_tariff": "Niedertarif",
+          "pv_with_hp": "PV mit WP",
+          "pv_hp_and_backup": "PV WP und Zusatzerz.",
+          "smart_grid": "Smart Grid (SG)",
+          "waiting_for_waterpress": "Warte a. Wasserdruck",
+          "no_producer_available": "Kein Erzeuger verfügb.",
+          "increased_min_power": "Min. Leistung erhöht",
+          "decreased_max_power": "Max. Leist. verringert",
+          "free_cool_pump_off": "Fr.Kühlung Pumpe aus",
+          "free_cool_pump_on": "Fr.Kühlung Pumpe ein",
+          "source_pump_pre_run": "Vorlauf QuellPumpe",
+          "calibration": "Kalibrierung",
+          "blocking_active": "Sperrung aktiv",
+          "warm_up": "Aufwärmen",
+          "defrost_curative": "Kurative Abtauung",
+          "defrost_preventive": "Präventive Abtauung",
+          "initialising_done": "Initialisierung erl.",
+          "initialising_csu": "Initialisierung CSU",
+          "init_identifiers": "Init. Identifikat.",
+          "init_bl_parameter": "Init. Sperr-Parameter",
+          "init_safety_unit": "Init. Sicherh.einr.",
+          "init_blocking": "Init. Sperrung",
+          "state_unknown": "Status unbekannt",
+          "su_out_of_resets_wait": "SU Auss. Rücks. Wart. 1h"
+        }
+      },
+      "relative_power": {
+        "name": "Relative Leistung"
+      },
+      "ionization_current": {
+        "name": "Ionisationsstrom"
+      },
+      "pump_speed": {
+        "name": "Pumpendrehzahl"
+      },
+      "actual_power": {
+        "name": "Aktuelle Leistung"
+      },
+      "cop": {
+        "name": "COP"
+      },
+      "cop_threshold": {
+        "name": "COP-Schwellenwert"
+      },
+      "total_starts": {
+        "name": "Erzeugerstarts gesamt"
+      },
+      "total_operating_hours": {
+        "name": "Betriebsstunden gesamt"
+      },
+      "backup1_starts": {
+        "name": "Starts Zusatzerzeuger 1"
+      },
+      "backup1_operating_hours": {
+        "name": "Betriebsstunden Zusatzerzeuger 1"
+      },
+      "backup2_starts": {
+        "name": "Starts Zusatzerzeuger 2"
+      },
+      "backup2_operating_hours": {
+        "name": "Betriebsstunden Zusatzerzeuger 2"
+      },
+      "mains_power_hours": {
+        "name": "Netzstrom-Betriebsstunden"
+      },
+      "energy_consumed_ch": {
+        "name": "Energieverbrauch Heizung"
+      },
+      "energy_consumed_dhw": {
+        "name": "Energieverbrauch TWW"
+      },
+      "energy_consumed_cooling": {
+        "name": "Energieverbrauch Kühlung"
+      },
+      "total_energy_consumed": {
+        "name": "Gesamtenergieverbrauch"
+      },
+      "energy_consumed_backup": {
+        "name": "Energieverbrauch Zusatzerzeuger"
+      },
+      "total_thermal_delivered": {
+        "name": "Gelieferte thermische Energie gesamt"
+      },
+      "thermal_delivered_ch": {
+        "name": "Gelieferte thermische Energie Heizung"
+      },
+      "thermal_delivered_dhw": {
+        "name": "Gelieferte thermische Energie TWW"
+      },
+      "thermal_delivered_cooling": {
+        "name": "Gelieferte thermische Energie Kühlung"
+      },
+      "energy_delivered_backup": {
+        "name": "Gelieferte Energie Zusatzerzeuger"
+      },
+      "service_notification": {
+        "name": "Wartungsmeldung",
+        "state": {
+          "none": "Keine",
+          "a": "Wartung A",
+          "b": "Wartung B",
+          "c": "Wartung C",
+          "custom": "Benutzerdefiniert",
+          "d": "Wartung D"
+        }
+      },
+      "hours_producing_since_service": {
+        "name": "Betriebsstunden seit Wartung"
+      },
+      "hours_since_service": {
+        "name": "Stunden seit Wartung"
+      },
+      "starts_since_service": {
+        "name": "Erzeugerstarts seit Wartung"
+      },
+      "devices_connected": {
+        "name": "Angeschlossene Geräte"
+      },
+      "board1_error_code": {
+        "name": "Leiterplatte 1 Fehlercode"
+      },
+      "board1_error_severity": {
+        "name": "Leiterplatte 1 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "warning": "Warnung"
+        }
+      },
+      "board2_error_code": {
+        "name": "Leiterplatte 2 Fehlercode"
+      },
+      "board2_error_severity": {
+        "name": "Leiterplatte 2 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "warning": "Warnung"
+        }
+      },
+      "board3_error_code": {
+        "name": "Leiterplatte 3 Fehlercode"
+      },
+      "board3_error_severity": {
+        "name": "Leiterplatte 3 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "warning": "Warnung"
+        }
+      },
+      "board4_error_code": {
+        "name": "Leiterplatte 4 Fehlercode"
+      },
+      "board4_error_severity": {
+        "name": "Leiterplatte 4 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "warning": "Warnung"
+        }
+      },
+      "zone_flow_temp": {
+        "name": "Zone {zone} Vorlauftemperatur"
+      },
+      "zone_flow_setpoint": {
+        "name": "Zone {zone} Temperatursollwert"
+      },
+      "zone_room_setpoint": {
+        "name": "Zone {zone} Raumtemperatursollwert"
+      },
+      "zone_activity": {
+        "name": "Zone {zone} Einstellung",
+        "state": {
+          "off": "Aus",
+          "eco": "Eco",
+          "comfort": "Komfort",
+          "anti_legionella": "Anti-Legionellen"
+        }
+      },
+      "zone_operating_mode": {
+        "name": "Zone {zone} Betriebsart",
+        "state": {
+          "scheduling": "Zeitprogramm",
+          "manual": "Manuell",
+          "off": "Aus",
+          "temporary": "Temporär"
+        }
+      },
+      "zone_pump_hours": {
+        "name": "Zone {zone} Pumpenbetriebsstunden"
+      },
+      "zone_pump_starts": {
+        "name": "Zone {zone} Pumpenstarts"
       }
     },
     "binary_sensor": {
@@ -922,6 +1252,84 @@
       },
       "controller_stop_function": {
         "name": "Reglerstoppfunktion"
+      },
+      "demand_direct_zones": {
+        "name": "Ungemischte Kreise freigegeben"
+      },
+      "demand_mixing_circuits": {
+        "name": "Mischerkreise freigegeben"
+      },
+      "demand_valves_open_safety": {
+        "name": "Alle Ventile offen / Pumpe läuft (Sicherheit)"
+      },
+      "demand_manual_heat": {
+        "name": "Manuelle Wärmeanforderung"
+      },
+      "demand_cooling_allowed": {
+        "name": "Kühlen erlaubt"
+      },
+      "demand_dhw_allowed": {
+        "name": "TWW-Kreise freigegeben"
+      },
+      "demand_heat_engine_active": {
+        "name": "Brennereinheit aktiv"
+      },
+      "status_flame_on": {
+        "name": "Flamme an"
+      },
+      "status_heat_pump_on": {
+        "name": "Wärmepumpe ein"
+      },
+      "status_backup1_on": {
+        "name": "Elektrischer Zusatzerzeuger 1 ein"
+      },
+      "status_backup2_on": {
+        "name": "Elektrischer Zusatzerzeuger 2 ein"
+      },
+      "status_dhw_backup_on": {
+        "name": "Elektrischer TWW-Zusatzerzeuger ein"
+      },
+      "status_service_required": {
+        "name": "Wartung erforderlich"
+      },
+      "status_power_down_needed": {
+        "name": "Abschaltung / Reset erforderlich"
+      },
+      "status_water_pressure_low": {
+        "name": "Wasserdruck niedrig"
+      },
+      "output_pump": {
+        "name": "Pumpe"
+      },
+      "output_3way_valve_open": {
+        "name": "Dreiwegeventil offen"
+      },
+      "output_3way_valve": {
+        "name": "Dreiwegeventil"
+      },
+      "output_3way_valve_closed": {
+        "name": "Dreiwegeventil geschlossen"
+      },
+      "output_dhw_active": {
+        "name": "TWW aktiv"
+      },
+      "output_ch_active": {
+        "name": "HZG aktiv"
+      },
+      "output_cooling_active": {
+        "name": "Kühlung aktiv"
+      },
+      "service_required": {
+        "name": "Wartung erforderlich"
+      },
+      "error_present": {
+        "name": "Fehler vorhanden"
+      },
+      "zone_pump": {
+        "name": "Zone {zone} Pumpe"
+      },
+      "zone_flow_measurement": {
+        "name": "Zone {zone} Vorlaufmessung"
       }
     }
   }
