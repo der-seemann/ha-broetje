@@ -10,7 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-
+from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .coordinator import BroetjeModbusCoordinator
 from .devices import CONF_DEVICE_TYPE, DeviceType
 
@@ -56,7 +56,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    entry.async_on_unload(entry.add_update_listener(_async_update_options))
+
     return True
+
+
+async def _async_update_options(
+    hass: HomeAssistant, entry: BroetjeConfigEntry
+) -> None:
+    """Handle options update."""
+    coordinator: BroetjeModbusCoordinator = entry.runtime_data
+    scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+    coordinator.update_scan_interval(scan_interval)
 
 
 def _copy_images_to_www(hass: HomeAssistant) -> None:

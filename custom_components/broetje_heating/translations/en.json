@@ -56,6 +56,20 @@
       "already_configured": "This device is already configured."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Brötje Heating Options",
+        "description": "Adjust polling and integration settings.",
+        "data": {
+          "scan_interval": "Scan interval (seconds)"
+        },
+        "data_description": {
+          "scan_interval": "How often to poll the Modbus device for updated values (10-3600 seconds)."
+        }
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "hc1_operating_mode": {

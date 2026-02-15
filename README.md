@@ -58,11 +58,11 @@ Register specification: [de-de_ma_modbm.pdf](https://polo.broetje.de/pdf/7715040
 - **Parallel operation**: Both modules can run side by side for different appliances
 - **Read-only monitoring**
 - **IWR**: ~80+ entities (main appliance, zones, service, error diagnostics)
-- **ISR**: ~100 entities across 6 categories
+- **ISR**: >200 entities across 6 categories
 - **Configurable zones** (IWR): 1–12 zones selectable during setup
 - **German and English translations**
 - **Sentinel value filtering**: Invalid Modbus readings (0xFFFF, 0xFFFFFFFF) are shown as "Unavailable" instead of bogus numbers
-- 30-second polling interval
+- configurable polling interval (global)
 
 ### ISR Categories
 

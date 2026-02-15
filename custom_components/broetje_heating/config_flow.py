@@ -8,12 +8,19 @@ from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_HOST, CONF_PORT
 
 from .const import (
+    CONF_SCAN_INTERVAL,
     CONF_UNIT_ID,
     DEFAULT_PORT,
+    DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
     DOMAIN,
 )
@@ -40,11 +47,44 @@ class CannotConnect(Exception):
     """Error to indicate we cannot connect."""
 
 
+class BroetjeOptionsFlow(OptionsFlow):
+    """Handle options for Brötje Heatpump."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the options."""
+        if user_input is not None:
+            return self.async_create_entry(data=user_input)
+
+        current_interval = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
+
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_SCAN_INTERVAL, default=current_interval
+                    ): vol.All(int, vol.Range(min=10, max=3600)),
+                }
+            ),
+        )
+
+
 class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Brötje Heatpump."""
 
     VERSION = 2
     MINOR_VERSION = 1
+
+    @staticmethod
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ) -> BroetjeOptionsFlow:
+        """Get the options flow handler."""
+        return BroetjeOptionsFlow(config_entry)
 
     def __init__(self) -> None:
         """Initialize the flow."""

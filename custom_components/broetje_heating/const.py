@@ -7,10 +7,11 @@ DOMAIN: Final = "broetje_heating"
 # Default values
 DEFAULT_PORT: Final = 502
 DEFAULT_UNIT_ID: Final = 1
-DEFAULT_SCAN_INTERVAL: Final = 30
+DEFAULT_SCAN_INTERVAL: Final = 120
 
 # Configuration keys
 CONF_UNIT_ID: Final = "unit_id"
+CONF_SCAN_INTERVAL: Final = "scan_interval"
 
 # Manufacturer info
 MANUFACTURER: Final = "Brötje"

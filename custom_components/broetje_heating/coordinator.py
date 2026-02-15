@@ -17,6 +17,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
+    CONF_SCAN_INTERVAL,
     CONF_UNIT_ID,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
@@ -37,12 +38,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
+        scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
             config_entry=entry,
-            update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
+            update_interval=timedelta(seconds=scan_interval),
         )
         self._host = entry.data[CONF_HOST]
         self._port = entry.data[CONF_PORT]
@@ -65,6 +67,11 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.device_model: str = DEVICE_MODELS.get(self._device_type, "Heatpump")
         self.device_manufacturer: str = MANUFACTURER
         self.device_firmware: str | None = None
+
+    def update_scan_interval(self, scan_interval: int) -> None:
+        """Update the polling interval (called when options change)."""
+        self.update_interval = timedelta(seconds=scan_interval)
+        _LOGGER.info("Scan interval updated to %d seconds", scan_interval)
 
     async def _async_setup(self) -> None:
         """Set up the coordinator (called during first refresh)."""
