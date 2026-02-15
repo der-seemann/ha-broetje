@@ -4,10 +4,10 @@
   "codeowners": [],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/",
+  "documentation": "https://github.com/henrywiechert/ha-broetje",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/",
+  "issue_tracker": "https://github.com/henrywiechert/ha-broetje/issues",
   "requirements": ["pymodbus>=3.11.0"],
   "version": "v0.4.3"
 }
