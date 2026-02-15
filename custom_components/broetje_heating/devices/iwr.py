@@ -243,6 +243,32 @@ IWR_ON_OFF: Final = {
     1: "on",
 }
 
+# Zone type (register 640 etc.)
+IWR_ZONE_TYPE: Final = {
+    0: "not_present",
+    1: "ch_only",
+    2: "ch_and_cooling",
+    3: "dhw",
+    4: "process_heat",
+    5: "swimming_pool",
+    254: "other",
+}
+
+# Heating control strategy (register 671 etc.)
+IWR_HEATING_CONTROL_STRATEGY: Final = {
+    0: "auto",
+    1: "room",
+    2: "outdoor",
+    3: "outdoor_and_room",
+}
+
+# Time program selection (register 688 etc.)
+IWR_TIME_PROGRAM_SELECTED: Final = {
+    0: "time_program_1",
+    1: "time_program_2",
+    2: "time_program_3",
+}
+
 # Cooling enabled mode (register 502)
 IWR_COOLING_ENABLED: Final = {
     0: "off",
@@ -265,6 +291,9 @@ IWR_ENUM_MAPS: Final = {
     "iwr_zone_function": IWR_ZONE_FUNCTION,
     "iwr_on_off": IWR_ON_OFF,
     "iwr_cooling_enabled": IWR_COOLING_ENABLED,
+    "iwr_zone_type": IWR_ZONE_TYPE,
+    "iwr_heating_control_strategy": IWR_HEATING_CONTROL_STRATEGY,
+    "iwr_time_program_selected": IWR_TIME_PROGRAM_SELECTED,
 }
 
 # ===== Zone Address Tables =====
@@ -1695,6 +1724,11 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
 # ===== Dynamic Zone Generation =====
 
 
+def _zone_addr(base: int, zone_idx: int) -> int:
+    """Compute zone register address. base is zone-1 address, zone_idx is 0-based."""
+    return base + 512 * zone_idx
+
+
 def _build_zone_registers(zone_count: int) -> dict[str, Any]:
     """Generate register map entries for zones 1..zone_count."""
     registers: dict[str, Any] = {}
@@ -1827,6 +1861,243 @@ def _build_zone_registers(zone_count: int) -> dict[str, Any]:
             "count": 1,
             "data_type": "uint16",
             "scale": IWR_SCALE_ROOM_TEMP,
+        }
+
+        # ===== New zone registers from German spec 7740782-01 =====
+
+        # 640 - Zone type (ENUM8)
+        registers[f"{prefix}_zone_type"] = {
+            "address": _zone_addr(640, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # 650-654 - Room comfort setpoints 1-5 (UINT16, 0.1°C)
+        for sp in range(1, 6):
+            registers[f"{prefix}_comfort_setpoint_{sp}"] = {
+                "address": _zone_addr(649 + sp, z),
+                "type": REG_HOLDING,
+                "count": 1,
+                "data_type": "uint16",
+                "scale": IWR_SCALE_ROOM_TEMP,
+            }
+        # 655 - Night setback setpoint (UINT16, 0.1°C)
+        registers[f"{prefix}_night_setback"] = {
+            "address": _zone_addr(655, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 656-660 - Room cooling setpoints 1-5 (UINT16, 0.1°C)
+        for sp in range(1, 6):
+            registers[f"{prefix}_cooling_room_setpoint_{sp}"] = {
+                "address": _zone_addr(655 + sp, z),
+                "type": REG_HOLDING,
+                "count": 1,
+                "data_type": "uint16",
+                "scale": IWR_SCALE_ROOM_TEMP,
+            }
+        # 661 - Cooling night setback (UINT16, 0.1°C)
+        registers[f"{prefix}_cooling_night_setback"] = {
+            "address": _zone_addr(661, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 662 - Holiday room setpoint (UINT16, 0.1°C)
+        registers[f"{prefix}_holiday_setpoint"] = {
+            "address": _zone_addr(662, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 663 - Temporary room setpoint (UINT16, 0.1°C)
+        registers[f"{prefix}_temporary_setpoint"] = {
+            "address": _zone_addr(663, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 665 - DHW comfort setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_comfort_setpoint"] = {
+            "address": _zone_addr(665, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 666 - DHW reduced setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_reduced_setpoint"] = {
+            "address": _zone_addr(666, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 667 - DHW holiday setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_holiday_setpoint"] = {
+            "address": _zone_addr(667, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 668 - DHW anti-legionella setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_antilegionella_setpoint"] = {
+            "address": _zone_addr(668, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 669 - Swimming pool setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_swimming_pool_setpoint"] = {
+            "address": _zone_addr(669, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 670 - Process heat setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_process_heat_setpoint"] = {
+            "address": _zone_addr(670, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 671 - Heating control strategy (ENUM8)
+        registers[f"{prefix}_heating_control_strategy"] = {
+            "address": _zone_addr(671, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # 672 - Max flow temperature setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_max_flow_setpoint"] = {
+            "address": _zone_addr(672, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 673 - Cooling mixing circuit flow setpoint (UINT16, 0.01°C)
+        registers[f"{prefix}_cooling_mixing_setpoint"] = {
+            "address": _zone_addr(673, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 676 - Heating curve footpoint night (UINT16, 0.1°C)
+        registers[f"{prefix}_heating_curve_footpoint_night"] = {
+            "address": _zone_addr(676, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 677 - Max preheat time (UINT16, minutes)
+        registers[f"{prefix}_max_preheat_time"] = {
+            "address": _zone_addr(677, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # 678 - Mixing valve shift (UINT16, 0.01°C)
+        registers[f"{prefix}_mixing_valve_shift"] = {
+            "address": _zone_addr(678, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 679 - Mixing valve bandwidth (UINT16, 0.01°C)
+        registers[f"{prefix}_mixing_valve_bandwidth"] = {
+            "address": _zone_addr(679, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 680 - DHW hysteresis (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_hysteresis"] = {
+            "address": _zone_addr(680, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 681 - DHW calorifier offset (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_calorifier_offset"] = {
+            "address": _zone_addr(681, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 682 - DHW calorifier setpoint raise (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_calorifier_raise"] = {
+            "address": _zone_addr(682, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 683 - Process heat hysteresis (UINT16, 0.01°C)
+        registers[f"{prefix}_process_heat_hysteresis"] = {
+            "address": _zone_addr(683, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 684 - Process heat offset (UINT16, 0.01°C)
+        registers[f"{prefix}_process_heat_offset"] = {
+            "address": _zone_addr(684, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 685 - Process heat calorifier setpoint raise (UINT16, 0.01°C)
+        registers[f"{prefix}_process_heat_calorifier_raise"] = {
+            "address": _zone_addr(685, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 686 - DHW calorifier hysteresis (UINT16, 0.01°C)
+        registers[f"{prefix}_dhw_calorifier_hysteresis"] = {
+            "address": _zone_addr(686, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 687 - Pump post-run delay (UINT8, minutes)
+        registers[f"{prefix}_pump_post_run"] = {
+            "address": _zone_addr(687, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # 688 - Time program selected (ENUM8)
+        registers[f"{prefix}_time_program_selected"] = {
+            "address": _zone_addr(688, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
         }
 
     return registers
@@ -1964,6 +2235,275 @@ def _build_zone_sensors(zone_count: int) -> dict[str, Any]:
             "unit": "°C",
             "state_class": "measurement",
             "icon": "mdi:chart-line",
+            "zone_number": zn,
+        }
+
+        # ===== New zone sensors from German spec 7740782-01 =====
+
+        sensors[f"{prefix}_zone_type"] = {
+            "register": f"{prefix}_zone_type",
+            "translation_key": "zone_type",
+            "device_class": "enum",
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:information-outline",
+            "enum_map": "iwr_zone_type",
+            "zone_number": zn,
+        }
+        for sp in range(1, 6):
+            sensors[f"{prefix}_comfort_setpoint_{sp}"] = {
+                "register": f"{prefix}_comfort_setpoint_{sp}",
+                "translation_key": f"zone_comfort_setpoint_{sp}",
+                "device_class": "temperature",
+                "unit": "°C",
+                "state_class": "measurement",
+                "icon": "mdi:home-thermometer",
+                "zone_number": zn,
+            }
+        sensors[f"{prefix}_night_setback"] = {
+            "register": f"{prefix}_night_setback",
+            "translation_key": "zone_night_setback",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:weather-night",
+            "zone_number": zn,
+        }
+        for sp in range(1, 6):
+            sensors[f"{prefix}_cooling_room_setpoint_{sp}"] = {
+                "register": f"{prefix}_cooling_room_setpoint_{sp}",
+                "translation_key": f"zone_cooling_room_setpoint_{sp}",
+                "device_class": "temperature",
+                "unit": "°C",
+                "state_class": "measurement",
+                "icon": "mdi:snowflake-thermometer",
+                "zone_number": zn,
+            }
+        sensors[f"{prefix}_cooling_night_setback"] = {
+            "register": f"{prefix}_cooling_night_setback",
+            "translation_key": "zone_cooling_night_setback",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:snowflake-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_holiday_setpoint"] = {
+            "register": f"{prefix}_holiday_setpoint",
+            "translation_key": "zone_holiday_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:beach",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_temporary_setpoint"] = {
+            "register": f"{prefix}_temporary_setpoint",
+            "translation_key": "zone_temporary_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:clock-fast",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_comfort_setpoint"] = {
+            "register": f"{prefix}_dhw_comfort_setpoint",
+            "translation_key": "zone_dhw_comfort_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_reduced_setpoint"] = {
+            "register": f"{prefix}_dhw_reduced_setpoint",
+            "translation_key": "zone_dhw_reduced_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_holiday_setpoint"] = {
+            "register": f"{prefix}_dhw_holiday_setpoint",
+            "translation_key": "zone_dhw_holiday_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_antilegionella_setpoint"] = {
+            "register": f"{prefix}_dhw_antilegionella_setpoint",
+            "translation_key": "zone_dhw_antilegionella_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:bacteria-outline",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_swimming_pool_setpoint"] = {
+            "register": f"{prefix}_swimming_pool_setpoint",
+            "translation_key": "zone_swimming_pool_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:pool-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_process_heat_setpoint"] = {
+            "register": f"{prefix}_process_heat_setpoint",
+            "translation_key": "zone_process_heat_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:fire",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_heating_control_strategy"] = {
+            "register": f"{prefix}_heating_control_strategy",
+            "translation_key": "zone_heating_control_strategy",
+            "device_class": "enum",
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:strategy",
+            "enum_map": "iwr_heating_control_strategy",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_max_flow_setpoint"] = {
+            "register": f"{prefix}_max_flow_setpoint",
+            "translation_key": "zone_max_flow_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:thermometer-chevron-up",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_cooling_mixing_setpoint"] = {
+            "register": f"{prefix}_cooling_mixing_setpoint",
+            "translation_key": "zone_cooling_mixing_setpoint",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:snowflake-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_heating_curve_footpoint_night"] = {
+            "register": f"{prefix}_heating_curve_footpoint_night",
+            "translation_key": "zone_heating_curve_footpoint_night",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:chart-line",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_max_preheat_time"] = {
+            "register": f"{prefix}_max_preheat_time",
+            "translation_key": "zone_max_preheat_time",
+            "device_class": None,
+            "unit": "min",
+            "state_class": "measurement",
+            "icon": "mdi:clock-start",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_mixing_valve_shift"] = {
+            "register": f"{prefix}_mixing_valve_shift",
+            "translation_key": "zone_mixing_valve_shift",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:valve",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_mixing_valve_bandwidth"] = {
+            "register": f"{prefix}_mixing_valve_bandwidth",
+            "translation_key": "zone_mixing_valve_bandwidth",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:valve",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_hysteresis"] = {
+            "register": f"{prefix}_dhw_hysteresis",
+            "translation_key": "zone_dhw_hysteresis",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_calorifier_offset"] = {
+            "register": f"{prefix}_dhw_calorifier_offset",
+            "translation_key": "zone_dhw_calorifier_offset",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_calorifier_raise"] = {
+            "register": f"{prefix}_dhw_calorifier_raise",
+            "translation_key": "zone_dhw_calorifier_raise",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_process_heat_hysteresis"] = {
+            "register": f"{prefix}_process_heat_hysteresis",
+            "translation_key": "zone_process_heat_hysteresis",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:fire",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_process_heat_offset"] = {
+            "register": f"{prefix}_process_heat_offset",
+            "translation_key": "zone_process_heat_offset",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:fire",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_process_heat_calorifier_raise"] = {
+            "register": f"{prefix}_process_heat_calorifier_raise",
+            "translation_key": "zone_process_heat_calorifier_raise",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:fire",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_dhw_calorifier_hysteresis"] = {
+            "register": f"{prefix}_dhw_calorifier_hysteresis",
+            "translation_key": "zone_dhw_calorifier_hysteresis",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:water-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_pump_post_run"] = {
+            "register": f"{prefix}_pump_post_run",
+            "translation_key": "zone_pump_post_run",
+            "device_class": None,
+            "unit": "min",
+            "state_class": "measurement",
+            "icon": "mdi:pump",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_time_program_selected"] = {
+            "register": f"{prefix}_time_program_selected",
+            "translation_key": "zone_time_program_selected",
+            "device_class": "enum",
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:clock-outline",
+            "enum_map": "iwr_time_program_selected",
             "zone_number": zn,
         }
 

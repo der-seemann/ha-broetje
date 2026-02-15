@@ -1344,6 +1344,137 @@
       },
       "zone_heating_curve_footpoint": {
         "name": "Heizkreis {zone} Heizkurve Fußpunkt"
+      },
+      "zone_type": {
+        "name": "Heizkreis {zone} Typ",
+        "state": {
+          "not_present": "Nicht vorhanden",
+          "ch_only": "Nur Heizung",
+          "ch_and_cooling": "Heizung + Kühlung",
+          "dhw": "Warmwasser",
+          "process_heat": "Prozesswärme",
+          "swimming_pool": "Schwimmbad",
+          "other": "Sonstige"
+        }
+      },
+      "zone_comfort_setpoint_1": {
+        "name": "Heizkreis {zone} Komfortsollwert 1"
+      },
+      "zone_comfort_setpoint_2": {
+        "name": "Heizkreis {zone} Komfortsollwert 2"
+      },
+      "zone_comfort_setpoint_3": {
+        "name": "Heizkreis {zone} Komfortsollwert 3"
+      },
+      "zone_comfort_setpoint_4": {
+        "name": "Heizkreis {zone} Komfortsollwert 4"
+      },
+      "zone_comfort_setpoint_5": {
+        "name": "Heizkreis {zone} Komfortsollwert 5"
+      },
+      "zone_night_setback": {
+        "name": "Heizkreis {zone} Nachtabsenkung"
+      },
+      "zone_cooling_room_setpoint_1": {
+        "name": "Heizkreis {zone} Kühlsollwert 1"
+      },
+      "zone_cooling_room_setpoint_2": {
+        "name": "Heizkreis {zone} Kühlsollwert 2"
+      },
+      "zone_cooling_room_setpoint_3": {
+        "name": "Heizkreis {zone} Kühlsollwert 3"
+      },
+      "zone_cooling_room_setpoint_4": {
+        "name": "Heizkreis {zone} Kühlsollwert 4"
+      },
+      "zone_cooling_room_setpoint_5": {
+        "name": "Heizkreis {zone} Kühlsollwert 5"
+      },
+      "zone_cooling_night_setback": {
+        "name": "Heizkreis {zone} Kühlung Nachtabsenkung"
+      },
+      "zone_holiday_setpoint": {
+        "name": "Heizkreis {zone} Feriensollwert"
+      },
+      "zone_temporary_setpoint": {
+        "name": "Heizkreis {zone} Temporärer Sollwert"
+      },
+      "zone_dhw_comfort_setpoint": {
+        "name": "Heizkreis {zone} TWW Komfortsollwert"
+      },
+      "zone_dhw_reduced_setpoint": {
+        "name": "Heizkreis {zone} TWW Reduzierter Sollwert"
+      },
+      "zone_dhw_holiday_setpoint": {
+        "name": "Heizkreis {zone} TWW Feriensollwert"
+      },
+      "zone_dhw_antilegionella_setpoint": {
+        "name": "Heizkreis {zone} TWW Anti-Legionellen-Sollwert"
+      },
+      "zone_swimming_pool_setpoint": {
+        "name": "Heizkreis {zone} Schwimmbad-Sollwert"
+      },
+      "zone_process_heat_setpoint": {
+        "name": "Heizkreis {zone} Prozesswärme-Sollwert"
+      },
+      "zone_heating_control_strategy": {
+        "name": "Heizkreis {zone} Regelstrategie",
+        "state": {
+          "auto": "Automatisch",
+          "room": "Raumregelung",
+          "outdoor": "Witterungsgeführt",
+          "outdoor_and_room": "Witterungsgeführt + Raum"
+        }
+      },
+      "zone_max_flow_setpoint": {
+        "name": "Heizkreis {zone} Max. Vorlaufsollwert"
+      },
+      "zone_cooling_mixing_setpoint": {
+        "name": "Heizkreis {zone} Kühlsollwert Mischkreis"
+      },
+      "zone_heating_curve_footpoint_night": {
+        "name": "Heizkreis {zone} Heizkurve Fußpunkt Nacht"
+      },
+      "zone_max_preheat_time": {
+        "name": "Heizkreis {zone} Max. Vorheizzeit"
+      },
+      "zone_mixing_valve_shift": {
+        "name": "Heizkreis {zone} Mischventil Verschiebung"
+      },
+      "zone_mixing_valve_bandwidth": {
+        "name": "Heizkreis {zone} Mischventil Bandbreite"
+      },
+      "zone_dhw_hysteresis": {
+        "name": "Heizkreis {zone} TWW Hysterese"
+      },
+      "zone_dhw_calorifier_offset": {
+        "name": "Heizkreis {zone} TWW Speicher Verschiebung"
+      },
+      "zone_dhw_calorifier_raise": {
+        "name": "Heizkreis {zone} TWW Speicher Sollwertanhebung"
+      },
+      "zone_process_heat_hysteresis": {
+        "name": "Heizkreis {zone} Prozesswärme Hysterese"
+      },
+      "zone_process_heat_offset": {
+        "name": "Heizkreis {zone} Prozesswärme Verschiebung"
+      },
+      "zone_process_heat_calorifier_raise": {
+        "name": "Heizkreis {zone} Prozesswärme Sollwertanhebung"
+      },
+      "zone_dhw_calorifier_hysteresis": {
+        "name": "Heizkreis {zone} TWW Speicher Hysterese"
+      },
+      "zone_pump_post_run": {
+        "name": "Heizkreis {zone} Pumpennachlauf"
+      },
+      "zone_time_program_selected": {
+        "name": "Heizkreis {zone} Zeitprogramm",
+        "state": {
+          "time_program_1": "Zeitprogramm 1",
+          "time_program_2": "Zeitprogramm 2",
+          "time_program_3": "Zeitprogramm 3"
+        }
       }
     },
     "binary_sensor": {

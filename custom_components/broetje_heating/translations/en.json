@@ -1344,6 +1344,137 @@
       },
       "zone_heating_curve_footpoint": {
         "name": "Zone {zone} heating curve footpoint"
+      },
+      "zone_type": {
+        "name": "Zone {zone} type",
+        "state": {
+          "not_present": "Not present",
+          "ch_only": "CH only",
+          "ch_and_cooling": "CH and cooling",
+          "dhw": "DHW",
+          "process_heat": "Process heat",
+          "swimming_pool": "Swimming pool",
+          "other": "Other"
+        }
+      },
+      "zone_comfort_setpoint_1": {
+        "name": "Zone {zone} comfort setpoint 1"
+      },
+      "zone_comfort_setpoint_2": {
+        "name": "Zone {zone} comfort setpoint 2"
+      },
+      "zone_comfort_setpoint_3": {
+        "name": "Zone {zone} comfort setpoint 3"
+      },
+      "zone_comfort_setpoint_4": {
+        "name": "Zone {zone} comfort setpoint 4"
+      },
+      "zone_comfort_setpoint_5": {
+        "name": "Zone {zone} comfort setpoint 5"
+      },
+      "zone_night_setback": {
+        "name": "Zone {zone} night setback"
+      },
+      "zone_cooling_room_setpoint_1": {
+        "name": "Zone {zone} cooling setpoint 1"
+      },
+      "zone_cooling_room_setpoint_2": {
+        "name": "Zone {zone} cooling setpoint 2"
+      },
+      "zone_cooling_room_setpoint_3": {
+        "name": "Zone {zone} cooling setpoint 3"
+      },
+      "zone_cooling_room_setpoint_4": {
+        "name": "Zone {zone} cooling setpoint 4"
+      },
+      "zone_cooling_room_setpoint_5": {
+        "name": "Zone {zone} cooling setpoint 5"
+      },
+      "zone_cooling_night_setback": {
+        "name": "Zone {zone} cooling night setback"
+      },
+      "zone_holiday_setpoint": {
+        "name": "Zone {zone} holiday setpoint"
+      },
+      "zone_temporary_setpoint": {
+        "name": "Zone {zone} temporary setpoint"
+      },
+      "zone_dhw_comfort_setpoint": {
+        "name": "Zone {zone} DHW comfort setpoint"
+      },
+      "zone_dhw_reduced_setpoint": {
+        "name": "Zone {zone} DHW reduced setpoint"
+      },
+      "zone_dhw_holiday_setpoint": {
+        "name": "Zone {zone} DHW holiday setpoint"
+      },
+      "zone_dhw_antilegionella_setpoint": {
+        "name": "Zone {zone} DHW anti-legionella setpoint"
+      },
+      "zone_swimming_pool_setpoint": {
+        "name": "Zone {zone} swimming pool setpoint"
+      },
+      "zone_process_heat_setpoint": {
+        "name": "Zone {zone} process heat setpoint"
+      },
+      "zone_heating_control_strategy": {
+        "name": "Zone {zone} heating control strategy",
+        "state": {
+          "auto": "Automatic",
+          "room": "Room control",
+          "outdoor": "Weather-compensated",
+          "outdoor_and_room": "Weather-compensated + room"
+        }
+      },
+      "zone_max_flow_setpoint": {
+        "name": "Zone {zone} max flow setpoint"
+      },
+      "zone_cooling_mixing_setpoint": {
+        "name": "Zone {zone} cooling mixing circuit setpoint"
+      },
+      "zone_heating_curve_footpoint_night": {
+        "name": "Zone {zone} heating curve footpoint night"
+      },
+      "zone_max_preheat_time": {
+        "name": "Zone {zone} max preheat time"
+      },
+      "zone_mixing_valve_shift": {
+        "name": "Zone {zone} mixing valve shift"
+      },
+      "zone_mixing_valve_bandwidth": {
+        "name": "Zone {zone} mixing valve bandwidth"
+      },
+      "zone_dhw_hysteresis": {
+        "name": "Zone {zone} DHW hysteresis"
+      },
+      "zone_dhw_calorifier_offset": {
+        "name": "Zone {zone} DHW calorifier offset"
+      },
+      "zone_dhw_calorifier_raise": {
+        "name": "Zone {zone} DHW calorifier setpoint raise"
+      },
+      "zone_process_heat_hysteresis": {
+        "name": "Zone {zone} process heat hysteresis"
+      },
+      "zone_process_heat_offset": {
+        "name": "Zone {zone} process heat offset"
+      },
+      "zone_process_heat_calorifier_raise": {
+        "name": "Zone {zone} process heat calorifier raise"
+      },
+      "zone_dhw_calorifier_hysteresis": {
+        "name": "Zone {zone} DHW calorifier hysteresis"
+      },
+      "zone_pump_post_run": {
+        "name": "Zone {zone} pump post-run"
+      },
+      "zone_time_program_selected": {
+        "name": "Zone {zone} time program",
+        "state": {
+          "time_program_1": "Time program 1",
+          "time_program_2": "Time program 2",
+          "time_program_3": "Time program 3"
+        }
       }
     },
     "binary_sensor": {
