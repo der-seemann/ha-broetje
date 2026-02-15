@@ -65,9 +65,9 @@ class BroetjeOptionsFlow(OptionsFlow):
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Required(
-                        CONF_SCAN_INTERVAL, default=current_interval
-                    ): vol.All(int, vol.Range(min=10, max=3600)),
+                    vol.Required(CONF_SCAN_INTERVAL, default=current_interval): vol.All(
+                        int, vol.Range(min=10, max=3600)
+                    ),
                 }
             ),
         )

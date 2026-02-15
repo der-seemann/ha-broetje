@@ -61,9 +61,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
     return True
 
 
-async def _async_update_options(
-    hass: HomeAssistant, entry: BroetjeConfigEntry
-) -> None:
+async def _async_update_options(hass: HomeAssistant, entry: BroetjeConfigEntry) -> None:
     """Handle options update."""
     coordinator: BroetjeModbusCoordinator = entry.runtime_data
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
