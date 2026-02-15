@@ -90,9 +90,14 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         self._value_format = sensor_config.get("value_format")
         self._device_categories = sensor_config.get("device_categories", {})
 
-        # Support zone number placeholders in translation strings
+        # Support zone/board number placeholders in translation strings
+        placeholders: dict[str, str] = {}
         if zone_number := sensor_config.get("zone_number"):
-            self._attr_translation_placeholders = {"zone": str(zone_number)}
+            placeholders["zone"] = str(zone_number)
+        if board_number := sensor_config.get("board_number"):
+            placeholders["board"] = str(board_number)
+        if placeholders:
+            self._attr_translation_placeholders = placeholders
 
         self._attr_device_class = None
         self._enum_map = None

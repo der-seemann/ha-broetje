@@ -870,8 +870,32 @@
       "controller_stop_setpoint": {
         "name": "Reglerstopp Sollwert"
       },
+      "gateway_device_type": {
+        "name": "Gateway Gerätetyp"
+      },
       "zone_count": {
         "name": "Erkannte Heizkreise"
+      },
+      "zones_disabled": {
+        "name": "Deaktivierte Heizkreise"
+      },
+      "zones_ch": {
+        "name": "Heizkreise (nur Heizung)"
+      },
+      "zones_ch_cooling": {
+        "name": "Heiz-/Kühlkreise"
+      },
+      "zones_dhw": {
+        "name": "TWW-Kreise"
+      },
+      "zones_process_heat": {
+        "name": "Prozesswärme-Kreise"
+      },
+      "zones_swimming_pool": {
+        "name": "Schwimmbad-Kreise"
+      },
+      "zones_others": {
+        "name": "Sonstige Kreise"
       },
       "control_power": {
         "name": "Steuerung Leistungssollwert"
@@ -1475,6 +1499,38 @@
           "time_program_2": "Zeitprogramm 2",
           "time_program_3": "Zeitprogramm 3"
         }
+      },
+      "zone_outside_temp": {
+        "name": "Heizkreis {zone} Außentemperatur"
+      },
+      "zone_room_temp": {
+        "name": "Heizkreis {zone} Raumtemperatur"
+      },
+      "zone_room_temp_measured": {
+        "name": "Heizkreis {zone} Raumtemperatur gemessen"
+      },
+      "zone_heating_mode": {
+        "name": "Heizkreis {zone} Heizmodus",
+        "state": {
+          "standby": "Standby",
+          "heating": "Heizen",
+          "cooling": "Kühlen"
+        }
+      },
+      "board_device_type": {
+        "name": "Platine {board} Gerätetyp"
+      },
+      "board_software_version": {
+        "name": "Platine {board} Softwareversion"
+      },
+      "board_config_table_version": {
+        "name": "Platine {board} Konfigurationstabellenversion"
+      },
+      "board_hardware_version": {
+        "name": "Platine {board} Hardwareversion"
+      },
+      "board_article_number": {
+        "name": "Platine {board} Artikelnummer"
       }
     },
     "binary_sensor": {
@@ -1606,6 +1662,18 @@
       },
       "zone_flow_measurement": {
         "name": "Heizkreis {zone} Vorlaufmessung"
+      },
+      "zone_heat_demand": {
+        "name": "Heizkreis {zone} Wärmeanforderung"
+      },
+      "zone_mixing_valve_opening": {
+        "name": "Heizkreis {zone} Mischventil öffnend"
+      },
+      "zone_swimming_pool_pump": {
+        "name": "Heizkreis {zone} Schwimmbadpumpe"
+      },
+      "zone_electrical_backup_output": {
+        "name": "Heizkreis {zone} Elektro-Backup Ausgang"
       }
     }
   }

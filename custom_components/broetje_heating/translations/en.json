@@ -870,8 +870,32 @@
       "controller_stop_setpoint": {
         "name": "Controller stop setpoint"
       },
+      "gateway_device_type": {
+        "name": "Gateway device type"
+      },
       "zone_count": {
         "name": "Zones detected"
+      },
+      "zones_disabled": {
+        "name": "Disabled zones"
+      },
+      "zones_ch": {
+        "name": "CH zones"
+      },
+      "zones_ch_cooling": {
+        "name": "CH + cooling zones"
+      },
+      "zones_dhw": {
+        "name": "DHW zones"
+      },
+      "zones_process_heat": {
+        "name": "Process heat zones"
+      },
+      "zones_swimming_pool": {
+        "name": "Swimming pool zones"
+      },
+      "zones_others": {
+        "name": "Other zones"
       },
       "control_power": {
         "name": "Control power setpoint"
@@ -1475,6 +1499,38 @@
           "time_program_2": "Time program 2",
           "time_program_3": "Time program 3"
         }
+      },
+      "zone_outside_temp": {
+        "name": "Zone {zone} outdoor temperature"
+      },
+      "zone_room_temp": {
+        "name": "Zone {zone} room temperature"
+      },
+      "zone_room_temp_measured": {
+        "name": "Zone {zone} room temperature measured"
+      },
+      "zone_heating_mode": {
+        "name": "Zone {zone} heating mode",
+        "state": {
+          "standby": "Standby",
+          "heating": "Heating",
+          "cooling": "Cooling"
+        }
+      },
+      "board_device_type": {
+        "name": "Board {board} device type"
+      },
+      "board_software_version": {
+        "name": "Board {board} software version"
+      },
+      "board_config_table_version": {
+        "name": "Board {board} config table version"
+      },
+      "board_hardware_version": {
+        "name": "Board {board} hardware version"
+      },
+      "board_article_number": {
+        "name": "Board {board} article number"
       }
     },
     "binary_sensor": {
@@ -1606,6 +1662,18 @@
       },
       "zone_flow_measurement": {
         "name": "Zone {zone} flow measurement"
+      },
+      "zone_heat_demand": {
+        "name": "Zone {zone} heat demand"
+      },
+      "zone_mixing_valve_opening": {
+        "name": "Zone {zone} mixing valve opening"
+      },
+      "zone_swimming_pool_pump": {
+        "name": "Zone {zone} swimming pool pump"
+      },
+      "zone_electrical_backup_output": {
+        "name": "Zone {zone} electrical backup output"
       }
     }
   }

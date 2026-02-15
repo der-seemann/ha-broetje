@@ -243,6 +243,13 @@ IWR_ON_OFF: Final = {
     1: "on",
 }
 
+# Zone current heating mode (register 1109 etc.)
+IWR_ZONE_HEATING_MODE: Final = {
+    0: "standby",
+    1: "heating",
+    2: "cooling",
+}
+
 # Zone type (register 640 etc.)
 IWR_ZONE_TYPE: Final = {
     0: "not_present",
@@ -292,6 +299,7 @@ IWR_ENUM_MAPS: Final = {
     "iwr_on_off": IWR_ON_OFF,
     "iwr_cooling_enabled": IWR_COOLING_ENABLED,
     "iwr_zone_type": IWR_ZONE_TYPE,
+    "iwr_zone_heating_mode": IWR_ZONE_HEATING_MODE,
     "iwr_heating_control_strategy": IWR_HEATING_CONTROL_STRATEGY,
     "iwr_time_program_selected": IWR_TIME_PROGRAM_SELECTED,
 }
@@ -332,9 +340,67 @@ ZONE_ADDRESSES: Final = {
 # ===== Static Register Map (non-zone registers) =====
 
 _IWR_STATIC_REGISTER_MAP: Final = {
+    # --- Device Information GTW-08 (from German spec 7740782-01) ---
+    "gateway_device_type": {
+        "address": 11,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     # --- Zone Detection (Tab.24) ---
     "zone_count": {
         "address": 189,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    # --- Zone Count Subtypes (from German spec 7740782-01) ---
+    "zones_disabled": {
+        "address": 190,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_ch": {
+        "address": 191,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_ch_cooling": {
+        "address": 192,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_dhw": {
+        "address": 193,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_process_heat": {
+        "address": 194,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_swimming_pool": {
+        "address": 195,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "zones_others": {
+        "address": 196,
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint16",
@@ -1017,10 +1083,76 @@ _IWR_STATIC_REGISTER_MAP: Final = {
 # ===== Static Sensor Definitions =====
 
 _IWR_STATIC_SENSORS: Final = {
+    # --- Device Information GTW-08 (from German spec 7740782-01) ---
+    "gateway_device_type": {
+        "register": "gateway_device_type",
+        "translation_key": "gateway_device_type",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:chip",
+    },
     # --- Zone Detection (Tab.24) ---
     "zone_count": {
         "register": "zone_count",
         "translation_key": "zone_count",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    # --- Zone Count Subtypes (from German spec 7740782-01) ---
+    "zones_disabled": {
+        "register": "zones_disabled",
+        "translation_key": "zones_disabled",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_ch": {
+        "register": "zones_ch",
+        "translation_key": "zones_ch",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_ch_cooling": {
+        "register": "zones_ch_cooling",
+        "translation_key": "zones_ch_cooling",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_dhw": {
+        "register": "zones_dhw",
+        "translation_key": "zones_dhw",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_process_heat": {
+        "register": "zones_process_heat",
+        "translation_key": "zones_process_heat",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_swimming_pool": {
+        "register": "zones_swimming_pool",
+        "translation_key": "zones_swimming_pool",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:counter",
+    },
+    "zones_others": {
+        "register": "zones_others",
+        "translation_key": "zones_others",
         "device_class": None,
         "unit": None,
         "state_class": None,
@@ -2100,6 +2232,69 @@ def _build_zone_registers(zone_count: int) -> dict[str, Any]:
             "scale": 1,
         }
 
+        # ===== Zone measurements (from German spec 7740782-01) =====
+
+        # 1103 - Zone outdoor temperature (INT16, 0.01°C)
+        registers[f"{prefix}_outside_temp"] = {
+            "address": _zone_addr(1103, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "int16",
+            "scale": IWR_SCALE_TEMP,
+        }
+        # 1104 - Zone room temperature (INT16, 0.1°C)
+        registers[f"{prefix}_room_temp"] = {
+            "address": _zone_addr(1104, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "int16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 1105 - Zone room temperature measured (INT16, 0.1°C)
+        registers[f"{prefix}_room_temp_measured"] = {
+            "address": _zone_addr(1105, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "int16",
+            "scale": IWR_SCALE_ROOM_TEMP,
+        }
+        # 1106 - Zone heat demand on/off (ENUM8, 0=off/1=on)
+        registers[f"{prefix}_heat_demand"] = {
+            "address": _zone_addr(1106, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "bool",
+        }
+        # 1109 - Zone current heating mode (ENUM8)
+        registers[f"{prefix}_heating_mode"] = {
+            "address": _zone_addr(1109, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        # 1112 - Mixing valve opening (ENUM8, 0=no/1=yes)
+        registers[f"{prefix}_mixing_valve_opening"] = {
+            "address": _zone_addr(1112, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "bool",
+        }
+        # 1113 - Swimming pool secondary pump (ENUM8, 0=off/1=on)
+        registers[f"{prefix}_swimming_pool_pump"] = {
+            "address": _zone_addr(1113, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "bool",
+        }
+        # 1114 - Electrical backup output (ENUM8, 0=off/1=on)
+        registers[f"{prefix}_electrical_backup_output"] = {
+            "address": _zone_addr(1114, z),
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "bool",
+        }
+
     return registers
 
 
@@ -2507,6 +2702,45 @@ def _build_zone_sensors(zone_count: int) -> dict[str, Any]:
             "zone_number": zn,
         }
 
+        # ===== Zone measurements (from German spec 7740782-01) =====
+
+        sensors[f"{prefix}_outside_temp"] = {
+            "register": f"{prefix}_outside_temp",
+            "translation_key": "zone_outside_temp",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_room_temp"] = {
+            "register": f"{prefix}_room_temp",
+            "translation_key": "zone_room_temp",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:home-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_room_temp_measured"] = {
+            "register": f"{prefix}_room_temp_measured",
+            "translation_key": "zone_room_temp_measured",
+            "device_class": "temperature",
+            "unit": "°C",
+            "state_class": "measurement",
+            "icon": "mdi:home-thermometer",
+            "zone_number": zn,
+        }
+        sensors[f"{prefix}_heating_mode"] = {
+            "register": f"{prefix}_heating_mode",
+            "translation_key": "zone_heating_mode",
+            "device_class": "enum",
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:thermostat",
+            "enum_map": "iwr_zone_heating_mode",
+            "zone_number": zn,
+        }
+
     return sensors
 
 
@@ -2531,7 +2765,149 @@ def _build_zone_binary_sensors(zone_count: int) -> dict[str, Any]:
             "zone_number": zn,
         }
 
+        # ===== Zone binary measurements (from German spec 7740782-01) =====
+
+        binary_sensors[f"{prefix}_heat_demand"] = {
+            "register": f"{prefix}_heat_demand",
+            "translation_key": "zone_heat_demand",
+            "device_class": "heat",
+            "zone_number": zn,
+        }
+        binary_sensors[f"{prefix}_mixing_valve_opening"] = {
+            "register": f"{prefix}_mixing_valve_opening",
+            "translation_key": "zone_mixing_valve_opening",
+            "device_class": None,
+            "icon": "mdi:valve-open",
+            "zone_number": zn,
+        }
+        binary_sensors[f"{prefix}_swimming_pool_pump"] = {
+            "register": f"{prefix}_swimming_pool_pump",
+            "translation_key": "zone_swimming_pool_pump",
+            "device_class": "running",
+            "icon": "mdi:pool",
+            "zone_number": zn,
+        }
+        binary_sensors[f"{prefix}_electrical_backup_output"] = {
+            "register": f"{prefix}_electrical_backup_output",
+            "translation_key": "zone_electrical_backup_output",
+            "device_class": "running",
+            "icon": "mdi:lightning-bolt",
+            "zone_number": zn,
+        }
+
     return binary_sensors
+
+
+# ===== Board Info Builders (System Discovery, addresses 129-188) =====
+
+_BOARD_COUNT: Final = 10  # GTW-08 supports up to 10 electronic boards
+
+
+def _build_board_registers() -> dict[str, Any]:
+    """Generate register definitions for board info (boards 1..10).
+
+    Each board occupies 6 registers starting at 129 + 6*(n-1):
+      DeviceType (uint16), SoftwareVersion (uint16),
+      ConfigTableVersion (uint16), HardwareVersion (uint16),
+      ArticleNumber (uint32 = 2 registers).
+    """
+    registers: dict[str, Any] = {}
+    for n in range(1, _BOARD_COUNT + 1):
+        base = 129 + 6 * (n - 1)
+        prefix = f"board{n}"
+
+        registers[f"{prefix}_device_type"] = {
+            "address": base,
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        registers[f"{prefix}_software_version"] = {
+            "address": base + 1,
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        registers[f"{prefix}_config_table_version"] = {
+            "address": base + 2,
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        registers[f"{prefix}_hardware_version"] = {
+            "address": base + 3,
+            "type": REG_HOLDING,
+            "count": 1,
+            "data_type": "uint16",
+            "scale": 1,
+        }
+        registers[f"{prefix}_article_number"] = {
+            "address": base + 4,
+            "type": REG_HOLDING,
+            "count": 2,
+            "data_type": "uint32",
+            "scale": 1,
+        }
+
+    return registers
+
+
+def _build_board_sensors() -> dict[str, Any]:
+    """Generate sensor definitions for board info (boards 1..10)."""
+    sensors: dict[str, Any] = {}
+    for n in range(1, _BOARD_COUNT + 1):
+        prefix = f"board{n}"
+
+        sensors[f"{prefix}_device_type"] = {
+            "register": f"{prefix}_device_type",
+            "translation_key": "board_device_type",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:chip",
+            "board_number": n,
+        }
+        sensors[f"{prefix}_software_version"] = {
+            "register": f"{prefix}_software_version",
+            "translation_key": "board_software_version",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:memory",
+            "board_number": n,
+        }
+        sensors[f"{prefix}_config_table_version"] = {
+            "register": f"{prefix}_config_table_version",
+            "translation_key": "board_config_table_version",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:memory",
+            "board_number": n,
+        }
+        sensors[f"{prefix}_hardware_version"] = {
+            "register": f"{prefix}_hardware_version",
+            "translation_key": "board_hardware_version",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:memory",
+            "board_number": n,
+        }
+        sensors[f"{prefix}_article_number"] = {
+            "register": f"{prefix}_article_number",
+            "translation_key": "board_article_number",
+            "device_class": None,
+            "unit": None,
+            "state_class": None,
+            "icon": "mdi:barcode",
+            "board_number": n,
+        }
+
+    return sensors
 
 
 # ===== Public API =====
@@ -2540,8 +2916,16 @@ def _build_zone_binary_sensors(zone_count: int) -> dict[str, Any]:
 def get_iwr_device_config(zone_count: int = 1) -> dict[str, Any]:
     """Build the complete IWR device config with the given number of zones."""
     # Merge static + dynamic registers
-    register_map = {**_IWR_STATIC_REGISTER_MAP, **_build_zone_registers(zone_count)}
-    sensors = {**_IWR_STATIC_SENSORS, **_build_zone_sensors(zone_count)}
+    register_map = {
+        **_IWR_STATIC_REGISTER_MAP,
+        **_build_zone_registers(zone_count),
+        **_build_board_registers(),
+    }
+    sensors = {
+        **_IWR_STATIC_SENSORS,
+        **_build_zone_sensors(zone_count),
+        **_build_board_sensors(),
+    }
     binary_sensors = {
         **_IWR_STATIC_BINARY_SENSORS,
         **_build_zone_binary_sensors(zone_count),
