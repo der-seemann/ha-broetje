@@ -1297,7 +1297,8 @@
           "dhw_layered": "DHW layered",
           "dhw_internal_tank": "DHW internal tank",
           "dhw_commercial_tank": "DHW commercial tank",
-          "occupied": "Occupied"
+          "occupied": "Occupied",
+          "dhw_primary": "DHW primary"
         }
       },
       "zone_device_type": {

@@ -201,6 +201,7 @@ IWR_ZONE_FUNCTION: Final = {
     11: "dhw_internal_tank",
     12: "dhw_commercial_tank",
     13: "occupied",
+    254: "dhw_primary",
 }
 
 # Device category lookup for 0xZZYY device type (Tab.26)

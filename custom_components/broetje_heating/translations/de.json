@@ -1297,7 +1297,8 @@
           "dhw_layered": "Warmwasser geschichtet",
           "dhw_internal_tank": "Interner Warmwasserspeicher",
           "dhw_commercial_tank": "Gewerblicher Warmwasserspeicher",
-          "occupied": "Belegt"
+          "occupied": "Belegt",
+          "dhw_primary": "TWW primär"
         }
       },
       "zone_device_type": {
