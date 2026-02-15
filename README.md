@@ -199,13 +199,23 @@ This integration uses:
 - [pymodbus](https://pymodbus.readthedocs.io/) ≥3.11.0 for Modbus TCP communication
 - Home Assistant's `DataUpdateCoordinator` for efficient polling
 
+### Pre-commit hook
+
+A pre-commit hook runs `ruff check` and `ruff format` on `custom_components/broetje_heating` before each commit. To set it up:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
 ### Contributing
 
 Contributions are welcome! Please:
 
 1. Fork the repository
 2. Create a feature branch
-3. Submit a pull request
+3. Run `ruff check` and `ruff format --check custom_components/broetje_heating` (or use the pre-commit hook)
+4. Submit a pull request
 
 ## Roadmap
 

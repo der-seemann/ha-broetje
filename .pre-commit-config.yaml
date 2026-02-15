@@ -1,0 +1,9 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.1
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^custom_components/broetje_heating/
+      - id: ruff-format
+        files: ^custom_components/broetje_heating/
