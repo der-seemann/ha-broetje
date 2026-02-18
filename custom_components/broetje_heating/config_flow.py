@@ -91,13 +91,13 @@ async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
 
         try:
             type_result = await client.read_holding_registers(
-                address=type_addr, count=1, slave=unit_id
+                address=type_addr, count=1, device_id=unit_id
             )
             if not type_result.isError():
                 zone_type = type_result.registers[0]
 
             func_result = await client.read_holding_registers(
-                address=func_addr, count=1, slave=unit_id
+                address=func_addr, count=1, device_id=unit_id
             )
             if not func_result.isError():
                 zone_function = func_result.registers[0]
