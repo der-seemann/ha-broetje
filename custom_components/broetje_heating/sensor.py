@@ -83,7 +83,11 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         sensor_config: dict,
     ) -> None:
         """Initialize the sensor."""
-        super().__init__(coordinator, entity_key)
+        super().__init__(
+            coordinator,
+            entity_key,
+            zone_number=sensor_config.get("zone_number"),
+        )
 
         self._register_key = sensor_config["register"]
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)

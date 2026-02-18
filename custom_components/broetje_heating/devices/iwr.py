@@ -9,6 +9,203 @@ from typing import Any, Final
 
 from ..const import REG_HOLDING
 
+# Entity classification: (entity_category, entity_registry_enabled_default)
+#   entity_category: None = primary, "diagnostic" = diagnostic
+#   entity_registry_enabled_default: True = enabled, False = disabled by default
+# Keys not listed default to (None, True).
+
+IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
+    # ===== Appliance core measurements — Primary =====
+    "flow_temperature": (None, True),
+    "return_temperature": (None, True),
+    "outside_temperature": (None, True),
+    "water_pressure": (None, True),
+    "actual_power": (None, True),
+    "cop": (None, True),
+    "system_power": (None, True),
+    "relative_power": (None, True),
+    "pump_speed": (None, True),
+    # ===== High-level status — Primary =====
+    "main_status": (None, True),
+    "sub_status": (None, True),
+    "seasonal_mode": (None, True),
+    "ch_enabled": (None, True),
+    "dhw_enabled": (None, True),
+    "cooling_enabled": (None, True),
+    "service_notification": (None, True),
+    # ===== Key binary status — Primary =====
+    "status_heat_pump_on": (None, True),
+    "status_flame_on": (None, True),
+    "status_service_required": (None, True),
+    "status_water_pressure_low": (None, True),
+    "error_present": (None, True),
+    "service_required": (None, True),
+    "output_pump": (None, True),
+    "output_dhw_active": (None, True),
+    "output_ch_active": (None, True),
+    "output_cooling_active": (None, True),
+    # ===== Energy totals — Primary =====
+    "total_energy_consumed": (None, True),
+    "total_thermal_delivered": (None, True),
+    "energy_consumed_ch": (None, True),
+    "energy_consumed_dhw": (None, True),
+    "thermal_delivered_ch": (None, True),
+    "thermal_delivered_dhw": (None, True),
+    "total_operating_hours": (None, True),
+    "total_starts": (None, True),
+    # ===== Appliance temperatures — Diagnostic, enabled =====
+    "hp_flow_temperature": ("diagnostic", True),
+    "hp_return_temperature": ("diagnostic", True),
+    "exhaust_gas_temperature": ("diagnostic", True),
+    "cu_flow_temperature": ("diagnostic", True),
+    "cu_return_temperature": ("diagnostic", True),
+    "cascade_flow_temperature": ("diagnostic", True),
+    "cascade_return_temperature": ("diagnostic", True),
+    "flow_rate": ("diagnostic", True),
+    # ===== Setpoints and control — Diagnostic, enabled =====
+    "ch_setpoint": ("diagnostic", True),
+    "internal_dhw_setpoint": ("diagnostic", True),
+    "dhw_flow_setpoint": ("diagnostic", True),
+    "cooling_setpoint": ("diagnostic", True),
+    "power_setpoint": ("diagnostic", True),
+    "cooling_forced": ("diagnostic", True),
+    # ===== Service counters — Diagnostic, enabled =====
+    "hours_since_service": ("diagnostic", True),
+    "hours_producing_since_service": ("diagnostic", True),
+    "starts_since_service": ("diagnostic", True),
+    # ===== Detailed energy breakdown — Diagnostic, enabled =====
+    "energy_consumed_cooling": ("diagnostic", True),
+    "energy_consumed_backup": ("diagnostic", True),
+    "thermal_delivered_cooling": ("diagnostic", True),
+    "energy_delivered_backup": ("diagnostic", True),
+    "backup1_starts": ("diagnostic", True),
+    "backup1_operating_hours": ("diagnostic", True),
+    "backup2_starts": ("diagnostic", True),
+    "backup2_operating_hours": ("diagnostic", True),
+    "mains_power_hours": ("diagnostic", True),
+    # ===== Appliance parameters — Diagnostic, disabled by default =====
+    "summer_winter_threshold": ("diagnostic", False),
+    "neutral_band": ("diagnostic", False),
+    "frost_protection_threshold": ("diagnostic", False),
+    "force_summer_mode": ("diagnostic", False),
+    "control_power": ("diagnostic", False),
+    "control_temperature": ("diagnostic", False),
+    "control_algorithm_type": ("diagnostic", False),
+    "control_heat_demand_type": ("diagnostic", False),
+    "cop_threshold": ("diagnostic", False),
+    "ionization_current": ("diagnostic", False),
+    # ===== Status backup indicators — Diagnostic, disabled by default =====
+    "status_backup1_on": ("diagnostic", False),
+    "status_backup2_on": ("diagnostic", False),
+    "status_dhw_backup_on": ("diagnostic", False),
+    "status_power_down_needed": ("diagnostic", False),
+    # ===== Bitfield internals — Diagnostic, disabled by default =====
+    "demand_direct_zones": ("diagnostic", False),
+    "demand_mixing_circuits": ("diagnostic", False),
+    "demand_valves_open_safety": ("diagnostic", False),
+    "demand_manual_heat": ("diagnostic", False),
+    "demand_cooling_allowed": ("diagnostic", False),
+    "demand_dhw_allowed": ("diagnostic", False),
+    "demand_heat_engine_active": ("diagnostic", False),
+    "output_3way_valve_open": ("diagnostic", False),
+    "output_3way_valve": ("diagnostic", False),
+    "output_3way_valve_closed": ("diagnostic", False),
+    # ===== Discovery / system metadata — Diagnostic, disabled by default =====
+    "gateway_device_type": ("diagnostic", False),
+    "zone_count": ("diagnostic", False),
+    "zones_disabled": ("diagnostic", False),
+    "zones_ch": ("diagnostic", False),
+    "zones_ch_cooling": ("diagnostic", False),
+    "zones_dhw": ("diagnostic", False),
+    "zones_process_heat": ("diagnostic", False),
+    "zones_swimming_pool": ("diagnostic", False),
+    "zones_others": ("diagnostic", False),
+    "devices_connected": ("diagnostic", False),
+    # ===== Board errors — Diagnostic, disabled by default =====
+    "board1_error_code": ("diagnostic", False),
+    "board1_error_severity": ("diagnostic", False),
+    "board2_error_code": ("diagnostic", False),
+    "board2_error_severity": ("diagnostic", False),
+    "board3_error_code": ("diagnostic", False),
+    "board3_error_severity": ("diagnostic", False),
+    "board4_error_code": ("diagnostic", False),
+    "board4_error_severity": ("diagnostic", False),
+}
+
+# Zone entity classification keyed by translation_key (zone-number-agnostic).
+IWR_ZONE_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
+    # ===== Zone essentials — Primary =====
+    "zone_room_temp": (None, True),
+    "zone_room_temp_measured": (None, True),
+    "zone_flow_temp": (None, True),
+    "zone_flow_setpoint": (None, True),
+    "zone_room_setpoint": (None, True),
+    "zone_heating_mode": (None, True),
+    "zone_pump": (None, True),
+    "zone_heat_demand": (None, True),
+    "zone_activity": (None, True),
+    "zone_operating_mode": (None, True),
+    # ===== Zone energy/runtime — Primary =====
+    "zone_pump_hours": (None, True),
+    "zone_pump_starts": (None, True),
+    # ===== Zone medium-advanced — Diagnostic, enabled =====
+    "zone_outside_temp": ("diagnostic", True),
+    "zone_time_program_selected": ("diagnostic", True),
+    "zone_night_setback": ("diagnostic", True),
+    "zone_heating_curve_gradient": ("diagnostic", True),
+    "zone_heating_curve_footpoint": ("diagnostic", True),
+    "zone_max_flow_setpoint": ("diagnostic", True),
+    "zone_room_setpoint_manual": ("diagnostic", True),
+    "zone_fixed_flow_setpoint": ("diagnostic", True),
+    # ===== Zone commissioning metadata — Diagnostic, disabled by default =====
+    "zone_function": ("diagnostic", False),
+    "zone_device_type": ("diagnostic", False),
+    "zone_type": ("diagnostic", False),
+    "zone_control_mode": ("diagnostic", False),
+    "zone_heating_control_strategy": ("diagnostic", False),
+    # ===== Zone deep tuning — Diagnostic, disabled by default =====
+    "zone_comfort_setpoint_1": ("diagnostic", False),
+    "zone_comfort_setpoint_2": ("diagnostic", False),
+    "zone_comfort_setpoint_3": ("diagnostic", False),
+    "zone_comfort_setpoint_4": ("diagnostic", False),
+    "zone_comfort_setpoint_5": ("diagnostic", False),
+    "zone_cooling_room_setpoint_1": ("diagnostic", False),
+    "zone_cooling_room_setpoint_2": ("diagnostic", False),
+    "zone_cooling_room_setpoint_3": ("diagnostic", False),
+    "zone_cooling_room_setpoint_4": ("diagnostic", False),
+    "zone_cooling_room_setpoint_5": ("diagnostic", False),
+    "zone_cooling_night_setback": ("diagnostic", False),
+    "zone_holiday_setpoint": ("diagnostic", False),
+    "zone_temporary_setpoint": ("diagnostic", False),
+    "zone_dhw_comfort_setpoint": ("diagnostic", False),
+    "zone_dhw_reduced_setpoint": ("diagnostic", False),
+    "zone_dhw_holiday_setpoint": ("diagnostic", False),
+    "zone_dhw_antilegionella_setpoint": ("diagnostic", False),
+    "zone_swimming_pool_setpoint": ("diagnostic", False),
+    "zone_process_heat_setpoint": ("diagnostic", False),
+    "zone_cooling_mixing_setpoint": ("diagnostic", False),
+    "zone_heating_curve_footpoint_night": ("diagnostic", False),
+    "zone_max_preheat_time": ("diagnostic", False),
+    "zone_mixing_valve_shift": ("diagnostic", False),
+    "zone_mixing_valve_bandwidth": ("diagnostic", False),
+    "zone_dhw_hysteresis": ("diagnostic", False),
+    "zone_dhw_calorifier_offset": ("diagnostic", False),
+    "zone_dhw_calorifier_raise": ("diagnostic", False),
+    "zone_process_heat_hysteresis": ("diagnostic", False),
+    "zone_process_heat_offset": ("diagnostic", False),
+    "zone_process_heat_calorifier_raise": ("diagnostic", False),
+    "zone_dhw_calorifier_hysteresis": ("diagnostic", False),
+    "zone_pump_post_run": ("diagnostic", False),
+    # ===== Zone low-level flags — Diagnostic, disabled by default =====
+    "zone_flow_measurement": ("diagnostic", False),
+    "zone_mixing_valve_opening": ("diagnostic", False),
+    "zone_swimming_pool_pump": ("diagnostic", False),
+    "zone_electrical_backup_output": ("diagnostic", False),
+}
+
+# Board discovery entities — all diagnostic, disabled by default.
+IWR_BOARD_ENTITY_CLASSIFICATION: Final[tuple[str | None, bool]] = ("diagnostic", False)
+
 # ===== IWR/GTW-08 Scale Factors =====
 # These differ from ISR scale factors
 IWR_SCALE_TEMP: Final = 0.01  # 0.01 °C resolution
@@ -2913,6 +3110,32 @@ def _build_board_sensors() -> dict[str, Any]:
 # ===== Public API =====
 
 
+def _build_entity_classification(
+    sensors: dict[str, Any],
+    binary_sensors: dict[str, Any],
+) -> dict[str, tuple[str | None, bool]]:
+    """Build a merged classification map for all IWR entities.
+
+    Static entities are looked up by entity key in IWR_STATIC_ENTITY_CLASSIFICATION.
+    Zone entities are looked up by translation_key in IWR_ZONE_ENTITY_CLASSIFICATION.
+    Board entities all get IWR_BOARD_ENTITY_CLASSIFICATION.
+    """
+    classification: dict[str, tuple[str | None, bool]] = {}
+
+    for entity_key, config in {**sensors, **binary_sensors}.items():
+        translation_key = config.get("translation_key", entity_key)
+
+        if entity_key in IWR_STATIC_ENTITY_CLASSIFICATION:
+            classification[entity_key] = IWR_STATIC_ENTITY_CLASSIFICATION[entity_key]
+        elif translation_key in IWR_ZONE_ENTITY_CLASSIFICATION:
+            classification[entity_key] = IWR_ZONE_ENTITY_CLASSIFICATION[translation_key]
+        elif translation_key.startswith("board_"):
+            classification[entity_key] = IWR_BOARD_ENTITY_CLASSIFICATION
+        # else: defaults to (None, True) at lookup time
+
+    return classification
+
+
 def get_iwr_device_config(zone_count: int = 1) -> dict[str, Any]:
     """Build the complete IWR device config with the given number of zones."""
     # Merge static + dynamic registers
@@ -2936,4 +3159,5 @@ def get_iwr_device_config(zone_count: int = 1) -> dict[str, Any]:
         "sensors": sensors,
         "binary_sensors": binary_sensors,
         "enum_maps": IWR_ENUM_MAPS,
+        "entity_classification": _build_entity_classification(sensors, binary_sensors),
     }

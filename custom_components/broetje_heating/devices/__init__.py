@@ -30,6 +30,7 @@ def get_device_config(
     if device_type == DeviceType.ISR:
         from .isr import (
             ISR_BINARY_SENSORS,
+            ISR_ENTITY_CLASSIFICATION,
             ISR_ENUM_MAPS,
             ISR_REGISTER_MAP,
             ISR_SENSORS,
@@ -40,6 +41,7 @@ def get_device_config(
             "sensors": ISR_SENSORS,
             "binary_sensors": ISR_BINARY_SENSORS,
             "enum_maps": ISR_ENUM_MAPS,
+            "entity_classification": ISR_ENTITY_CLASSIFICATION,
         }
 
     if device_type == DeviceType.IWR:

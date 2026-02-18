@@ -13,6 +13,132 @@ from ..const import (
     SCALE_TEMP,
 )
 
+# Entity classification: (entity_category, entity_registry_enabled_default)
+#   entity_category: None = primary, "diagnostic" = diagnostic
+#   entity_registry_enabled_default: True = enabled, False = disabled by default
+# Keys not listed default to (None, True).
+ISR_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
+    # ===== Heating Circuit 1 =====
+    # Primary (visible by default)
+    "hc1_flow_temperature": (None, True),
+    "hc1_room_temperature": (None, True),
+    "hc1_flow_setpoint": (None, True),
+    "hc1_room_setpoint": (None, True),
+    "hc1_status": (None, True),
+    "hc1_operating_mode": (None, True),
+    "hc1_pump": (None, True),
+    "hc1_enabled": (None, True),
+    "hc1_room_thermostat_demand": (None, True),
+    # Diagnostic, enabled
+    "hc1_pump_speed": ("diagnostic", True),
+    "hc1_comfort_setpoint": ("diagnostic", True),
+    "hc1_reduced_setpoint": ("diagnostic", True),
+    "hc1_mixer_boost": ("diagnostic", True),
+    "hc1_mixer_open": ("diagnostic", True),
+    "hc1_mixer_close": ("diagnostic", True),
+    # Diagnostic, disabled by default
+    "hc1_frost_protection_setpoint": ("diagnostic", False),
+    "hc1_heating_curve_slope": ("diagnostic", False),
+    "hc1_heating_curve_offset": ("diagnostic", False),
+    "hc1_summer_winter_threshold": ("diagnostic", False),
+    "hc1_day_heating_threshold": ("diagnostic", False),
+    "hc1_flow_setpoint_min": ("diagnostic", False),
+    "hc1_flow_setpoint_max": ("diagnostic", False),
+    "hc1_flow_setpoint_room_thermostat": ("diagnostic", False),
+    "hc1_room_influence": ("diagnostic", False),
+    "hc1_pump_speed_min": ("diagnostic", False),
+    "hc1_pump_speed_max": ("diagnostic", False),
+    # ===== DHW Settings =====
+    # Primary
+    "dhw_operating_mode": (None, True),
+    "dhw_setpoint": (None, True),
+    "dhw_status": (None, True),
+    "dhw_tank_temp_1": (None, True),
+    "dhw_tank_temp_2": (None, True),
+    "dhw_charging_temp": (None, True),
+    "dhw_circulation_temp": (None, True),
+    "dhw_pump": (None, True),
+    "dhw_circulation_pump": (None, True),
+    # Diagnostic, enabled
+    "dhw_current_setpoint": ("diagnostic", True),
+    "dhw_pump_speed": ("diagnostic", True),
+    "dhw_reduced_setpoint": ("diagnostic", True),
+    "dhw_intermediate_pump": ("diagnostic", True),
+    # Diagnostic, disabled by default
+    "dhw_release_mode": ("diagnostic", False),
+    "dhw_legionella_mode": ("diagnostic", False),
+    "dhw_legionella_interval": ("diagnostic", False),
+    "dhw_legionella_weekday": ("diagnostic", False),
+    "dhw_legionella_time": ("diagnostic", False),
+    "dhw_legionella_setpoint": ("diagnostic", False),
+    "dhw_legionella_dwell_time": ("diagnostic", False),
+    "dhw_circulation_setpoint": ("diagnostic", False),
+    "dhw_charging_time_limit": ("diagnostic", False),
+    "dhw_flow_setpoint_boost": ("diagnostic", False),
+    "dhw_switching_differential": ("diagnostic", False),
+    "dhw_charging_temp_max": ("diagnostic", False),
+    "dhw_intermediate_pump_speed": ("diagnostic", False),
+    # ===== Buffer Storage =====
+    # Primary
+    "buffer_temp_1": (None, True),
+    "buffer_temp_2": (None, True),
+    "buffer_status": (None, True),
+    "buffer_generator_valve": (None, True),
+    "buffer_return_valve": (None, True),
+    # Diagnostic, disabled by default
+    "buffer_temp_3": ("diagnostic", False),
+    "buffer_setpoint": ("diagnostic", False),
+    # ===== Boiler =====
+    # Primary
+    "boiler_temperature": (None, True),
+    "boiler_setpoint": (None, True),
+    "boiler_status": (None, True),
+    "boiler_burner_status": (None, True),
+    "boiler_pump": (None, True),
+    "boiler_return_temp": (None, True),
+    "boiler_power_relative": (None, True),
+    "boiler_gas_energy_total": (None, True),
+    "boiler_gas_energy_heating_total": (None, True),
+    "boiler_gas_energy_dhw_total": (None, True),
+    "boiler_operating_hours_stage1": (None, True),
+    "boiler_ion_message": (None, True),
+    # Diagnostic, enabled
+    "boiler_pump_speed": ("diagnostic", True),
+    "boiler_fan_speed": ("diagnostic", True),
+    "boiler_firing_phase": ("diagnostic", True),
+    "boiler_start_count_stage1": ("diagnostic", True),
+    "boiler_operating_hours_heating": ("diagnostic", True),
+    "boiler_operating_hours_dhw": ("diagnostic", True),
+    "boiler_gas_energy_heating": ("diagnostic", True),
+    "boiler_gas_energy_dhw": ("diagnostic", True),
+    "boiler_gas_energy": ("diagnostic", True),
+    # Diagnostic, disabled by default
+    "boiler_manual_setpoint": ("diagnostic", False),
+    "boiler_temp_lift_nominal": ("diagnostic", False),
+    "boiler_power_nominal": ("diagnostic", False),
+    "boiler_power_base": ("diagnostic", False),
+    "boiler_burner_hours_interval": ("diagnostic", False),
+    "boiler_burner_hours_since_maint": ("diagnostic", False),
+    "boiler_burner_starts_interval": ("diagnostic", False),
+    "boiler_burner_starts_since_maint": ("diagnostic", False),
+    "boiler_fan_speed_service_threshold": ("diagnostic", False),
+    "boiler_fan_setpoint": ("diagnostic", False),
+    "boiler_fan_control": ("diagnostic", False),
+    "boiler_ionization_current": ("diagnostic", False),
+    "boiler_generator_lock": ("diagnostic", False),
+    # ===== General Functions =====
+    # Primary
+    "outdoor_temperature": (None, True),
+    "alarm_relay_status": (None, True),
+    # Diagnostic, enabled
+    "burner_power_mode": ("diagnostic", True),
+    # Diagnostic, disabled by default
+    "controller_stop_setpoint": ("diagnostic", False),
+    "chimney_sweep_function": ("diagnostic", False),
+    "manual_operation": ("diagnostic", False),
+    "controller_stop_function": ("diagnostic", False),
+}
+
 # ===== ISR Enum Maps =====
 
 # Operating mode enumeration (Betriebsart)

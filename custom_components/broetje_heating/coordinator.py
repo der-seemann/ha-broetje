@@ -61,6 +61,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.sensors: dict[str, Any] = device_config["sensors"]
         self.binary_sensors: dict[str, Any] = device_config["binary_sensors"]
         self.enum_maps: dict[str, dict[int, str]] = device_config["enum_maps"]
+        self.entity_classification: dict[str, tuple[str | None, bool]] = (
+            device_config.get("entity_classification", {})
+        )
 
         # Device info
         self.device_serial: str | None = None

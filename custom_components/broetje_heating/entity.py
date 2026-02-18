@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
@@ -21,10 +22,12 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
         self,
         coordinator: BroetjeModbusCoordinator,
         entity_key: str,
+        zone_number: int | None = None,
     ) -> None:
         """Initialize the entity."""
         super().__init__(coordinator)
         self._entity_key = entity_key
+        self._zone_number = zone_number
 
         # Generate unique ID based on device and entity key
         device_id = (
@@ -32,11 +35,30 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
         )
         self._attr_unique_id = f"{device_id}_{entity_key}"
 
+        # Apply entity classification (category + enabled_default)
+        category, enabled = coordinator.entity_classification.get(
+            entity_key, (None, True)
+        )
+        if category == "diagnostic":
+            self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_entity_registry_enabled_default = enabled
+
     @property
     def device_info(self) -> DeviceInfo:
-        """Return device information."""
+        """Return device information, routing zone entities to sub-devices."""
+        entry_id = self.coordinator.config_entry.entry_id
+
+        if self._zone_number is not None:
+            return DeviceInfo(
+                identifiers={(DOMAIN, f"{entry_id}_zone_{self._zone_number}")},
+                name=f"Brötje Zone {self._zone_number}",
+                manufacturer=self.coordinator.device_manufacturer,
+                model=self.coordinator.device_model,
+                via_device=(DOMAIN, entry_id),
+            )
+
         return DeviceInfo(
-            identifiers={(DOMAIN, self.coordinator.config_entry.entry_id)},
+            identifiers={(DOMAIN, entry_id)},
             name=f"Brötje {self.coordinator.device_model}",
             manufacturer=self.coordinator.device_manufacturer,
             model=self.coordinator.device_model,

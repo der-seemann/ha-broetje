@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import logging
+import re
 import shutil
 from pathlib import Path
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 
 from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 from .coordinator import BroetjeModbusCoordinator
@@ -56,9 +58,37 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    # Clean up orphaned zone sub-devices when zone_count has been reduced
+    _cleanup_orphan_zone_devices(hass, entry)
+
     entry.async_on_unload(entry.add_update_listener(_async_update_options))
 
     return True
+
+
+def _cleanup_orphan_zone_devices(
+    hass: HomeAssistant, entry: BroetjeConfigEntry
+) -> None:
+    """Remove zone sub-devices that exceed the current zone_count."""
+    zone_count = entry.data.get("zone_count", 0)
+    device_registry = dr.async_get(hass)
+    entry_id = entry.entry_id
+
+    zone_id_pattern = re.compile(rf"^{re.escape(entry_id)}_zone_(\d+)$")
+
+    for device in dr.async_entries_for_config_entry(device_registry, entry_id):
+        for _, identifier in device.identifiers:
+            match = zone_id_pattern.match(identifier)
+            if match:
+                zone_num = int(match.group(1))
+                if zone_num > zone_count:
+                    _LOGGER.info(
+                        "Removing orphaned zone device: Zone %d (zone_count=%d)",
+                        zone_num,
+                        zone_count,
+                    )
+                    device_registry.async_remove_device(device.id)
+                break
 
 
 async def _async_update_options(hass: HomeAssistant, entry: BroetjeConfigEntry) -> None:
