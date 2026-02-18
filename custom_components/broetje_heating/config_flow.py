@@ -50,6 +50,7 @@ _ZONE_TYPE_LABELS: dict[int, str] = {
     4: "process heat",
     5: "swimming pool",
     254: "other",
+    255: "undefined",
 }
 
 _ZONE_FUNCTION_LABELS: dict[int, str] = {
@@ -68,7 +69,10 @@ _ZONE_FUNCTION_LABELS: dict[int, str] = {
     12: "DHW commercial tank",
     13: "occupied",
     254: "DHW primary",
+    255: "undefined",
 }
+
+_ZONE_TYPE_INACTIVE: frozenset[int] = frozenset({0, 255})
 
 
 class CannotConnect(Exception):
@@ -123,7 +127,7 @@ async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
         except Exception:
             _LOGGER.exception("Zone %d: exception reading registers", zn)
 
-        _LOGGER.warning(
+        _LOGGER.debug(
             "Zone detect: zone %d addr=%d/%d => type=%d, function=%d",
             zn,
             type_addr,
@@ -131,12 +135,12 @@ async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
             zone_type,
             zone_function,
         )
-        active = zone_type != 0
+        active = zone_type not in _ZONE_TYPE_INACTIVE
         type_label = _ZONE_TYPE_LABELS.get(zone_type, f"type {zone_type}")
         func_label = _ZONE_FUNCTION_LABELS.get(zone_function, f"func {zone_function}")
 
-        if zone_type == 0:
-            label = f"Zone {zn} — not present"
+        if zone_type in _ZONE_TYPE_INACTIVE:
+            label = f"Zone {zn} — {type_label}"
         else:
             label = f"Zone {zn} — {type_label}, {func_label}"
 
