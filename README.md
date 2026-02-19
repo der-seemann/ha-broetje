@@ -223,6 +223,10 @@ Contributions are welcome! Please:
 - [ ] Additional heating circuits for ISR (HC2, HC3)
 - [X] Brötje logo in official HA brand repo
 
+## Acknowledgements
+
+- [@der-seemann](https://github.com/der-seemann) — lot of ideas and feature suggestions
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

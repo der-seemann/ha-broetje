@@ -196,6 +196,10 @@ Beiträge sind willkommen! Bitte:
 - [ ] Zusätzliche Heizkreise für ISR (HK2, HK3)
 - [X] Brötje Logo im offiziellen HA brand repo
 
+## Danksagungen
+
+- [@der-seemann](https://github.com/der-seemann) — Viele ideen und Feature-Vorschläge
+
 ## Lizenz
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE](LICENSE) für Details.
