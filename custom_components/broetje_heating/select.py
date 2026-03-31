@@ -22,6 +22,9 @@ async def async_setup_entry(
     entities: list[BroetjeSelect] = []
 
     for entity_key, entity_config in coordinator.selects.items():
+        sub_device = entity_config.get("sub_device")
+        if sub_device is not None and sub_device not in coordinator.active_sub_devices:
+            continue
         entities.append(
             BroetjeSelect(
                 coordinator=coordinator,
