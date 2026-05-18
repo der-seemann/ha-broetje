@@ -13,8 +13,14 @@ Ziel: jedes Register aus der offiziellen GTW-08-Doku muss in der Integration / L
 
 - [x] `GTW-08_ModBus-Spec.pdf` gegen `custom_components/broetje_heating/register_map.csv` prüfen — Bericht: `.kiki/reports/GTW-08_ModBus-Spec_gap_report.md`
 - [x] `Modbus GTW-08 - Liste der Parameter 7740782-01 26072019.pdf` gegen `register_map.csv` prüfen — Bericht: `.kiki/reports/Modbus_GTW-08_Liste_der_Parameter_gap_report.md`
-- [ ] `GTW-08-Modbus-parameterlijst.xlsx` gegen `register_map.csv` prüfen
+- [x] `GTW-08-Modbus-parameterlijst.xlsx` gegen `register_map.csv` prüfen — Bericht: `.kiki/reports/GTW-08-Modbus-parameterlijst_gap_report.md`
 - [ ] Komplette Lückenliste erstellen und David schlafen lassen; noch keine RW-Implementierung
+
+### Ergebnis XLSX-Abgleich 2026-05-19
+- Extrakt: `.kiki/cache/extracted/GTW-08-Modbus-parameterlijst_extracted_registers.csv`
+- Bericht: `.kiki/reports/GTW-08-Modbus-parameterlijst_gap_report.md`
+- Kurzbefund: 537 Modbus-Zeilen extrahiert; 509 bewertete Quell-Blöcke mit Bedeutung; 314 Blöcke fehlen oder sind nicht vollständig von `register_map.csv` abgedeckt, davon 116 mit W-Zugriff in der Doku.
+- Reservierte/Future-use/blanke Zeilen wurden dokumentiert, aber nicht als Implementierungslücke gezählt. Keine Schreibfunktion implementiert oder getestet.
 
 ## Phase 2 — Register implementieren
 Für jedes in Phase 1 gefundene fehlende Register einzeln:
