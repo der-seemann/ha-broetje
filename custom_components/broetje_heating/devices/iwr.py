@@ -121,6 +121,7 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "control_temperature": ("diagnostic", False),
     "control_algorithm_type": ("diagnostic", False),
     "control_heat_demand_type": ("diagnostic", False),
+    "control_cooling_temperature": ("diagnostic", False),
     "cop_threshold": ("diagnostic", False),
     "hybrid_cop_threshold": ("diagnostic", False),
     "ionization_current": ("diagnostic", False),
@@ -748,6 +749,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+    },
+    "control_cooling_temperature": {
+        "address": 260,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
     },
     # --- Main Appliance Information (Tab.12) ---
     "system_power": {
@@ -1923,6 +1931,15 @@ _IWR_STATIC_SENSORS: Final = {
         "state_class": None,
         "icon": "mdi:fire-circle",
         "enum_map": "iwr_heat_demand_type",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "control_cooling_temperature": {
+        "register": "control_cooling_temperature",
+        "translation_key": "control_cooling_temperature",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "icon": "mdi:snowflake-thermometer",
         "sub_device": SUBDEV_BOILER,
     },
     # --- Main Appliance Sensors ---

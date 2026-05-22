@@ -63,6 +63,7 @@
 "Main Controller Monitoring","257","1","uint16","Control temperature setpoint","Steuerung Temperatursollwert","control_temperature","°C","0-65535","","0.01","GTW-08 spec","R/W","R"
 "Main Controller Monitoring","258","1","uint16","Control algorithm type (0=Remote temperature and power; 1=Remote power; 2=Remote temperature; 3=Monitoring only)","Steuerung Algorithmustyp (0=Fernsteuerung Temperatur und Leistung; 1=Fernsteuerung Leistung; 2=Fernsteuerung Temperatur; 3=Nur Überwachung)","control_algorithm_type","","0-65535","mdi:cog-outline","","GTW-08 spec","R/W","R"
 "Main Controller Monitoring","259","1","uint16","Control heat demand type (0=Standby; 7=Heating; 8=Cooling)","Steuerung Wärmeanforderungstyp (0=Bereitschaft; 7=Heizen; 8=Kühlen)","control_heat_demand_type","","0-65535","mdi:fire-circle","","GTW-08 spec","R/W","R"
+"Main Controller Monitoring","260","1","int16","Control cooling temperature setpoint","Steuerung Kühlsollwert","control_cooling_temperature","°C","-32768-32767","","0.01","GTW-08 spec","R/W","R"
 "Main Controller Monitoring","272","1","uint16","System power","Systemleistung","system_power","%","0-65535","mdi:gauge","","GTW-08 spec","R","R"
 "Main Controller Monitoring","273","1","int16","Flow temperature (CU)","Vorlauftemperatur (CU)","cu_flow_temperature","°C","-32768-32767","","0.01","German parameter list","R","R"
 "Main Controller Monitoring","274","1","int16","Return temperature (CU)","Rücklauftemperatur (CU)","cu_return_temperature","°C","-32768-32767","","0.01","German parameter list","R","R"

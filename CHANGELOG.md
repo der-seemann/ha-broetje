@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.0-beta.3
+- Fix: Main-Control-Register 260 für externe Kühl-Fernverwaltung ergänzt.
+
 ## v0.6.0-beta.2
 - Fix: `outdoor_unit_operation_mode` im Register-Map ergänzt, damit der letzte Batch-Read-Hinweis verschwindet.
 

@@ -1035,6 +1035,9 @@
           "cooling": "Kühlen"
         }
       },
+      "control_cooling_temperature": {
+        "name": "Steuerung Kühlsollwert"
+      },
       "system_power": {
         "name": "Systemleistung"
       },

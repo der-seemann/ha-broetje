@@ -1011,6 +1011,9 @@
           "cooling": "Cooling"
         }
       },
+      "control_cooling_temperature": {
+        "name": "Control cooling temperature setpoint"
+      },
       "system_power": {
         "name": "System power"
       },
