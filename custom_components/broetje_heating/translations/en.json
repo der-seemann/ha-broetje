@@ -1674,6 +1674,30 @@
       "demand_heat_engine_active": {
         "name": "Heat engine active"
       },
+      "special_status_shutdown": {
+        "name": "Shutdown"
+      },
+      "special_status_heating": {
+        "name": "Heating"
+      },
+      "special_status_cooling": {
+        "name": "Cooling"
+      },
+      "special_status_screed_drying": {
+        "name": "Screed drying"
+      },
+      "special_status_electric": {
+        "name": "Electric"
+      },
+      "special_status_frost_protection": {
+        "name": "Frost protection"
+      },
+      "special_status_summer_winter": {
+        "name": "Summer/winter"
+      },
+      "special_status_summer_neutral_band": {
+        "name": "Summer neutral band"
+      },
       "status_flame_on": {
         "name": "Flame on"
       },

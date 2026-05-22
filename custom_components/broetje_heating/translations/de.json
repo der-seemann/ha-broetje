@@ -1674,6 +1674,30 @@
       "demand_heat_engine_active": {
         "name": "Brennereinheit aktiv"
       },
+      "special_status_shutdown": {
+        "name": "Ausserbetriebsetzung"
+      },
+      "special_status_heating": {
+        "name": "Heizen"
+      },
+      "special_status_cooling": {
+        "name": "Kühlen"
+      },
+      "special_status_screed_drying": {
+        "name": "Estrichtrocknung"
+      },
+      "special_status_electric": {
+        "name": "Elektro"
+      },
+      "special_status_frost_protection": {
+        "name": "Frostschutz"
+      },
+      "special_status_summer_winter": {
+        "name": "Sommer/Winter"
+      },
+      "special_status_summer_neutral_band": {
+        "name": "Übergangszeit"
+      },
       "status_flame_on": {
         "name": "Flamme an"
       },
