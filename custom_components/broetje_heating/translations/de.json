@@ -1793,6 +1793,15 @@
       "status_heat_pump_on": {
         "name": "Wärmepumpe ein"
       },
+      "status_bitfields_number_1": {
+        "name": "Status-Bitfeld Nummer 1"
+      },
+      "status_bitfields_number_2": {
+        "name": "Status-Bitfeld Nummer 2"
+      },
+      "status_bitfields_number_3": {
+        "name": "Status-Bitfeld Nummer 3"
+      },
       "status_backup1_on": {
         "name": "Elektrischer Zusatzerzeuger 1 ein"
       },

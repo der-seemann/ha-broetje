@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.0-beta.4
+- Fix: HMI-Statusbitfelder 340-342 als rohe Diagnosticsensors ergänzt.
+
 ## v0.6.0-beta.3
 - Fix: Main-Control-Register 260 für externe Kühl-Fernverwaltung ergänzt.
 
