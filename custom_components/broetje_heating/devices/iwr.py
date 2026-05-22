@@ -517,6 +517,77 @@ IWR_DHW_ECO_COMFORT: Final = {
     1: "comfort_hp_boiler",
 }
 
+# Boiler / appliance enums from the GTW-08 parameter list.
+IWR_INTERNAL_HEAT_DEMAND_TYPE: Final = {
+    0: "none",
+    1: "dhw_primary",
+    2: "dhw_high_priority",
+    3: "process_heat",
+    4: "screed_drying",
+    5: "dhw_medium_priority",
+    6: "dhw_low_priority",
+    7: "central_heating",
+    8: "cooling",
+    9: "electrical_active",
+    10: "electrical_reactive",
+}
+
+IWR_OUTDOOR_UNIT_OPERATION_MODE: Final = {
+    0: "standby",
+    1: "heating",
+    2: "dhw_high_priority",
+    3: "cooling",
+}
+
+IWR_HYBRID_MODE_SELECTED: Final = {
+    0: "no_hybrid",
+    1: "hybrid_cost",
+    2: "hybrid_primary_energy",
+    3: "hybrid_co2",
+}
+
+IWR_LOGIC_CONTACT: Final = {
+    0: "open",
+    1: "closed",
+}
+
+IWR_BLOCKING_INPUT_SETTING: Final = {
+    0: "not_used",
+    1: "full_blocking",
+    2: "partial_blocking",
+    3: "user_reset_locking",
+    4: "backup_relieved",
+    5: "generator_relieved",
+    6: "generator_and_backup_relieved",
+    7: "high_tariff_low_tariff",
+    8: "photovoltaic_heat_pump_only",
+    9: "photovoltaic_heat_pump_and_backup",
+    10: "smart_grid_ready",
+    11: "heating_cooling",
+    12: "central_heating_blocking",
+}
+
+IWR_LOW_NOISE_MODE_STATE: Final = {
+    0: "no_silent_mode",
+    1: "silent_mode_level_1",
+    2: "silent_mode_level_2",
+    3: "silent_mode_level_3",
+    4: "silent_mode_level_4",
+    5: "silent_mode_level_5",
+}
+
+IWR_NO_YES: Final = {
+    0: "no",
+    1: "yes",
+}
+
+IWR_BACKUP_TYPE: Final = {
+    0: "no_backup",
+    1: "1_stage_electrical_backup",
+    2: "2_stages_electrical_backup",
+    3: "boiler_backup",
+}
+
 # Collected enum maps for IWR device
 IWR_ENUM_MAPS: Final = {
     "iwr_main_status": IWR_MAIN_STATUS,
@@ -537,6 +608,14 @@ IWR_ENUM_MAPS: Final = {
     "iwr_heating_control_strategy": IWR_HEATING_CONTROL_STRATEGY,
     "iwr_time_program_selected": IWR_TIME_PROGRAM_SELECTED,
     "iwr_dhw_eco_comfort": IWR_DHW_ECO_COMFORT,
+    "iwr_internal_heat_demand_type": IWR_INTERNAL_HEAT_DEMAND_TYPE,
+    "iwr_outdoor_unit_operation_mode": IWR_OUTDOOR_UNIT_OPERATION_MODE,
+    "iwr_hybrid_mode_selected": IWR_HYBRID_MODE_SELECTED,
+    "iwr_logic_contact": IWR_LOGIC_CONTACT,
+    "iwr_blocking_input_setting": IWR_BLOCKING_INPUT_SETTING,
+    "iwr_low_noise_mode_state": IWR_LOW_NOISE_MODE_STATE,
+    "iwr_no_yes": IWR_NO_YES,
+    "iwr_backup_type": IWR_BACKUP_TYPE,
 }
 
 # ===== Zone Address Tables =====
@@ -1755,6 +1834,90 @@ _IWR_STATIC_SENSORS: Final = {
         "icon": "mdi:water-pump",
         "sub_device": SUBDEV_BOILER,
     },
+    # --- Boiler / appliance monitoring additions (Tab. Boiler) ---
+    "boiler_alarm_code": {
+        "register": "boiler_alarm_code",
+        "translation_key": "boiler_alarm_code",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "internal_heat_demand_power": {
+        "register": "internal_heat_demand_power",
+        "translation_key": "internal_heat_demand_power",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:fire",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "internal_heat_demand_temperature_setpoint": {
+        "register": "internal_heat_demand_temperature_setpoint",
+        "translation_key": "internal_heat_demand_temperature_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "icon": "mdi:thermostat",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "internal_heat_demand_type": {
+        "register": "internal_heat_demand_type",
+        "translation_key": "internal_heat_demand_type",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:fire",
+        "enum_map": "iwr_internal_heat_demand_type",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "condenser_pump_speed": {
+        "register": "condenser_pump_speed",
+        "translation_key": "condenser_pump_speed",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:pump",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "condenser_pump_hours": {
+        "register": "condenser_pump_hours",
+        "translation_key": "condenser_pump_hours",
+        "device_class": "duration",
+        "unit": "h",
+        "state_class": "total_increasing",
+        "icon": "mdi:clock-outline",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "odu_current": {
+        "register": "odu_current",
+        "translation_key": "odu_current",
+        "device_class": "current",
+        "unit": "A",
+        "state_class": "measurement",
+        "icon": "mdi:current-ac-ac",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "outdoor_unit_operation_mode": {
+        "register": "outdoor_unit_operation_mode",
+        "translation_key": "outdoor_unit_operation_mode",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:hvac",
+        "enum_map": "iwr_outdoor_unit_operation_mode",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "system_flow_temperature_setpoint": {
+        "register": "system_flow_temperature_setpoint",
+        "translation_key": "system_flow_temperature_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "icon": "mdi:thermometer",
+        "sub_device": SUBDEV_BOILER,
+    },
     "main_status": {
         "register": "main_status",
         "translation_key": "main_status",
@@ -2096,6 +2259,34 @@ _IWR_STATIC_SENSORS: Final = {
         "device_class": "energy",
         "unit": "kWh",
         "state_class": "total_increasing",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "total_pump_starts": {
+        "register": "total_pump_starts",
+        "translation_key": "total_pump_starts",
+        "device_class": None,
+        "unit": None,
+        "state_class": "total_increasing",
+        "icon": "mdi:counter",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "heat_pump_defrost": {
+        "register": "heat_pump_defrost",
+        "translation_key": "heat_pump_defrost",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:snowflake-alert",
+        "enum_map": "iwr_no_yes",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "actual_relative_power_produced": {
+        "register": "actual_relative_power_produced",
+        "translation_key": "actual_relative_power_produced",
+        "device_class": None,
+        "unit": "%",
+        "state_class": "measurement",
+        "icon": "mdi:gauge",
         "sub_device": SUBDEV_BOILER,
     },
     # --- Appliance Enable/Disable (from German spec 7740782-01) ---
@@ -3685,6 +3876,156 @@ def _build_zone_numbers(zones: list[int]) -> dict[str, Any]:
     return numbers
 
 
+# Static (non-zone) number entities for the IWR device.
+_IWR_STATIC_NUMBERS: Final[dict[str, Any]] = {
+    # Boiler / hybrid settings and operating limits.
+    "hybrid_electricity_cost_high_tariff": {
+        "register": "hybrid_electricity_cost_high_tariff",
+        "translation_key": "hybrid_electricity_cost_high_tariff",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "hybrid_electricity_cost_low_tariff": {
+        "register": "hybrid_electricity_cost_low_tariff",
+        "translation_key": "hybrid_electricity_cost_low_tariff",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "fossil_energy_cost": {
+        "register": "fossil_energy_cost",
+        "translation_key": "fossil_energy_cost",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "electrical_co2_emission_heating_mode": {
+        "register": "electrical_co2_emission_heating_mode",
+        "translation_key": "electrical_co2_emission_heating_mode",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "electrical_co2_emission_dhw_mode": {
+        "register": "electrical_co2_emission_dhw_mode",
+        "translation_key": "electrical_co2_emission_dhw_mode",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "gas_or_oil_co2_emission": {
+        "register": "gas_or_oil_co2_emission",
+        "translation_key": "gas_or_oil_co2_emission",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "boiler_efficiency": {
+        "register": "boiler_efficiency",
+        "translation_key": "boiler_efficiency",
+        "device_class": None,
+        "unit": "%",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "cop_threshold_primary_energy": {
+        "register": "cop_threshold_primary_energy",
+        "translation_key": "cop_threshold_primary_energy",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "dhw_min_heating_time": {
+        "register": "dhw_min_heating_time",
+        "translation_key": "dhw_min_heating_time",
+        "device_class": None,
+        "unit": "h",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "dhw_max_production_time": {
+        "register": "dhw_max_production_time",
+        "translation_key": "dhw_max_production_time",
+        "device_class": None,
+        "unit": "h",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "hybrid_electricity_cost_high_tariff_accurate": {
+        "register": "hybrid_electricity_cost_high_tariff_accurate",
+        "translation_key": "hybrid_electricity_cost_high_tariff_accurate",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "hybrid_electricity_cost_low_tariff_accurate": {
+        "register": "hybrid_electricity_cost_low_tariff_accurate",
+        "translation_key": "hybrid_electricity_cost_low_tariff_accurate",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "fossil_energy_cost_accurate": {
+        "register": "fossil_energy_cost_accurate",
+        "translation_key": "fossil_energy_cost_accurate",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "outside_temperature_level_backup_blocked": {
+        "register": "outside_temperature_level_backup_blocked",
+        "translation_key": "outside_temperature_level_backup_blocked",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "next_generator_start_delay": {
+        "register": "next_generator_start_delay",
+        "translation_key": "next_generator_start_delay",
+        "device_class": None,
+        "unit": "min",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "minimum_outside_temperature_heat_pump_stopped": {
+        "register": "minimum_outside_temperature_heat_pump_stopped",
+        "translation_key": "minimum_outside_temperature_heat_pump_stopped",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "low_noise_start_time": {
+        "register": "low_noise_start_time",
+        "translation_key": "low_noise_start_time",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "low_noise_stop_time": {
+        "register": "low_noise_stop_time",
+        "translation_key": "low_noise_stop_time",
+        "device_class": None,
+        "unit": None,
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+}
+
+
 # Static (non-zone) select entities for the IWR device.
 _IWR_STATIC_SELECTS: Final[dict[str, Any]] = {
     # DP051 - DHW ECO or COMFORT setting (register 479, R/W)
@@ -3695,6 +4036,55 @@ _IWR_STATIC_SELECTS: Final[dict[str, Any]] = {
         "enum_map": "iwr_dhw_eco_comfort",
         "icon": "mdi:water-boiler",
         "sub_device": SUBDEV_HYBRID,
+    },
+    "hybrid_mode_selected": {
+        "register": "hybrid_mode_selected",
+        "translation_key": "hybrid_mode_selected",
+        "enum_map": "iwr_hybrid_mode_selected",
+        "icon": "mdi:flash",
+        "sub_device": SUBDEV_HYBRID,
+    },
+    "blocking_input_1_contact": {
+        "register": "blocking_input_1_contact",
+        "translation_key": "blocking_input_1_contact",
+        "enum_map": "iwr_logic_contact",
+        "icon": "mdi:toggle-switch",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "blocking_input_2_contact": {
+        "register": "blocking_input_2_contact",
+        "translation_key": "blocking_input_2_contact",
+        "enum_map": "iwr_logic_contact",
+        "icon": "mdi:toggle-switch",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "blocking_input_2_setting": {
+        "register": "blocking_input_2_setting",
+        "translation_key": "blocking_input_2_setting",
+        "enum_map": "iwr_blocking_input_setting",
+        "icon": "mdi:progress-alert",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "function_blocking_input": {
+        "register": "function_blocking_input",
+        "translation_key": "function_blocking_input",
+        "enum_map": "iwr_blocking_input_setting",
+        "icon": "mdi:progress-alert",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "backup_type": {
+        "register": "backup_type",
+        "translation_key": "backup_type",
+        "enum_map": "iwr_backup_type",
+        "icon": "mdi:backup-restore",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "heat_pump_silent_mode": {
+        "register": "heat_pump_silent_mode",
+        "translation_key": "heat_pump_silent_mode",
+        "enum_map": "iwr_low_noise_mode_state",
+        "icon": "mdi:volume-off",
+        "sub_device": SUBDEV_BOILER,
     },
 }
 
@@ -3798,7 +4188,7 @@ def get_iwr_device_config(zones: list[int] | None = None) -> dict[str, Any]:
         **_IWR_STATIC_BINARY_SENSORS,
         **_build_zone_binary_sensors(zones),
     }
-    numbers = _build_zone_numbers(zones)
+    numbers = {**_IWR_STATIC_NUMBERS, **_build_zone_numbers(zones)}
     selects = {**_IWR_STATIC_SELECTS, **_build_zone_selects(zones)}
     climates = _build_zone_climates(zones)
 

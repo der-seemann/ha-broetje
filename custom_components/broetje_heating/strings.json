@@ -670,6 +670,65 @@
       "boiler_fan_speed_service_threshold": {
         "name": "Fan speed service threshold"
       },
+      "boiler_alarm_code": {
+        "name": "Boiler alarm code"
+      },
+      "internal_heat_demand_power": {
+        "name": "Internal heat demand power"
+      },
+      "internal_heat_demand_temperature_setpoint": {
+        "name": "Internal heat demand temperature setpoint"
+      },
+      "internal_heat_demand_type": {
+        "name": "Internal heat demand type",
+        "state": {
+          "none": "None",
+          "dhw_primary": "DHW primary",
+          "dhw_high_priority": "DHW high priority",
+          "process_heat": "Process heat",
+          "screed_drying": "Screed drying",
+          "dhw_medium_priority": "DHW medium priority",
+          "dhw_low_priority": "DHW low priority",
+          "central_heating": "Central heating",
+          "cooling": "Cooling",
+          "electrical_active": "Electrical active",
+          "electrical_reactive": "Electrical reactive"
+        }
+      },
+      "condenser_pump_speed": {
+        "name": "Condenser pump speed"
+      },
+      "condenser_pump_hours": {
+        "name": "Condenser pump operating hours"
+      },
+      "odu_current": {
+        "name": "ODU actual current"
+      },
+      "outdoor_unit_operation_mode": {
+        "name": "Outdoor unit operation mode",
+        "state": {
+          "standby": "Standby",
+          "heating": "Heating",
+          "dhw_high_priority": "DHW high priority",
+          "cooling": "Cooling"
+        }
+      },
+      "system_flow_temperature_setpoint": {
+        "name": "System flow temperature setpoint"
+      },
+      "heat_pump_defrost": {
+        "name": "Heat pump defrost",
+        "state": {
+          "no": "No",
+          "yes": "Yes"
+        }
+      },
+      "total_pump_starts": {
+        "name": "Total pump starts"
+      },
+      "actual_relative_power_produced": {
+        "name": "Actual relative power produced"
+      },
       "boiler_status": {
         "name": "Boiler status",
         "state": {
@@ -1533,6 +1592,60 @@
       }
     },
     "number": {
+      "hybrid_electricity_cost_high_tariff": {
+        "name": "Hybrid electricity cost high tariff"
+      },
+      "hybrid_electricity_cost_low_tariff": {
+        "name": "Hybrid electricity cost low tariff"
+      },
+      "fossil_energy_cost": {
+        "name": "Fossil energy cost"
+      },
+      "electrical_co2_emission_heating_mode": {
+        "name": "Electrical CO2 emission heating mode"
+      },
+      "electrical_co2_emission_dhw_mode": {
+        "name": "Electrical CO2 emission DHW mode"
+      },
+      "gas_or_oil_co2_emission": {
+        "name": "Gas or oil CO2 emission"
+      },
+      "boiler_efficiency": {
+        "name": "Boiler efficiency"
+      },
+      "cop_threshold_primary_energy": {
+        "name": "COP threshold primary energy"
+      },
+      "dhw_min_heating_time": {
+        "name": "Minimum heating time before DHW production"
+      },
+      "dhw_max_production_time": {
+        "name": "Maximum DHW production time"
+      },
+      "hybrid_electricity_cost_high_tariff_accurate": {
+        "name": "Hybrid electricity cost high tariff accurate"
+      },
+      "hybrid_electricity_cost_low_tariff_accurate": {
+        "name": "Hybrid electricity cost low tariff accurate"
+      },
+      "fossil_energy_cost_accurate": {
+        "name": "Fossil energy cost accurate"
+      },
+      "outside_temperature_level_backup_blocked": {
+        "name": "Outside temperature level backup blocked"
+      },
+      "next_generator_start_delay": {
+        "name": "Next generator start delay"
+      },
+      "minimum_outside_temperature_heat_pump_stopped": {
+        "name": "Minimum outside temperature heat pump stopped"
+      },
+      "low_noise_start_time": {
+        "name": "Low noise start time"
+      },
+      "low_noise_stop_time": {
+        "name": "Low noise stop time"
+      },
       "zone_dhw_comfort_setpoint": {
         "name": "Zone {zone} DHW comfort setpoint"
       },
@@ -1556,6 +1669,92 @@
       }
     },
     "select": {
+      "dhw_eco_comfort_mode": {
+        "name": "DHW mode",
+        "state": {
+          "eco_hp_only": "Eco (HP only)",
+          "comfort_hp_boiler": "Comfort (HP + boiler)"
+        }
+      },
+      "hybrid_mode_selected": {
+        "name": "Hybrid mode selected",
+        "state": {
+          "no_hybrid": "No hybrid",
+          "hybrid_cost": "Hybrid cost",
+          "hybrid_primary_energy": "Hybrid primary energy",
+          "hybrid_co2": "Hybrid CO2"
+        }
+      },
+      "blocking_input_1_contact": {
+        "name": "Blocking input 1 contact",
+        "state": {
+          "open": "Open",
+          "closed": "Closed"
+        }
+      },
+      "blocking_input_2_contact": {
+        "name": "Blocking input 2 contact",
+        "state": {
+          "open": "Open",
+          "closed": "Closed"
+        }
+      },
+      "blocking_input_2_setting": {
+        "name": "Blocking input 2 setting",
+        "state": {
+          "not_used": "Not used",
+          "full_blocking": "Full blocking",
+          "partial_blocking": "Partial blocking",
+          "user_reset_locking": "User reset locking",
+          "backup_relieved": "Backup relieved",
+          "generator_relieved": "Generator relieved",
+          "generator_and_backup_relieved": "Generator and backup relieved",
+          "high_tariff_low_tariff": "High tariff / low tariff",
+          "photovoltaic_heat_pump_only": "Photovoltaic / heat pump only",
+          "photovoltaic_heat_pump_and_backup": "Photovoltaic / heat pump and backup",
+          "smart_grid_ready": "Smart grid ready",
+          "heating_cooling": "Heating / cooling",
+          "central_heating_blocking": "Central heating blocking"
+        }
+      },
+      "function_blocking_input": {
+        "name": "Function blocking input",
+        "state": {
+          "not_used": "Not used",
+          "full_blocking": "Full blocking",
+          "partial_blocking": "Partial blocking",
+          "user_reset_locking": "User reset locking",
+          "backup_relieved": "Backup relieved",
+          "generator_relieved": "Generator relieved",
+          "generator_and_backup_relieved": "Generator and backup relieved",
+          "high_tariff_low_tariff": "High tariff / low tariff",
+          "photovoltaic_heat_pump_only": "Photovoltaic / heat pump only",
+          "photovoltaic_heat_pump_and_backup": "Photovoltaic / heat pump and backup",
+          "smart_grid_ready": "Smart grid ready",
+          "heating_cooling": "Heating / cooling",
+          "central_heating_blocking": "Central heating blocking"
+        }
+      },
+      "backup_type": {
+        "name": "Backup type",
+        "state": {
+          "no_backup": "No backup",
+          "1_stage_electrical_backup": "1-stage electrical backup",
+          "2_stages_electrical_backup": "2-stage electrical backup",
+          "boiler_backup": "Boiler backup"
+        }
+      },
+      "heat_pump_silent_mode": {
+        "name": "Heat pump silent mode",
+        "state": {
+          "no_silent_mode": "No silent mode",
+          "silent_mode_level_1": "Silent mode level 1",
+          "silent_mode_level_2": "Silent mode level 2",
+          "silent_mode_level_3": "Silent mode level 3",
+          "silent_mode_level_4": "Silent mode level 4",
+          "silent_mode_level_5": "Silent mode level 5"
+        }
+      },
       "zone_control_mode": {
         "name": "Zone {zone} control mode",
         "state": {

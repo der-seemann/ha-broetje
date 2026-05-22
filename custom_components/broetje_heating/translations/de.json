@@ -670,6 +670,65 @@
       "boiler_fan_speed_service_threshold": {
         "name": "Gebläsedrehzahlschwelle Servicemeldung"
       },
+      "boiler_alarm_code": {
+        "name": "Kessel Alarmcode"
+      },
+      "internal_heat_demand_power": {
+        "name": "Interne Wärmeanforderung Leistung"
+      },
+      "internal_heat_demand_temperature_setpoint": {
+        "name": "Interne Wärmeanforderung Temperatursollwert"
+      },
+      "internal_heat_demand_type": {
+        "name": "Interne Wärmeanforderung Typ",
+        "state": {
+          "none": "Keine",
+          "dhw_primary": "TWW primär",
+          "dhw_high_priority": "TWW hohe Priorität",
+          "process_heat": "Prozesswärme",
+          "screed_drying": "Estrichtrocknung",
+          "dhw_medium_priority": "TWW mittlere Priorität",
+          "dhw_low_priority": "TWW niedrige Priorität",
+          "central_heating": "Heizbetrieb",
+          "cooling": "Kühlung",
+          "electrical_active": "Elektrisch aktiv",
+          "electrical_reactive": "Elektrisch reaktiv"
+        }
+      },
+      "condenser_pump_speed": {
+        "name": "Kondensatpumpe Drehzahl"
+      },
+      "condenser_pump_hours": {
+        "name": "Kondensatpumpe Betriebsstunden"
+      },
+      "odu_current": {
+        "name": "ODU aktueller Strom"
+      },
+      "outdoor_unit_operation_mode": {
+        "name": "Betriebsart Außengerät",
+        "state": {
+          "standby": "Standby",
+          "heating": "Heizen",
+          "dhw_high_priority": "TWW hohe Priorität",
+          "cooling": "Kühlung"
+        }
+      },
+      "system_flow_temperature_setpoint": {
+        "name": "System Vorlaufsollwert"
+      },
+      "heat_pump_defrost": {
+        "name": "Wärmepumpe Abtauung",
+        "state": {
+          "no": "Nein",
+          "yes": "Ja"
+        }
+      },
+      "total_pump_starts": {
+        "name": "Gesamtanzahl Pumpenstarts"
+      },
+      "actual_relative_power_produced": {
+        "name": "Aktuell erzeugte relative Leistung"
+      },
       "boiler_status": {
         "name": "Status Kessel",
         "state": {
@@ -1805,6 +1864,60 @@
       }
     },
     "number": {
+      "hybrid_electricity_cost_high_tariff": {
+        "name": "Hybrid-Strompreis Hochtarif"
+      },
+      "hybrid_electricity_cost_low_tariff": {
+        "name": "Hybrid-Strompreis Niedertarif"
+      },
+      "fossil_energy_cost": {
+        "name": "Fossilenergie-Kosten"
+      },
+      "electrical_co2_emission_heating_mode": {
+        "name": "Elektrische CO2-Emission Heizbetrieb"
+      },
+      "electrical_co2_emission_dhw_mode": {
+        "name": "Elektrische CO2-Emission TWW-Betrieb"
+      },
+      "gas_or_oil_co2_emission": {
+        "name": "Gas- oder Öl-CO2-Emission"
+      },
+      "boiler_efficiency": {
+        "name": "Kesselwirkungsgrad"
+      },
+      "cop_threshold_primary_energy": {
+        "name": "COP-Schwelle Primärenergie"
+      },
+      "dhw_min_heating_time": {
+        "name": "Minimale Heizzeit vor TWW-Bereitung"
+      },
+      "dhw_max_production_time": {
+        "name": "Maximale TWW-Bereitungszeit"
+      },
+      "hybrid_electricity_cost_high_tariff_accurate": {
+        "name": "Hybrid-Strompreis Hochtarif (genau)"
+      },
+      "hybrid_electricity_cost_low_tariff_accurate": {
+        "name": "Hybrid-Strompreis Niedertarif (genau)"
+      },
+      "fossil_energy_cost_accurate": {
+        "name": "Fossilenergie-Kosten (genau)"
+      },
+      "outside_temperature_level_backup_blocked": {
+        "name": "Außentemperaturschwelle Backup gesperrt"
+      },
+      "next_generator_start_delay": {
+        "name": "Verzögerung für den Start des nächsten Erzeugers"
+      },
+      "minimum_outside_temperature_heat_pump_stopped": {
+        "name": "Minimale Außentemperatur Wärmepumpe stoppt"
+      },
+      "low_noise_start_time": {
+        "name": "Startzeit Leisefunktion"
+      },
+      "low_noise_stop_time": {
+        "name": "Stoppzeit Leisefunktion"
+      },
       "zone_dhw_comfort_setpoint": {
         "name": "Heizkreis {zone} TWW Komfortsollwert"
       },
@@ -1833,6 +1946,85 @@
         "state": {
           "eco_hp_only": "Öko (nur Wärmepumpe)",
           "comfort_hp_boiler": "Komfort (WP + Kessel)"
+        }
+      },
+      "hybrid_mode_selected": {
+        "name": "Hybridmodus gewählt",
+        "state": {
+          "no_hybrid": "Kein Hybrid",
+          "hybrid_cost": "Hybrid nach Kosten",
+          "hybrid_primary_energy": "Hybrid Primärenergie",
+          "hybrid_co2": "Hybrid CO2"
+        }
+      },
+      "blocking_input_1_contact": {
+        "name": "Logikkontakt Sperreingang 1",
+        "state": {
+          "open": "Offen",
+          "closed": "Geschlossen"
+        }
+      },
+      "blocking_input_2_contact": {
+        "name": "Logikkontakt Sperreingang 2",
+        "state": {
+          "open": "Offen",
+          "closed": "Geschlossen"
+        }
+      },
+      "blocking_input_2_setting": {
+        "name": "Einstellung Sperreingang 2",
+        "state": {
+          "not_used": "Nicht verwendet",
+          "full_blocking": "Vollsperre",
+          "partial_blocking": "Teilsperre",
+          "user_reset_locking": "Benutzer-Reset-Sperre",
+          "backup_relieved": "Zusatzerzeuger entlastet",
+          "generator_relieved": "Erzeuger entlastet",
+          "generator_and_backup_relieved": "Erzeuger und Zusatzerzeuger entlastet",
+          "high_tariff_low_tariff": "Hochtarif / Niedertarif",
+          "photovoltaic_heat_pump_only": "Photovoltaik / nur Wärmepumpe",
+          "photovoltaic_heat_pump_and_backup": "Photovoltaik / Wärmepumpe und Backup",
+          "smart_grid_ready": "Smart Grid bereit",
+          "heating_cooling": "Heizen / Kühlen",
+          "central_heating_blocking": "Heizbetrieb sperren"
+        }
+      },
+      "function_blocking_input": {
+        "name": "Funktion Sperreingang",
+        "state": {
+          "not_used": "Nicht verwendet",
+          "full_blocking": "Vollsperre",
+          "partial_blocking": "Teilsperre",
+          "user_reset_locking": "Benutzer-Reset-Sperre",
+          "backup_relieved": "Zusatzerzeuger entlastet",
+          "generator_relieved": "Erzeuger entlastet",
+          "generator_and_backup_relieved": "Erzeuger und Zusatzerzeuger entlastet",
+          "high_tariff_low_tariff": "Hochtarif / Niedertarif",
+          "photovoltaic_heat_pump_only": "Photovoltaik / nur Wärmepumpe",
+          "photovoltaic_heat_pump_and_backup": "Photovoltaik / Wärmepumpe und Backup",
+          "smart_grid_ready": "Smart Grid bereit",
+          "heating_cooling": "Heizen / Kühlen",
+          "central_heating_blocking": "Heizbetrieb sperren"
+        }
+      },
+      "backup_type": {
+        "name": "Zusatzerzeuger-Art",
+        "state": {
+          "no_backup": "Kein Zusatzerzeuger",
+          "1_stage_electrical_backup": "1-stufiger elektrischer Zusatzerzeuger",
+          "2_stages_electrical_backup": "2-stufiger elektrischer Zusatzerzeuger",
+          "boiler_backup": "Kessel-Zusatzerzeuger"
+        }
+      },
+      "heat_pump_silent_mode": {
+        "name": "Wärmepumpen-Leisebetrieb",
+        "state": {
+          "no_silent_mode": "Kein Leisebetrieb",
+          "silent_mode_level_1": "Leisebetrieb Stufe 1",
+          "silent_mode_level_2": "Leisebetrieb Stufe 2",
+          "silent_mode_level_3": "Leisebetrieb Stufe 3",
+          "silent_mode_level_4": "Leisebetrieb Stufe 4",
+          "silent_mode_level_5": "Leisebetrieb Stufe 5"
         }
       },
       "zone_control_mode": {
