@@ -1158,6 +1158,33 @@
       "mains_power_hours": {
         "name": "Mains power hours"
       },
+      "main_control_burner_starts": {
+        "name": "Main control burner starts"
+      },
+      "main_control_burning_hours": {
+        "name": "Main control burning hours"
+      },
+      "main_control_hours_after_service": {
+        "name": "Main control hours after service"
+      },
+      "main_control_successful_compressor_starts_after_service": {
+        "name": "Main control successful compressor starts after service"
+      },
+      "main_control_backup1_starts": {
+        "name": "Main control backup 1 starts"
+      },
+      "main_control_backup1_hours": {
+        "name": "Main control backup 1 hours"
+      },
+      "main_control_backup2_starts": {
+        "name": "Main control backup 2 starts"
+      },
+      "main_control_backup2_hours": {
+        "name": "Main control backup 2 hours"
+      },
+      "main_control_active_hours": {
+        "name": "Main control active hours"
+      },
       "energy_consumed_ch": {
         "name": "Energy consumed CH"
       },

@@ -1225,6 +1225,33 @@
       "mains_power_hours": {
         "name": "Netzstrom-Betriebsstunden"
       },
+      "main_control_burner_starts": {
+        "name": "Hauptregler Brennerstarts"
+      },
+      "main_control_burning_hours": {
+        "name": "Hauptregler Brennerbetriebsstunden"
+      },
+      "main_control_hours_after_service": {
+        "name": "Hauptregler Stunden seit Wartung"
+      },
+      "main_control_successful_compressor_starts_after_service": {
+        "name": "Hauptregler erfolgreiche Verdichterstarts seit Wartung"
+      },
+      "main_control_backup1_starts": {
+        "name": "Hauptregler Starts Zusatzerzeuger 1"
+      },
+      "main_control_backup1_hours": {
+        "name": "Hauptregler Betriebsstunden Zusatzerzeuger 1"
+      },
+      "main_control_backup2_starts": {
+        "name": "Hauptregler Starts Zusatzerzeuger 2"
+      },
+      "main_control_backup2_hours": {
+        "name": "Hauptregler Betriebsstunden Zusatzerzeuger 2"
+      },
+      "main_control_active_hours": {
+        "name": "Hauptregler aktive Betriebsstunden"
+      },
       "energy_consumed_ch": {
         "name": "Energieverbrauch Heizung"
       },
