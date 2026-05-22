@@ -1802,6 +1802,9 @@
       "status_bitfields_number_3": {
         "name": "Status bitfields number 3"
       },
+      "appliance_time": {
+        "name": "Appliance time"
+      },
       "status_backup1_on": {
         "name": "Electrical backup 1 on"
       },

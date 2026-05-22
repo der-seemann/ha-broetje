@@ -1802,6 +1802,9 @@
       "status_bitfields_number_3": {
         "name": "Status-Bitfeld Nummer 3"
       },
+      "appliance_time": {
+        "name": "Gerätezeit"
+      },
       "status_backup1_on": {
         "name": "Elektrischer Zusatzerzeuger 1 ein"
       },

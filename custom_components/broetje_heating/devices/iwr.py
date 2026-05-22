@@ -55,6 +55,7 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "output_dhw_active": (None, True),
     "output_ch_active": (None, True),
     "output_cooling_active": (None, True),
+    "appliance_time": ("diagnostic", False),
     "special_status_shutdown": ("diagnostic", False),
     "special_status_heating": ("diagnostic", False),
     "special_status_cooling": ("diagnostic", False),
@@ -1369,6 +1370,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint8",
+        "scale": 1,
+    },
+    "appliance_time": {
+        "address": 350,
+        "type": REG_HOLDING,
+        "count": 3,
+        "data_type": "string",
         "scale": 1,
     },
     # Register 280 bits (Tab.15 - Output status 2)
@@ -2942,6 +2950,15 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
         "state_class": "measurement",
         "icon": "mdi:counter",
         "sub_device": SUBDEV_SERVICE,
+    },
+    "appliance_time": {
+        "register": "appliance_time",
+        "translation_key": "appliance_time",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:clock-outline",
+        "sub_device": SUBDEV_BOILER,
     },
     # --- Bitfield 280: Output status 2 ---
     "output_pump": {

@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.6.0-beta.5
+- Fix: `AP050` Appliance Time als Rohsensor ergänzt.
+
 ## v0.6.0-beta.4
 - Fix: HMI-Statusbitfelder 340-342 als rohe Diagnosticsensors ergänzt.
 
