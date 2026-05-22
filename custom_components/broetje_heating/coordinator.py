@@ -325,7 +325,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Build list of register info and sort by type, then address
         registers: list[dict[str, Any]] = []
         for key in register_keys:
-            config = self.register_map[key]
+            config = self.register_map.get(key)
+            if config is None:
+                _LOGGER.warning("Skipping unknown register key in batch read: %s", key)
+                continue
             registers.append(
                 {
                     "key": key,

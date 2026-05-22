@@ -70,6 +70,7 @@ class BroetjeNumber(BroetjeEntity, NumberEntity):
         if zone_number := entity_config.get("zone_number"):
             self._attr_translation_placeholders = {"zone": str(zone_number)}
 
+        self._attr_device_class = None
         device_class = entity_config.get("device_class")
         if device_class:
             self._attr_device_class = DEVICE_CLASS_MAP.get(device_class)
