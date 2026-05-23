@@ -1675,6 +1675,32 @@
           "no_error": "Kein Fehler"
         }
       },
+      "board9_error_code": {
+        "name": "Leiterplatte 9 Fehlercode"
+      },
+      "board9_error_severity": {
+        "name": "Leiterplatte 9 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
+          "warning": "Warnung",
+          "no_error": "Kein Fehler"
+        }
+      },
+      "board10_error_code": {
+        "name": "Leiterplatte 10 Fehlercode"
+      },
+      "board10_error_severity": {
+        "name": "Leiterplatte 10 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
+          "warning": "Warnung",
+          "no_error": "Kein Fehler"
+        }
+      },
       "zone_flow_temp": {
         "name": "Heizkreis {zone} Vorlauftemperatur"
       },

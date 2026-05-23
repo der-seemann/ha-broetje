@@ -1579,6 +1579,32 @@
           "no_error": "No error"
         }
       },
+      "board9_error_code": {
+        "name": "Board 9 error code"
+      },
+      "board9_error_severity": {
+        "name": "Board 9 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "device_not_available": "Device not available",
+          "warning": "Warning",
+          "no_error": "No error"
+        }
+      },
+      "board10_error_code": {
+        "name": "Board 10 error code"
+      },
+      "board10_error_severity": {
+        "name": "Board 10 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "device_not_available": "Device not available",
+          "warning": "Warning",
+          "no_error": "No error"
+        }
+      },
       "zone_flow_temp": {
         "name": "Zone {zone} flow temperature"
       },
