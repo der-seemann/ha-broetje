@@ -1543,8 +1543,32 @@
       "starts_since_service": {
         "name": "Starts since service"
       },
+      "buffer_tank_active": {
+        "name": "Buffer tank active",
+        "state": {
+          "no": "No",
+          "yes": "Yes"
+        }
+      },
+      "cascade_role": {
+        "name": "Cascade role",
+        "state": {
+          "no": "No",
+          "cascade_master": "Cascade master",
+          "cascade_slave": "Cascade slave"
+        }
+      },
       "devices_connected": {
         "name": "Devices connected"
+      },
+      "appliance_error_priority": {
+        "name": "Appliance error priority",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "warning": "Warning",
+          "no_error": "No error"
+        }
       },
       "board1_error_code": {
         "name": "Board 1 error code"

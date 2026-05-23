@@ -153,7 +153,10 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "zones_process_heat": ("diagnostic", False),
     "zones_swimming_pool": ("diagnostic", False),
     "zones_others": ("diagnostic", False),
+    "buffer_tank_active": ("diagnostic", False),
+    "cascade_role": ("diagnostic", False),
     "devices_connected": ("diagnostic", False),
+    "appliance_error_priority": ("diagnostic", False),
     "board1_device_type": ("diagnostic", True),
     "board1_software_version": ("diagnostic", True),
     "board1_config_table_version": ("diagnostic", True),
@@ -634,6 +637,12 @@ IWR_NO_YES: Final = {
     1: "yes",
 }
 
+IWR_CASCADE_ROLE: Final = {
+    0: "no",
+    1: "cascade_master",
+    2: "cascade_slave",
+}
+
 IWR_BACKUP_TYPE: Final = {
     0: "no_backup",
     1: "1_stage_electrical_backup",
@@ -668,6 +677,7 @@ IWR_ENUM_MAPS: Final = {
     "iwr_blocking_input_setting": IWR_BLOCKING_INPUT_SETTING,
     "iwr_low_noise_mode_state": IWR_LOW_NOISE_MODE_STATE,
     "iwr_no_yes": IWR_NO_YES,
+    "iwr_cascade_role": IWR_CASCADE_ROLE,
     "iwr_backup_type": IWR_BACKUP_TYPE,
 }
 
@@ -773,6 +783,20 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "data_type": "uint16",
         "scale": 1,
     },
+    "buffer_tank_active": {
+        "address": 197,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "cascade_role": {
+        "address": 198,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     # --- Temperature and Power Control (Tab.18) ---
     "control_power": {
         "address": 256,
@@ -834,6 +858,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
     },
     "error_list": {
         "address": 277,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "appliance_error_priority": {
+        "address": 278,
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint16",
@@ -2424,6 +2455,24 @@ _IWR_STATIC_SENSORS: Final = {
         "state_class": None,
         "icon": "mdi:counter",
     },
+    "buffer_tank_active": {
+        "register": "buffer_tank_active",
+        "translation_key": "buffer_tank_active",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:storage-tank-outline",
+        "enum_map": "iwr_no_yes",
+    },
+    "cascade_role": {
+        "register": "cascade_role",
+        "translation_key": "cascade_role",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:source-branch",
+        "enum_map": "iwr_cascade_role",
+    },
     # --- Temperature and Power Control Sensors (Tab.18) ---
     "control_power": {
         "register": "control_power",
@@ -3189,6 +3238,16 @@ _IWR_STATIC_SENSORS: Final = {
         "unit": None,
         "state_class": None,
         "icon": "mdi:developer-board",
+        "sub_device": SUBDEV_SERVICE,
+    },
+    "appliance_error_priority": {
+        "register": "appliance_error_priority",
+        "translation_key": "appliance_error_priority",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "enum_map": "iwr_error_severity",
         "sub_device": SUBDEV_SERVICE,
     },
     "board1_error_code": {

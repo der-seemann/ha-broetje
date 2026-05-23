@@ -1,0 +1,345 @@
+block,datatype,access,classification,context,description,sources
+1-10,OCTETSTRING,R,nur R laut Doku,DeviceInformationGtw08 (2),Manufacturer Code (= VAT code) of the device,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+12,UINT8,R/W,enthält W laut Doku,DeviceInformationGtw08 (2),Alternative Modbus mapping,GTW-08-Modbus-parameterlijst_gap_report.md
+197,UINT8,R,nur R laut Doku,SystemDiscovery (3),Buffer Tank is active on the appliance,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+198,UINT8,R,nur R laut Doku,SystemDiscovery (3),the appliance is part of a cascade,GTW-08-Modbus-parameterlijst_gap_report.md
+200,UINT8,R/W,enthält W laut Doku,SystemDiscovery (3),Reset discovery table. Set to 0x5A to execute the order. Reset to 0 by the GTW-08,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+260,INT16,R/W,enthält W laut Doku,MainControlMonitoring (16),External Remote Management: Heat demand Temperature setpoint Cooling to send to the CU device,GTW-08-Modbus-parameterlijst_gap_report.md
+276,UINT8,R,nur R laut Doku,MainControlMonitoring (16),Special Status bitfield of the appliance /cascade,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+278,ENUM8,R,nur R laut Doku,MainControlMonitoring (16),Appliance error priority,GTW-08-Modbus-parameterlijst_gap_report.md
+288-289,UINT32,R,nur R laut Doku,MainControlMonitoring (16),Counter burner starts,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+290-291,UINT32,R,nur R laut Doku,MainControlMonitoring (16),Counter Burning Hours,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+292,UINT16,R,nur R laut Doku,MainControlMonitoring (16),Number of hours appliance was active after service,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+293-294,UINT32,R,nur R laut Doku,MainControlMonitoring (16),Number of successful Compressor Starts after service,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+295-296,UINT32,R,nur R laut Doku,MainControlMonitoring (16),counter Backup1 starts,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+297-298,UINT32,R,nur R laut Doku,MainControlMonitoring (16),counter Backup1 Hours,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+299-300,UINT32,R,nur R laut Doku,MainControlMonitoring (16),counter Backup2 starts,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+301-302,UINT32,R,nur R laut Doku,MainControlMonitoring (16),counter Backup2 Hours,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+303-304,UINT32,R,nur R laut Doku,MainControlMonitoring (16),Number of hours appliance was active,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+340,UINT8,R,nur R laut Doku,MainControlMonitoring (16),Status bitfields number 1. Relevant for the HMI output,GTW-08-Modbus-parameterlijst_gap_report.md
+341,UINT8,R,nur R laut Doku,MainControlMonitoring (16),Status bitfields number 2. Relevant for the HMI output,GTW-08-Modbus-parameterlijst_gap_report.md
+342,UINT8,R,nur R laut Doku,MainControlMonitoring (16),Status bitfields number 3. Relevant for the HMI output,GTW-08-Modbus-parameterlijst_gap_report.md
+350,OCTETSTRING,R/W,enthält W laut Doku,MainControlMonitoring (16),Appliance Time,GTW-08-Modbus-parameterlijst_gap_report.md
+351,OCTET_STRING,R/W,enthält W laut Doku,3.3 Ungültige Werte,parApTimeOfDay Byte 2 parApTimeOfDay Byte 3 Uhrzeit Ende Modusänderung ZeitStempel CIA OCTET_STRING 3023.0 Write,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+390,INT16,R,nur R laut Doku,Boiler(Appliance) (41),Alarm codes when there is an alarm condition,GTW-08-Modbus-parameterlijst_gap_report.md
+416,UINT8,R,nur R laut Doku,Boiler(Appliance) (41),Internal heat demand - Power,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+417,INT16,R,nur R laut Doku,Boiler(Appliance) (41),Internal heat demand - temperature Setpoint,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+418,UINT8,R,nur R laut Doku,Boiler(Appliance) (41),Internal heat demand - heatdemandType,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+453,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),current speed of the condenser pump,GTW-08-Modbus-parameterlijst_gap_report.md
+454-455,UINT32,R,nur R laut Doku,Boiler(Appliance) (41),counter of the operating hours of the condenser pump (also called Hp Pump),GTW-08-Modbus-parameterlijst_gap_report.md
+456,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),"the actual current of the ODU as measured by the ODU, is used in the ODU unit to protect against too high current",GTW-08-Modbus-parameterlijst_gap_report.md
+457,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),"operation mode of the outdoor unit, in the current contrôle scheme onfle the HEAT(1) and COOL(2) modes are used, The current default is HEAT(1)",GTW-08-Modbus-parameterlijst_gap_report.md
+458,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),system flow temperature setpoint including backups,GTW-08-Modbus-parameterlijst_gap_report.md
+462,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),Instantaneous COP calculated by Hybrid application,GTW-08-Modbus-parameterlijst_gap_report.md
+463,UINT16,R,nur R laut Doku,Boiler(Appliance) (41),COP threshold calculated by hybrid,GTW-08-Modbus-parameterlijst_gap_report.md
+464,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Hybrid mode selected,GTW-08-Modbus-parameterlijst_gap_report.md
+465,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Hybrid Electricity cost in high tarif,GTW-08-Modbus-parameterlijst_gap_report.md
+466,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Hybrid Electricity cost in low tarif,GTW-08-Modbus-parameterlijst_gap_report.md
+467,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),cost of ofssil energy (oil or gas) - piece per litre or peu m3,GTW-08-Modbus-parameterlijst_gap_report.md
+468,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Electrical CO2 emission in heating mode,GTW-08-Modbus-parameterlijst_gap_report.md
+469,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Electrical CO2 emission in DHW mode,GTW-08-Modbus-parameterlijst_gap_report.md
+470,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Gas or Oil CO2 emission,GTW-08-Modbus-parameterlijst_gap_report.md
+471,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Boiler in appliance efficiency,GTW-08-Modbus-parameterlijst_gap_report.md
+472,UINT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),COP threshold above which heat pump is authorized to operate when hybrid mode is primary energy,GTW-08-Modbus-parameterlijst_gap_report.md
+473,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Logic contact to take into account for Blocking input 1,GTW-08-Modbus-parameterlijst_gap_report.md
+474,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Logic contact to take into account for Blocking input 2,GTW-08-Modbus-parameterlijst_gap_report.md
+475,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Blocking input 2 setting,GTW-08-Modbus-parameterlijst_gap_report.md
+476,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Function blocking input,GTW-08-Modbus-parameterlijst_gap_report.md
+477,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Minimum heating time before Domestic Hot Water production,GTW-08-Modbus-parameterlijst_gap_report.md
+478,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Maximum time allowed to produce Domestic Hot Water,GTW-08-Modbus-parameterlijst_gap_report.md
+479,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Domestic Hot Water ECO or COMFORT setting,GTW-08-Modbus-parameterlijst_gap_report.md
+480,ENUM8,R,nur R laut Doku,Boiler(Appliance) (41),Low Noise Mode state,GTW-08-Modbus-parameterlijst_gap_report.md
+481,ENUM8,R,nur R laut Doku,Boiler(Appliance) (41),Heat Pump Defrost,GTW-08-Modbus-parameterlijst_gap_report.md
+482,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Set the type of backup used in the heat pump.,GTW-08-Modbus-parameterlijst_gap_report.md
+483,UINT8,R,nur R laut Doku,Boiler(Appliance) (41),Actual relative power produced for PDO output,GTW-08-Modbus-parameterlijst_gap_report.md
+484,UINT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Hybrid Electricity cost in high tarif accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+485,UINT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Hybrid Electricity cost in low tarif accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+486,UINT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Cost of fossil energy (oil or gas) - price per liter or per m3 accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+487,INT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Outside temperature level above which the backup operation is blocked for a standard heating mode,GTW-08-Modbus-parameterlijst_gap_report.md
+488,UINT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Delay for starting the next generator (backup stage) in central heating mode,GTW-08-Modbus-parameterlijst_gap_report.md
+489,INT16,R/W,enthält W laut Doku,Boiler(Appliance) (41),Minimum oustide temperature below which Heat Pump is stopped,GTW-08-Modbus-parameterlijst_gap_report.md
+490,ENUM8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Enabling Heat pump Silent mode,GTW-08-Modbus-parameterlijst_gap_report.md
+491,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),Start time for low noise function,GTW-08-Modbus-parameterlijst_gap_report.md
+492,UINT8,R/W,enthält W laut Doku,Boiler(Appliance) (41),stop time for low noise,GTW-08-Modbus-parameterlijst_gap_report.md
+493-494,UINT32,R,nur R laut Doku,Boiler(Appliance) (41),Total amount of pump starts,GTW-08-Modbus-parameterlijst_gap_report.md
+530,UINT16,R,nur R laut Doku,Service (13),Current error generic code,GTW-08-Modbus-parameterlijst_gap_report.md
+540,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 5(CF System Discovery table Modbus Address 153),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+541,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 5,GTW-08-Modbus-parameterlijst_gap_report.md
+542,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 6(CF System Discovery table Modbus Address 159),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+543,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 6,GTW-08-Modbus-parameterlijst_gap_report.md
+544,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 7(CF System Discovery table Modbus Address 165),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+545,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 7,GTW-08-Modbus-parameterlijst_gap_report.md
+546,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 8(CF System Discovery table Modbus Address 171),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+547,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 8,GTW-08-Modbus-parameterlijst_gap_report.md
+548,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 9(CF System Discovery table Modbus Address 177),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+549,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 9,GTW-08-Modbus-parameterlijst_gap_report.md
+550,UINT16,R,nur R laut Doku,Service (13),Code error of the device located on instance 10(CF System Discovery table Modbus Address 183),"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+551,ENUM8,R,nur R laut Doku,Service (13),Error gravity error of the device located on instance 10,GTW-08-Modbus-parameterlijst_gap_report.md
+642,6,R,nur R laut Doku,Zones X12 (36),3202,GTW-08-Modbus-parameterlijst_gap_report.md
+643,VISIBLE_STRING,R,nur R laut Doku,3.3 Ungültige Werte,"parZoneFriendlyNameShort Byte 2 parZoneFriendlyNameShort Byte 3 Kreisbezeichnung kurz Read VISIBLE_STRING InternalVariable ""DHW""",Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+646,1,R,nur R laut Doku,Zones X12 (36),3206,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+689,20,,nur R laut Doku,Zones X12 (36),3249,GTW-08-Modbus-parameterlijst_gap_report.md
+693,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramMonday1 Byte 8 parZoneTimeProgramMonday1 Byte 9 Read/Write OCTET_STRING 3431.n 363E.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+699,20,R,nur R laut Doku,Zones X12 (36),3259,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+709,20,,nur R laut Doku,Zones X12 (36),3269,GTW-08-Modbus-parameterlijst_gap_report.md
+713,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramWednesday1 Byte 8 parZoneTimeProgramWednesday1 Byte 9 Read/Write OCTET_STRING 3433.n 3640.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+719,20,,nur R laut Doku,Zones X12 (36),3279,GTW-08-Modbus-parameterlijst_gap_report.md
+723,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramThursday1 Byte 8 parZoneTimeProgramThursday1 Byte 9 Read/Write OCTET_STRING 3434.n 3641.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+729,20,,nur R laut Doku,Zones X12 (36),3289,GTW-08-Modbus-parameterlijst_gap_report.md
+733,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramFriday1 Byte 8 parZoneTimeProgramFriday1 Byte 9 Read/Write OCTET_STRING 3435.n 3642.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+739,20,,nur R laut Doku,Zones X12 (36),3299,GTW-08-Modbus-parameterlijst_gap_report.md
+743,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSaturday1 Byte 8 parZoneTimeProgramSaturday1 Byte 9 Read/Write OCTET_STRING 3436.n 3643.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+749,20,,nur R laut Doku,Zones X12 (36),3309,GTW-08-Modbus-parameterlijst_gap_report.md
+751,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSunday1 Byte 4 parZoneTimeProgramSunday1 Byte 5 Read/Write OCTET_STRING 3437.n 3644.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+759,20,,nur R laut Doku,Zones X12 (36),3319,GTW-08-Modbus-parameterlijst_gap_report.md
+763,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramMonday2 Byte 8 parZoneTimeProgramMonday2 Byte 9 Read/Write OCTET_STRING 3438.n 3645.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+769,20,,nur R laut Doku,Zones X12 (36),3329,GTW-08-Modbus-parameterlijst_gap_report.md
+773,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramTuesday2 Byte 8 parZoneTimeProgramTuesday2 Byte 9 Read/Write OCTET_STRING 3439.n 3646.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+779,20,,nur R laut Doku,Zones X12 (36),3339,GTW-08-Modbus-parameterlijst_gap_report.md
+780,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramWednesday2 Byte 2 parZoneTimeProgramWednesday2 Byte 3 Read/Write OCTET_STRING 343A.n 3647.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+789,20,,nur R laut Doku,Zones X12 (36),3349,GTW-08-Modbus-parameterlijst_gap_report.md
+793,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramThursday2 Byte 8 parZoneTimeProgramThursday2 Byte 9 Read/Write OCTET_STRING 343B.n 3648.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+799,20,,nur R laut Doku,Zones X12 (36),3359,GTW-08-Modbus-parameterlijst_gap_report.md
+803,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramFriday2 Byte 8 parZoneTimeProgramFriday2 Byte 9 Read/Write OCTET_STRING 343C.n 3649.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+809,20,,nur R laut Doku,Zones X12 (36),3369,GTW-08-Modbus-parameterlijst_gap_report.md
+813,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSaturday2 Byte 8 parZoneTimeProgramSaturday2 Byte 9 Read/Write OCTET_STRING 343D.n 364A.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+819,20,,nur R laut Doku,Zones X12 (36),3379,GTW-08-Modbus-parameterlijst_gap_report.md
+823,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSunday2 Byte 8 parZoneTimeProgramSunday2 Byte 9 Read/Write OCTET_STRING 343E.n 364B.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+829-830,20,,nur R laut Doku,Zones X12 (36),3389,GTW-08-Modbus-parameterlijst_gap_report.md
+832,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramMonday3 Byte 6 parZoneTimeProgramMonday3 Byte 7 Zeitprogramm 3 Read/Write OCTET_STRING 343F.n 364C.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+839,20,,nur R laut Doku,Zones X12 (36),3399,GTW-08-Modbus-parameterlijst_gap_report.md
+843,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramTuesday3 Byte 8 parZoneTimeProgramTuesday3 Byte 9 Read/Write OCTET_STRING 3440.n 364D.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+849,20,,nur R laut Doku,Zones X12 (36),3409,GTW-08-Modbus-parameterlijst_gap_report.md
+853,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramWednesday3Byte 8 parZoneTimeProgramWednesday3Byte 9 Read/Write OCTET_STRING 3441.n 364E.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+859,20,,nur R laut Doku,Zones X12 (36),3419,GTW-08-Modbus-parameterlijst_gap_report.md
+860,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramThursday3 Byte 2 parZoneTimeProgramThursday3 Byte 3 Read/Write OCTET_STRING 3442.n 364F.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+869,20,,nur R laut Doku,Zones X12 (36),3429,GTW-08-Modbus-parameterlijst_gap_report.md
+873,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramFriday3Byte 8 parZoneTimeProgramFriday3Byte 9 Read/Write OCTET_STRING 3443.n 3650.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+879,20,,nur R laut Doku,Zones X12 (36),3439,GTW-08-Modbus-parameterlijst_gap_report.md
+883,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSaturday3 Byte 8 parZoneTimeProgramSaturday3 Byte 9 Read/Write OCTET_STRING 3444.n 3651.n,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+889,20,R,nur R laut Doku,Zones X12 (36),3449,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+899-900,20,,nur R laut Doku,Zones X12 (36),3459,GTW-08-Modbus-parameterlijst_gap_report.md
+903,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramMonday4 Byte 8 parZoneTimeProgramMonday4 Byte 9 Read/Write OCTET_STRING 3446.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+909,20,,nur R laut Doku,Zones X12 (36),3469,GTW-08-Modbus-parameterlijst_gap_report.md
+912,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramTuesday4 Byte 6 parZoneTimeProgramTuesday4 Byte 7 Read/Write OCTET_STRING 3447.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+919,20,,nur R laut Doku,Zones X12 (36),3479,GTW-08-Modbus-parameterlijst_gap_report.md
+923,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramWednesday4Byte 8 parZoneTimeProgramWednesday4Byte 9 Read/Write OCTET_STRING 3448.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+929,20,,nur R laut Doku,Zones X12 (36),3489,GTW-08-Modbus-parameterlijst_gap_report.md
+933,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramThursday4 Byte 8 parZoneTimeProgramThursday4 Byte 9 Read/Write OCTET_STRING 3449.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+939,20,,nur R laut Doku,Zones X12 (36),3499,GTW-08-Modbus-parameterlijst_gap_report.md
+941,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramFriday4Byte 4 parZoneTimeProgramFriday4Byte 5 Read/Write OCTET_STRING 344A.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+949,20,,nur R laut Doku,Zones X12 (36),3509,GTW-08-Modbus-parameterlijst_gap_report.md
+953,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSaturday4 Byte 8 parZoneTimeProgramSaturday4 Byte 9 Read/Write OCTET_STRING 344B.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+959,20,,nur R laut Doku,Zones X12 (36),3519,GTW-08-Modbus-parameterlijst_gap_report.md
+963,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneTimeProgramSunday4Byte 8 parZoneTimeProgramSunday4Byte 9 Read/Write OCTET_STRING 344C.n Not Available,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+971,6,R,nur R laut Doku,Zones X12 (36),3531,GTW-08-Modbus-parameterlijst_gap_report.md
+972,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneStartTimeHoliday Byte 2 parZoneStartTimeHoliday Byte 3 Startzeit Ferienbetrieb Read/Write OCTET_STRING 3421.n 365E.n ZeitStempel CIA,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+974,6,R,nur R laut Doku,Zones X12 (36),3534,GTW-08-Modbus-parameterlijst_gap_report.md
+975,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneEndTimeHoliday Byte 2 parZoneEndTimeHoliday Byte 3 Endzeit Ferienbetrieb Read/Write OCTET_STRING 3422.n 365F.n ZeitStempel,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+978,6,R,nur R laut Doku,Zones X12 (36),3538,GTW-08-Modbus-parameterlijst_gap_report.md
+979,OCTET_STRING,R,nur R laut Doku,3.3 Ungültige Werte,parZoneEndTimeModeChange Byte 2 parZoneEndTimeModeChange Byte 3 Modusänderung Read/Write OCTET_STRING 3423.n 3660.n ZeitStempel CIA,Modbus_GTW-08_Liste_der_Parameter_gap_report.md
+981,2,"0,01°C",nur R laut Doku,Zones X12 (36),CP280 to CP289,GTW-08-Modbus-parameterlijst_gap_report.md
+1119,2,"0,01°C",nur R laut Doku,Zones X12 (36),CM040 to CM049 or DM001,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+1120,2,"0,01°C",nur R laut Doku,Zones X12 (36),CM250 to CM259 or DM006,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7000,UINT8,R,nur R laut Doku,Cascade (110),Appliance Number on cascade:,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7001,ENUM8,R/W,enthält W laut Doku,Cascade (110),Mode on cascade,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7002,ENUM8,R/W,enthält W laut Doku,Cascade (110),Type of Cascade : Traditional or PARALLEL,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7003,UINT8,R/W,enthält W laut Doku,Cascade (110),This parameter is used to set the master boiler.,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7004,UINT8,R/W,enthält W laut Doku,Cascade (110),Time delay for starting up or shutting down producers,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7005,INT16,R/W,enthält W laut Doku,Cascade (110),Outside temperature triggering all stages in parallel mode,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7006,INT16,R/W,enthält W laut Doku,Cascade (110),Outside temperature triggering all stages in parallel mode,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7007,UINT8,R/W,enthält W laut Doku,Cascade (110),Rise Time to Acheive Setpoint,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7008,ENUM8,R/W,enthält W laut Doku,Cascade (110),"Enabled the master functionnality of this device one the S-Bus, If multople devices have this parameter all will be reset to 0 automatically,",GTW-08-Modbus-parameterlijst_gap_report.md
+7009,ENUM8,R/W,enthält W laut Doku,Cascade (110),"choice of cascade algorithm type, power or temperature","GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7010,UINT16,R/W,enthält W laut Doku,Cascade (110),The maximum flow temperature the système is allowed to produce,GTW-08-Modbus-parameterlijst_gap_report.md
+7011,ENUM8,R/W,enthält W laut Doku,Cascade (110),"the type of start order permutation, to determine which producer to start first","GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7012-7013,UINT16,R/W,enthält W laut Doku,Cascade (110),The time that needs to be elapsed before switching the appliance order,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7014,ENUM8,R/W,enthält W laut Doku,Cascade (110),Switching strategy for power control of the cascade.,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7015,UINT8,R/W,enthält W laut Doku,Cascade (110),The preferred appliance for CH heat production,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7016,UINT8,R/W,enthält W laut Doku,Cascade (110),The non-preferred appliance for CH heat production,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7017,UINT8,R/W,enthält W laut Doku,Cascade (110),The power percentage for the late on strategy for activating the next appliance,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7018,UINT8,R/W,enthält W laut Doku,Cascade (110),The power percentage for the late off strategy for deactivating the last appliance,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7019,UINT8,R/W,enthält W laut Doku,Cascade (110),The power percentage for the early on strategy for activating the next appliance,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7020,UINT8,R/W,enthält W laut Doku,Cascade (110),The power percentage for the early off strategy for deactivating the last appliance,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7021,UINT8,R/W,enthält W laut Doku,Cascade (110),Minimum duration of post-operation of the generator pump,GTW-08-Modbus-parameterlijst_gap_report.md
+7022,ENUM8,R/W,enthält W laut Doku,Cascade (110),Force Primary Pump to Stop,GTW-08-Modbus-parameterlijst_gap_report.md
+7023,ENUM8,R/W,enthält W laut Doku,Cascade (110),The type of primary pump,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7024,ENUM8,R/W,enthält W laut Doku,Cascade (110),The type of secondary pump,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7100,UINT8,R,nur R laut Doku,Cascade (110),Producer Active Number,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7102,UINT8,R,nur R laut Doku,Cascade (110),Number of Producers recognised in the cascade,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7103,UINT8,R,nur R laut Doku,Cascade (110),Number of stages available on the Casacde,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7104,UINT8,R,nur R laut Doku,Cascade (110),Number of stages required on the Casacde,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7105,UINT8,R,nur R laut Doku,Cascade (110),Cascade power request by the consumer manager - Power,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7106,INT16,R,nur R laut Doku,Cascade (110),Cascade power request by the consumer manager - - temperature Setpoint,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7107,ENUM8,R,nur R laut Doku,Cascade (110),Cascade power request by the consumer manager - heatdemandType,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7108,UINT8,R,nur R laut Doku,Cascade (110),Cascade System Power Setpoint Calculated - Power,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7109,INT16,R,nur R laut Doku,Cascade (110),Cascade System Power Setpoint Calculated - temperature Setpoint,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7110,ENUM8,R,nur R laut Doku,Cascade (110),Cascade System Power Setpoint Calculated - heatdemandType,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7111,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 1,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7112,INT16,R,nur R laut Doku,Cascade (110),Appliance 1 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7113,UINT8,R,nur R laut Doku,Cascade (110),Appliance 1 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7114,UINT8,R,nur R laut Doku,Cascade (110),Appliance 1 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7115,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 3,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7116,INT16,R,nur R laut Doku,Cascade (110),Appliance 3 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7117,UINT8,R,nur R laut Doku,Cascade (110),Appliance 3 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7118,UINT8,R,nur R laut Doku,Cascade (110),Appliance 3 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7119,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 4,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7120,INT16,R,nur R laut Doku,Cascade (110),Appliance 4 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7121,UINT8,R,nur R laut Doku,Cascade (110),Appliance 4 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7122,UINT8,R,nur R laut Doku,Cascade (110),Appliance 4 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7123,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 5,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7124,INT16,R,nur R laut Doku,Cascade (110),Appliance 5 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7125,UINT8,R,nur R laut Doku,Cascade (110),Appliance 5 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7126,UINT8,R,nur R laut Doku,Cascade (110),Appliance 5 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7127,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 6,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7128,INT16,R,nur R laut Doku,Cascade (110),Appliance 6 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7129,UINT8,R,nur R laut Doku,Cascade (110),Appliance 6 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7130,UINT8,R,nur R laut Doku,Cascade (110),Appliance 6 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7131,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 7,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7132,INT16,R,nur R laut Doku,Cascade (110),Appliance 7 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7133,UINT8,R,nur R laut Doku,Cascade (110),Appliance 7 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7134,UINT8,R,nur R laut Doku,Cascade (110),Appliance 7 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7135,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 8,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7136,INT16,R,nur R laut Doku,Cascade (110),Appliance 8 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7137,UINT8,R,nur R laut Doku,Cascade (110),Appliance 8 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7138,UINT8,R,nur R laut Doku,Cascade (110),Appliance 8 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7139,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 9,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7140,INT16,R,nur R laut Doku,Cascade (110),Appliance 9 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7141,UINT8,R,nur R laut Doku,Cascade (110),Appliance 9 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7142,UINT8,R,nur R laut Doku,Cascade (110),Appliance 9 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7143,UINT8,R,nur R laut Doku,Cascade (110),Actual power output of Appliance 10,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7144,INT16,R,nur R laut Doku,Cascade (110),Appliance 10 Flow Temperature,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7145,UINT8,R,nur R laut Doku,Cascade (110),Appliance 10 Status,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7146,UINT8,R,nur R laut Doku,Cascade (110),Appliance 10 Special Request,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7151-7152,UINT32,R,nur R laut Doku,Cascade (110),The requested power to fulfil the heat demand,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7153,ENUM8,R,nur R laut Doku,Cascade (110),Outside Temperature connected,GTW-08-Modbus-parameterlijst_gap_report.md
+7154,INT16,R,nur R laut Doku,Cascade (110),Outside Temperature Used by the Cascade,GTW-08-Modbus-parameterlijst_gap_report.md
+7155,INT16,R,nur R laut Doku,Cascade (110),The requested power percentage,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7156,UINT16,R,nur R laut Doku,Cascade (110),Current Time To Start next Stage,GTW-08-Modbus-parameterlijst_gap_report.md
+7157,ENUM8,R,nur R laut Doku,Cascade (110),The activation of the primary pump relay,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7158,ENUM8,R,nur R laut Doku,Cascade (110),The activation of the secondary pump relay,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7159,ENUM8,R,nur R laut Doku,Cascade (110),The current state of the cascade system,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7160-7161,UINT32,R,nur R laut Doku,Cascade (110),The amount of hours spend on producing heat for CH,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7162-7163,UINT32,R,nur R laut Doku,Cascade (110),The amount of hours spend on producing heat for DHW,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7164,INT16,R,nur R laut Doku,Cascade (110),The measured return temperature on the LLH,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7165,UINT8,R,nur R laut Doku,Cascade (110),"Cascade, smart pump status - producer circuit of low loss header","GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7166,UINT8,R,nur R laut Doku,Cascade (110),The pump speed output after transfer function for pwm or 0-10V output signal for primary pump (producer circuit),"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7167,UINT8,R,nur R laut Doku,Cascade (110),The pump speed output after transfer function for pwm or 0-10V output signal for secondary pump (consumer circuit),"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7168,INT16,R,nur R laut Doku,Cascade (110),The measured cascade flow temperature on the secondary side of the LLH,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7200,UINT8,R/W,enthält W laut Doku,Cascade (110),The order in which the producers are going to be activated,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7201,UINT8,R/W,enthält W laut Doku,Cascade (110),Logical number that represents the physical location of a device within a cascade,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7202,ENUM8,R/W,enthält W laut Doku,Cascade (110),The availability of the device for the cascade,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7203,UINT16,R/W,enthält W laut Doku,Cascade (110),The minimum power of an appliance in the cascade system,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7205,UINT16,R/W,enthält W laut Doku,Cascade (110),The maximum power of an appliance in the cascade system,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7207,UINT16,R,nur R laut Doku,Cascade (110),List of appliances needed to fulfil the heat demand,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7208,UINT16,R,nur R laut Doku,Cascade (110),The temporary stored permutation order,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7209,ENUM8,R,nur R laut Doku,Cascade (110),The status of all producers found on the S-Bus,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7210,UINT8,R,nur R laut Doku,Cascade (110),The generic error codes of all producers found on the S-Bus,GTW-08-Modbus-parameterlijst_gap_report.md
+7211-7212,UINT32,R,nur R laut Doku,Cascade (110),Matrix describing the error priority and the error custom code per brand,GTW-08-Modbus-parameterlijst_gap_report.md
+7213,INT16,R,nur R laut Doku,Cascade (110),Flow temperature of appliance. The temperature of the water leaving the appliance.,GTW-08-Modbus-parameterlijst_gap_report.md
+7214,INT16,R,nur R laut Doku,Cascade (110),The return temperature of an appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7215,INT16,R,nur R laut Doku,Cascade (110),The heat exchanger temperature of an appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7216,INT16,R,nur R laut Doku,Cascade (110),The flu gas temperature of an appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7217,ENUM8,R,nur R laut Doku,Cascade (110),Current or upcoming service notification,GTW-08-Modbus-parameterlijst_gap_report.md
+7218,UINT8,R,nur R laut Doku,Cascade (110),The water pressure of an appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7219,INT16,R,nur R laut Doku,Cascade (110),The 2nd return temperature of an appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7220,UINT16,R,nur R laut Doku,Cascade (110),The current pump speed,GTW-08-Modbus-parameterlijst_gap_report.md
+7221,UINT16,R,nur R laut Doku,Cascade (110),Actual relative power of the appliance,GTW-08-Modbus-parameterlijst_gap_report.md
+7222-7223,UINT32,R,nur R laut Doku,Cascade (110),Total number of burner hours. For heating and domestic hot water,GTW-08-Modbus-parameterlijst_gap_report.md
+7224-7225,UINT32,R,nur R laut Doku,Cascade (110),Number of burner hours for Domestic Hot Water,GTW-08-Modbus-parameterlijst_gap_report.md
+7226,UINT8,R,nur R laut Doku,Cascade (110),Producer order listed with node id's,GTW-08-Modbus-parameterlijst_gap_report.md
+7227,UINT16,R,nur R laut Doku,Cascade (110),The type of appliance in the cascade system,GTW-08-Modbus-parameterlijst_gap_report.md
+7228-7229,UINT32,R/W,enthält W laut Doku,Cascade (110),The serial number of an appliance in the cascade system,"GTW-08-Modbus-parameterlijst_gap_report.md, GTW-08_ModBus-Spec_gap_report.md"
+7500,INT16,R/W,enthält W laut Doku,BufferTank (22),Hysteresis to start buffer loading,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7501,INT16,R/W,enthält W laut Doku,BufferTank (22),Hysteresis to stop buffer tank loading,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7502,UINT8,R/W,enthält W laut Doku,BufferTank (22),Minimum duration of post-operation of the buffer tank pump,GTW-08-Modbus-parameterlijst_gap_report.md
+7503,ENUM8,R/W,enthält W laut Doku,BufferTank (22),Heating Cooling Control strategy used with buffer tank,GTW-08-Modbus-parameterlijst_gap_report.md
+7504,UINT16,R/W,enthält W laut Doku,BufferTank (22),Fixed setpoint requested by buffer tank in Heating Mode,GTW-08-Modbus-parameterlijst_gap_report.md
+7505,UINT16,R/W,enthält W laut Doku,BufferTank (22),Fixed setpoint requested by buffer tank in Cooling Mode,GTW-08-Modbus-parameterlijst_gap_report.md
+7506,UINT8,R/W,enthält W laut Doku,BufferTank (22),Buffer Tank Slope,GTW-08-Modbus-parameterlijst_gap_report.md
+7507,UINT16,R/W,enthält W laut Doku,BufferTank (22),Offset to add to the calculate Setpoint,GTW-08-Modbus-parameterlijst_gap_report.md
+7508-7517,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),Time program buffer tank,GTW-08-Modbus-parameterlijst_gap_report.md
+7518-7527,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7528-7537,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7538-7547,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7548-7557,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7558-7567,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7568-7577,OCTET_STRING,R/W,enthält W laut Doku,BufferTank (22),(no description),GTW-08-Modbus-parameterlijst_gap_report.md
+7600,INT16,R,nur R laut Doku,BufferTank (22),Measured buffer temperature bottom,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7601,INT16,R,nur R laut Doku,BufferTank (22),Measured buffer temperature top,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7602,ENUM8,R,nur R laut Doku,BufferTank (22),State buffer tank pump,GTW-08-Modbus-parameterlijst_gap_report.md
+7603,ENUM8,R,nur R laut Doku,BufferTank (22),The buffer tank Mode,GTW-08-Modbus-parameterlijst_gap_report.md
+7604,UINT8,R,nur R laut Doku,BufferTank (22),Buffer Tank winning heat demand request : the winning heat demand requested by the zones connected after the buffer tank - Power,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7605,INT16,R,nur R laut Doku,BufferTank (22),Buffer Tank winning heat demand request : the winning heat demand requested by the zones connected after the buffer tank - temperature Setpoint,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+7606,UINT8,R,nur R laut Doku,BufferTank (22),Buffer Tank winning heat demand request : the winning heat demand requested by the zones connected after the buffer tank - heatdemandType,"GTW-08-Modbus-parameterlijst_gap_report.md, Modbus_GTW-08_Liste_der_Parameter_gap_report.md"
+8112-8113,UINT32,R,nur R laut Doku,Solar (21),Signal for storing the total solar thermal energy collected for DHW and CH.,GTW-08-Modbus-parameterlijst_gap_report.md
+8114,ENUM8,R,nur R laut Doku,Solar (21),Signal for storing the actual status of the advanced solar range boiler,GTW-08-Modbus-parameterlijst_gap_report.md
+8115,UINT16,R,nur R laut Doku,Solar (21),Signal for storing the instantaneous mean rotation speed of the solar pumps.,GTW-08-Modbus-parameterlijst_gap_report.md
+8116,INT16,R,nur R laut Doku,Solar (21),Signal for storing the actual measured instantaneous value of the DHW tank low temperature sensor.,GTW-08-Modbus-parameterlijst_gap_report.md
+8117,INT16,R,nur R laut Doku,Solar (21),Signal for storing the actual measured instantaneous value of the CH tank low temperature sensor.,GTW-08-Modbus-parameterlijst_gap_report.md
+8118,INT16,R,nur R laut Doku,Solar (21),Signal for storing the instantaneous temperature of the heat conduct. medium at the solar collector. - collector 1,GTW-08-Modbus-parameterlijst_gap_report.md
+8119,INT16,R,nur R laut Doku,Solar (21),Signal for storing the instantaneous temperature of the heat conduct. medium at the solar collector - collector 2,GTW-08-Modbus-parameterlijst_gap_report.md
+8120,ENUM8,R,nur R laut Doku,Solar (21),Signal for storing the instantaneous status of each three way valve (ON or OFF). - valve 1,GTW-08-Modbus-parameterlijst_gap_report.md
+8121,ENUM8,R,nur R laut Doku,Solar (21),Signal for storing the instantaneous status of each three way valve (ON or OFF). - valve 2,GTW-08-Modbus-parameterlijst_gap_report.md
+8122,INT16,R,nur R laut Doku,Solar (21),Reduction of the setpoint of the DHW primary based on the heat delivery of a solar collector (solar first).,GTW-08-Modbus-parameterlijst_gap_report.md
+8123,INT16,R,nur R laut Doku,Solar (21),Reduction of the setpoint of a buffered CH zone based on the heat delivery of a solar collector (solar first).,GTW-08-Modbus-parameterlijst_gap_report.md
+8141,ENUM8,R/W,enthält W laut Doku,Solar (21),Configuration of the solar hydraulics installation type.,GTW-08-Modbus-parameterlijst_gap_report.md
+8142,ENUM8,R/W,enthält W laut Doku,Solar (21),Parameter to configure the mode of the advanced solar DHW and/or CH function group.,GTW-08-Modbus-parameterlijst_gap_report.md
+8143,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for nominal DHW tank T° setpoint.,GTW-08-Modbus-parameterlijst_gap_report.md
+8144,UINT16,R/W,enthält W laut Doku,Solar (21),"Parameter for configuring the nominal setpoint to charge the CH tank with solar energy, possible values are within the range 8°C ~ 60°C",GTW-08-Modbus-parameterlijst_gap_report.md
+8145,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for configuring the maximum allowed temperature temperature in the solar panel.- collector 1,GTW-08-Modbus-parameterlijst_gap_report.md
+8146,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for configuring the maximum allowed temperature temperature in the solar panel - collector 2,GTW-08-Modbus-parameterlijst_gap_report.md
+8147,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for maximal DHW tank T° setpoint.,GTW-08-Modbus-parameterlijst_gap_report.md
+8148,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for maximal CH tank T° setpoint.,GTW-08-Modbus-parameterlijst_gap_report.md
+8149,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for setting the minimal temperature rise corresponding to one step increase in pump speed.,GTW-08-Modbus-parameterlijst_gap_report.md
+8150,UINT16,R/W,enthält W laut Doku,Solar (21),Parameter for setting the minimal temperature rise corresponding to one step increase in pump speed.,GTW-08-Modbus-parameterlijst_gap_report.md
+9001,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),PV function Active,GTW-08-Modbus-parameterlijst_gap_report.md
+9002,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),PV function Contact Logic,GTW-08-Modbus-parameterlijst_gap_report.md
+9003,UINT16,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Zone Dhw primary Boost PV Setpoint,GTW-08-Modbus-parameterlijst_gap_report.md
+9004,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Peak/OffPeak Active,GTW-08-Modbus-parameterlijst_gap_report.md
+9005,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Peak input contact logic configuration,GTW-08-Modbus-parameterlijst_gap_report.md
+9006,INT8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Max time BackUp off when peak mode enabled,GTW-08-Modbus-parameterlijst_gap_report.md
+9007,ENUM8,R,nur R laut Doku,Thermodynamic Water Heater (12),S_PhotoVoltaicInputState,GTW-08-Modbus-parameterlijst_gap_report.md
+9008,ENUM8,R,nur R laut Doku,Thermodynamic Water Heater (12),S_PeakOffPeakInputState,GTW-08-Modbus-parameterlijst_gap_report.md
+9009,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Digital input 1 configuration,GTW-08-Modbus-parameterlijst_gap_report.md
+9010,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),Digital input 2 configuration,GTW-08-Modbus-parameterlijst_gap_report.md
+9011,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),digital input 1 contact logic configuration,GTW-08-Modbus-parameterlijst_gap_report.md
+9012,ENUM8,R/W,enthält W laut Doku,Thermodynamic Water Heater (12),digital input 2 contact logic configuration,GTW-08-Modbus-parameterlijst_gap_report.md
+9200,INT16,R,nur R laut Doku,Hybrid (27),Flow temperature,GTW-08-Modbus-parameterlijst_gap_report.md
+9201,INT16,R,nur R laut Doku,Hybrid (27),Return temperature,GTW-08-Modbus-parameterlijst_gap_report.md
+9202,UINT16,R,nur R laut Doku,Hybrid (27),Internal setpoint used for hot water production,GTW-08-Modbus-parameterlijst_gap_report.md
+9203,UINT8,R,nur R laut Doku,Hybrid (27),actual Water pressure,GTW-08-Modbus-parameterlijst_gap_report.md
+9204,UINT8,R,nur R laut Doku,Hybrid (27),Status of appliance,GTW-08-Modbus-parameterlijst_gap_report.md
+9205,UINT8,R,nur R laut Doku,Hybrid (27),Sub Status of appliance,GTW-08-Modbus-parameterlijst_gap_report.md
+9206-9207,UINT32,R,nur R laut Doku,Hybrid (27),Counter burner/compressor starts,GTW-08-Modbus-parameterlijst_gap_report.md
+9208-9209,UINT32,R,nur R laut Doku,Hybrid (27),Counter Burning Hours,GTW-08-Modbus-parameterlijst_gap_report.md
+9210-9211,UINT32,R,nur R laut Doku,Hybrid (27),Number of hours appliance was active,GTW-08-Modbus-parameterlijst_gap_report.md
+9212-9213,UINT32,R,nur R laut Doku,Hybrid (27),NTotal energy consumed for production of central heat,GTW-08-Modbus-parameterlijst_gap_report.md
+9214-9215,UINT32,R,nur R laut Doku,Hybrid (27),Total energy consumed for production of domestic hot water.,GTW-08-Modbus-parameterlijst_gap_report.md
+9216,UINT16,R,nur R laut Doku,Hybrid (27),system flow temperature setpoint including backups,GTW-08-Modbus-parameterlijst_gap_report.md
+9217,UINT16,R,nur R laut Doku,Hybrid (27),current pump speed,GTW-08-Modbus-parameterlijst_gap_report.md
+9218-9219,UINT32,R,nur R laut Doku,Hybrid (27),signal used to capture actual power calculation,GTW-08-Modbus-parameterlijst_gap_report.md
+9220,UINT8,R,nur R laut Doku,Hybrid (27),Service is required,GTW-08-Modbus-parameterlijst_gap_report.md
+9221,ENUM8,R/W,enthält W laut Doku,Hybrid (27),Hybrid mode selected,GTW-08-Modbus-parameterlijst_gap_report.md
+9222,UINT8,R/W,enthält W laut Doku,Hybrid (27),Hybrid Electricity cost in high tarif,GTW-08-Modbus-parameterlijst_gap_report.md
+9223,UINT8,R/W,enthält W laut Doku,Hybrid (27),Hybrid Electricity cost in low tarif,GTW-08-Modbus-parameterlijst_gap_report.md
+9224,UINT8,R/W,enthält W laut Doku,Hybrid (27),cost of ofssil energy (oil or gas) - piece per litre or peu m3,GTW-08-Modbus-parameterlijst_gap_report.md
+9225,UINT8,R/W,enthält W laut Doku,Hybrid (27),Electrical CO2 emission in heating mode,GTW-08-Modbus-parameterlijst_gap_report.md
+9226,UINT8,R/W,enthält W laut Doku,Hybrid (27),Electrical CO2 emission in DHW mode,GTW-08-Modbus-parameterlijst_gap_report.md
+9227,UINT8,R/W,enthält W laut Doku,Hybrid (27),Gas or Oil CO2 emission,GTW-08-Modbus-parameterlijst_gap_report.md
+9228,UINT8,R/W,enthält W laut Doku,Hybrid (27),Boiler in appliance efficiency,GTW-08-Modbus-parameterlijst_gap_report.md
+9229,UINT16,R/W,enthält W laut Doku,Hybrid (27),COP threshold above which heat pump is authorized to operate when hybrid mode is primary energy,GTW-08-Modbus-parameterlijst_gap_report.md
+9232,UINT16,R/W,enthält W laut Doku,Hybrid (27),Hybrid Electricity cost in high tarif accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+9233,UINT16,R/W,enthält W laut Doku,Hybrid (27),Hybrid Electricity cost in low tarif accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+9234,UINT16,R/W,enthält W laut Doku,Hybrid (27),cost of fossil energy (oil or gas) - piece per litre or per m3 accurate,GTW-08-Modbus-parameterlijst_gap_report.md
+21020,ENUM8,R/W,enthält W laut Doku,BMS (11),The heat demand mode which is used in case of a communication error,GTW-08-Modbus-parameterlijst_gap_report.md
+21021,ENUM8,R/W,enthält W laut Doku,BMS (11),Fallback strategy to apply,GTW-08-Modbus-parameterlijst_gap_report.md
+21022,UINT8,R/W,enthält W laut Doku,BMS (11),Number Of Minutes To Maintain Heat Demand in fallback mode,GTW-08-Modbus-parameterlijst_gap_report.md
+21023,UINT8,R/W,enthält W laut Doku,BMS (11),fallback power setpoint,GTW-08-Modbus-parameterlijst_gap_report.md
+21024,INT16,R/W,enthält W laut Doku,BMS (11),fallback temperature setpoint,GTW-08-Modbus-parameterlijst_gap_report.md
+21025,ENUM8,R/W,enthält W laut Doku,BMS (11),fallback heat demand type,GTW-08-Modbus-parameterlijst_gap_report.md
+21026,ENUM8,R/W,enthält W laut Doku,BMS (11),0 - 10V input selection (temperature or power setpoint),GTW-08-Modbus-parameterlijst_gap_report.md
+21027,UINT8,R,nur R laut Doku,BMS (11),Measure of the Voltage on the 0-10V Input,GTW-08-Modbus-parameterlijst_gap_report.md
+21028,ENUM8,R/W,enthält W laut Doku,BMS (11),Parameter to activate the 2nd return sensor,GTW-08-Modbus-parameterlijst_gap_report.md
+21029,INT16,R,nur R laut Doku,BMS (11),Second return temperature,GTW-08-Modbus-parameterlijst_gap_report.md
+21030,UINT16,R/W,enthält W laut Doku,BMS (11),Absolute max boiler power in KW. This is the power the device can produce when burner parameters are set at maximum.,GTW-08-Modbus-parameterlijst_gap_report.md

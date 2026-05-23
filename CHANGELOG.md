@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.9.0-beta.0
+- Docs: Phase-1 Gap-Reports zu einer deduplizierten Lückenliste unter `.kiki/reports/PHASE1_LUECKENLISTE_KONSOLIDIERT_2026-05-23.{md,csv}` zusammengeführt.
+- Feat: Neue IWR/GTW-08 Sensoren `buffer_tank_active`, `cascade_role` und `appliance_error_priority` ergänzt.
+
 ## v0.8.0-beta.0
 - Feat: `AP050` Gerätezeit wird als lesbarer Zeitstempel aus dem 6-Byte-OCTETSTRING dekodiert.
 
