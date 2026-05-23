@@ -1546,6 +1546,18 @@
       "manufacturer_code": {
         "name": "Manufacturer code"
       },
+      "cascade_producer_active_number": {
+        "name": "Active producers"
+      },
+      "cascade_number_of_producers": {
+        "name": "Recognised cascade producers"
+      },
+      "cascade_number_of_stages_available": {
+        "name": "Available cascade stages"
+      },
+      "cascade_number_of_stages_required": {
+        "name": "Required cascade stages"
+      },
       "buffer_tank_active": {
         "name": "Buffer tank active",
         "state": {

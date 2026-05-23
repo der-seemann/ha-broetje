@@ -1546,6 +1546,18 @@
       "manufacturer_code": {
         "name": "Herstellercode"
       },
+      "cascade_producer_active_number": {
+        "name": "Aktive Erzeuger"
+      },
+      "cascade_number_of_producers": {
+        "name": "Erkannte Kaskaden-Erzeuger"
+      },
+      "cascade_number_of_stages_available": {
+        "name": "Verfügbare Kaskadenstufen"
+      },
+      "cascade_number_of_stages_required": {
+        "name": "Angeforderte Kaskadenstufen"
+      },
       "buffer_tank_active": {
         "name": "Pufferspeicher aktiv",
         "state": {
