@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Any
 
 from pymodbus.client import AsyncModbusTcpClient
@@ -34,6 +34,7 @@ from .const import (
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_config
 
 _LOGGER = logging.getLogger(__name__)
+_APPLIANCE_TIME_EPOCH = date(1984, 1, 1)
 
 
 class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -515,6 +516,27 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 chars.append(chr((reg >> 8) & 0xFF))
                 chars.append(chr(reg & 0xFF))
             return "".join(chars).rstrip("\x00").strip()
+
+        if data_type == "appliance_time":
+            raw = b"".join(reg.to_bytes(2, "big") for reg in registers)
+            if len(raw) != 6:
+                return None
+
+            millis_since_midnight = int.from_bytes(raw[:4], "little")
+            days_since_epoch = int.from_bytes(raw[4:], "little")
+
+            total_seconds, milliseconds = divmod(millis_since_midnight, 1000)
+            hours, remainder = divmod(total_seconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            if hours >= 24 or minutes >= 60 or seconds >= 60:
+                return None
+
+            appliance_date = _APPLIANCE_TIME_EPOCH + timedelta(days=days_since_epoch)
+            return (
+                f"{appliance_date.isoformat()} "
+                f"{hours:02d}:{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
+            )
 
         return registers[0] * scale
 

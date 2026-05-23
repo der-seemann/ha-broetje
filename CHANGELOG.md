@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.8.0-beta.0
+- Feat: `AP050` Gerätezeit wird als lesbarer Zeitstempel aus dem 6-Byte-OCTETSTRING dekodiert.
+
 ## v0.7.0-beta.4
 - Fix: `appliance_time_sensor` und `low_noise_mode_state_sensor` aus dem Binary-Sensor-Block in den Sensor-Block verschoben.
 

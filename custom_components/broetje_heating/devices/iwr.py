@@ -1427,7 +1427,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "address": 350,
         "type": REG_HOLDING,
         "count": 3,
-        "data_type": "string",
+        "data_type": "appliance_time",
         "scale": 1,
     },
     # Register 280 bits (Tab.15 - Output status 2)
