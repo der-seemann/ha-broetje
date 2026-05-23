@@ -229,6 +229,10 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "board9_error_severity": ("diagnostic", False),
     "board10_error_code": ("diagnostic", False),
     "board10_error_severity": ("diagnostic", False),
+    "buffer_tank_temperature_bottom": ("diagnostic", True),
+    "buffer_tank_temperature_top": ("diagnostic", True),
+    "buffer_tank_pump_state": ("diagnostic", True),
+    "buffer_tank_mode": ("diagnostic", True),
 }
 
 # Zone entity classification keyed by translation_key (zone-number-agnostic).
@@ -646,6 +650,11 @@ IWR_LOW_NOISE_MODE_STATE: Final = {
     5: "silent_mode_level_5",
 }
 
+IWR_BUFFER_TANK_MODE: Final = {
+    0: "decoupling_tank",
+    1: "storage_tank",
+}
+
 IWR_NO_YES: Final = {
     0: "no",
     1: "yes",
@@ -690,6 +699,7 @@ IWR_ENUM_MAPS: Final = {
     "iwr_logic_contact": IWR_LOGIC_CONTACT,
     "iwr_blocking_input_setting": IWR_BLOCKING_INPUT_SETTING,
     "iwr_low_noise_mode_state": IWR_LOW_NOISE_MODE_STATE,
+    "iwr_buffer_tank_mode": IWR_BUFFER_TANK_MODE,
     "iwr_no_yes": IWR_NO_YES,
     "iwr_cascade_role": IWR_CASCADE_ROLE,
     "iwr_backup_type": IWR_BACKUP_TYPE,
@@ -1738,6 +1748,34 @@ _IWR_STATIC_REGISTER_MAP: Final = {
     },
     "board10_error_severity": {
         "address": 551,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "buffer_tank_temperature_bottom": {
+        "address": 7600,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
+    },
+    "buffer_tank_temperature_top": {
+        "address": 7601,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
+    },
+    "buffer_tank_pump_state": {
+        "address": 7602,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "buffer_tank_mode": {
+        "address": 7603,
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint16",
@@ -3553,6 +3591,44 @@ _IWR_STATIC_SENSORS: Final = {
         "icon": "mdi:alert-circle-outline",
         "enum_map": "iwr_error_severity",
         "sub_device": SUBDEV_SERVICE,
+    },
+    "buffer_tank_temperature_bottom": {
+        "register": "buffer_tank_temperature_bottom",
+        "translation_key": "buffer_tank_temperature_bottom",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "icon": "mdi:thermometer-chevron-down",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_tank_temperature_top": {
+        "register": "buffer_tank_temperature_top",
+        "translation_key": "buffer_tank_temperature_top",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "icon": "mdi:thermometer-chevron-up",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_tank_pump_state": {
+        "register": "buffer_tank_pump_state",
+        "translation_key": "buffer_tank_pump_state",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:pump",
+        "enum_map": "iwr_on_off",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_tank_mode": {
+        "register": "buffer_tank_mode",
+        "translation_key": "buffer_tank_mode",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:storage-tank",
+        "enum_map": "iwr_buffer_tank_mode",
+        "sub_device": SUBDEV_BUFFER_TANK,
     },
 }
 

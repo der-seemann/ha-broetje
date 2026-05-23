@@ -1605,6 +1605,26 @@
           "no_error": "No error"
         }
       },
+      "buffer_tank_temperature_bottom": {
+        "name": "Buffer tank temperature bottom"
+      },
+      "buffer_tank_temperature_top": {
+        "name": "Buffer tank temperature top"
+      },
+      "buffer_tank_pump_state": {
+        "name": "Buffer tank pump state",
+        "state": {
+          "off": "Off",
+          "on": "On"
+        }
+      },
+      "buffer_tank_mode": {
+        "name": "Buffer tank mode",
+        "state": {
+          "decoupling_tank": "Decoupling tank",
+          "storage_tank": "Storage tank"
+        }
+      },
       "zone_flow_temp": {
         "name": "Zone {zone} flow temperature"
       },

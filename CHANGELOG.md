@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.13.0-beta.0
+- Feat: Neuer Buffer-Tank-Block mit `buffer_tank_temperature_bottom`, `buffer_tank_temperature_top`, `buffer_tank_pump_state`, `buffer_tank_mode`.
+
 ## v0.12.0-beta.0
 - Feat: Neuer Service-Block mit `board9_error_code`/`severity` und `board10_error_code`/`severity`.
 

@@ -1701,6 +1701,26 @@
           "no_error": "Kein Fehler"
         }
       },
+      "buffer_tank_temperature_bottom": {
+        "name": "Puffertemperatur unten"
+      },
+      "buffer_tank_temperature_top": {
+        "name": "Puffertemperatur oben"
+      },
+      "buffer_tank_pump_state": {
+        "name": "Pufferspeicherpumpe",
+        "state": {
+          "off": "Aus",
+          "on": "Ein"
+        }
+      },
+      "buffer_tank_mode": {
+        "name": "Pufferspeichermodus",
+        "state": {
+          "decoupling_tank": "Hydraulische Weiche",
+          "storage_tank": "Speicher"
+        }
+      },
       "zone_flow_temp": {
         "name": "Heizkreis {zone} Vorlauftemperatur"
       },
