@@ -55,8 +55,8 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "output_dhw_active": (None, True),
     "output_ch_active": (None, True),
     "output_cooling_active": (None, True),
-    "appliance_time": ("diagnostic", True),
-    "low_noise_mode_state": ("diagnostic", True),
+    "appliance_time_sensor": ("diagnostic", True),
+    "low_noise_mode_state_sensor": ("diagnostic", True),
     "special_status_shutdown": ("diagnostic", False),
     "special_status_heating": ("diagnostic", False),
     "special_status_cooling": ("diagnostic", False),
@@ -3432,7 +3432,7 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
         "icon": "mdi:counter",
         "sub_device": SUBDEV_SERVICE,
     },
-    "appliance_time": {
+    "appliance_time_sensor": {
         "register": "appliance_time",
         "translation_key": "appliance_time",
         "device_class": None,
@@ -3441,7 +3441,7 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
         "icon": "mdi:clock-outline",
         "sub_device": SUBDEV_BOILER,
     },
-    "low_noise_mode_state": {
+    "low_noise_mode_state_sensor": {
         "register": "low_noise_mode_state",
         "translation_key": "low_noise_mode_state",
         "device_class": "enum",

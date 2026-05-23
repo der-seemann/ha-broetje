@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.0-beta.2
+- Fix: neue Sensor-Entity-Keys für `appliance_time` und `low_noise_mode_state`, damit alte fehlerhafte Binary-Sensor-Registry-Einträge die Sensoranlage nicht mehr blockieren.
+
 ## v0.7.0-beta.1
 - Fix: fehlenden Register-Map-Eintrag für `low_noise_mode_state` ergänzt, damit der Sensor live gelesen wird.
 
