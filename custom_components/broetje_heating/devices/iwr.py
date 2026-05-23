@@ -157,6 +157,7 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "cascade_role": ("diagnostic", False),
     "devices_connected": ("diagnostic", False),
     "appliance_error_priority": ("diagnostic", False),
+    "current_generic_error_code": ("diagnostic", False),
     "board1_device_type": ("diagnostic", True),
     "board1_software_version": ("diagnostic", True),
     "board1_config_table_version": ("diagnostic", True),
@@ -216,6 +217,10 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "board3_error_severity": ("diagnostic", False),
     "board4_error_code": ("diagnostic", False),
     "board4_error_severity": ("diagnostic", False),
+    "board5_error_code": ("diagnostic", False),
+    "board5_error_severity": ("diagnostic", False),
+    "board6_error_code": ("diagnostic", False),
+    "board6_error_severity": ("diagnostic", False),
 }
 
 # Zone entity classification keyed by translation_key (zone-number-agnostic).
@@ -466,6 +471,7 @@ IWR_ERROR_SEVERITY: Final = {
     0: "locking",
     3: "blocking",
     6: "warning",
+    254: "device_not_available",
     255: "no_error",
 }
 
@@ -1595,6 +1601,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "scale": 1,
     },
     # --- Error registers (Tab.51-53) ---
+    "current_generic_error_code": {
+        "address": 530,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     "error_present": {
         "address": 531,
         "type": REG_HOLDING,
@@ -1633,6 +1646,34 @@ _IWR_STATIC_REGISTER_MAP: Final = {
     },
     "board2_error_severity": {
         "address": 535,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "board5_error_code": {
+        "address": 540,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "board5_error_severity": {
+        "address": 541,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "board6_error_code": {
+        "address": 542,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
+    "board6_error_severity": {
+        "address": 543,
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint16",
@@ -3250,6 +3291,15 @@ _IWR_STATIC_SENSORS: Final = {
         "enum_map": "iwr_error_severity",
         "sub_device": SUBDEV_SERVICE,
     },
+    "current_generic_error_code": {
+        "register": "current_generic_error_code",
+        "translation_key": "current_generic_error_code",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "sub_device": SUBDEV_SERVICE,
+    },
     "board1_error_code": {
         "register": "board1_error_code",
         "translation_key": "board1_error_code",
@@ -3319,6 +3369,44 @@ _IWR_STATIC_SENSORS: Final = {
     "board4_error_severity": {
         "register": "board4_error_severity",
         "translation_key": "board4_error_severity",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "enum_map": "iwr_error_severity",
+        "sub_device": SUBDEV_SERVICE,
+    },
+    "board5_error_code": {
+        "register": "board5_error_code",
+        "translation_key": "board5_error_code",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "sub_device": SUBDEV_SERVICE,
+    },
+    "board5_error_severity": {
+        "register": "board5_error_severity",
+        "translation_key": "board5_error_severity",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "enum_map": "iwr_error_severity",
+        "sub_device": SUBDEV_SERVICE,
+    },
+    "board6_error_code": {
+        "register": "board6_error_code",
+        "translation_key": "board6_error_code",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:alert-circle-outline",
+        "sub_device": SUBDEV_SERVICE,
+    },
+    "board6_error_severity": {
+        "register": "board6_error_severity",
+        "translation_key": "board6_error_severity",
         "device_class": "enum",
         "unit": None,
         "state_class": None,

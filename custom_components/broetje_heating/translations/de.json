@@ -1566,9 +1566,13 @@
         "state": {
           "locking": "Verriegelt",
           "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
           "warning": "Warnung",
           "no_error": "Kein Fehler"
         }
+      },
+      "current_generic_error_code": {
+        "name": "Aktueller generischer Fehlercode"
       },
       "board1_error_code": {
         "name": "Leiterplatte 1 Fehlercode"
@@ -1614,6 +1618,33 @@
         "state": {
           "locking": "Verriegelt",
           "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
+          "warning": "Warnung",
+          "no_error": "Kein Fehler"
+        }
+      },
+      "board5_error_code": {
+        "name": "Leiterplatte 5 Fehlercode"
+      },
+      "board5_error_severity": {
+        "name": "Leiterplatte 5 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
+          "warning": "Warnung",
+          "no_error": "Kein Fehler"
+        }
+      },
+      "board6_error_code": {
+        "name": "Leiterplatte 6 Fehlercode"
+      },
+      "board6_error_severity": {
+        "name": "Leiterplatte 6 Fehlerschwere",
+        "state": {
+          "locking": "Verriegelt",
+          "blocking": "Gesperrt",
+          "device_not_available": "Gerät nicht verfügbar",
           "warning": "Warnung",
           "no_error": "Kein Fehler"
         }

@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.10.0-beta.0
+- Feat: Neuer Service-Block mit `current_generic_error_code`, `board5_error_code`/`severity` und `board6_error_code`/`severity`.
+
 ## v0.9.0-beta.0
 - Docs: Phase-1 Gap-Reports zu einer deduplizierten Lückenliste unter `.kiki/reports/PHASE1_LUECKENLISTE_KONSOLIDIERT_2026-05-23.{md,csv}` zusammengeführt.
 - Feat: Neue IWR/GTW-08 Sensoren `buffer_tank_active`, `cascade_role` und `appliance_error_priority` ergänzt.

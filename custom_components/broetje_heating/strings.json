@@ -1320,9 +1320,13 @@
         "state": {
           "locking": "Locking",
           "blocking": "Blocking",
+          "device_not_available": "Device not available",
           "warning": "Warning",
           "no_error": "No error"
         }
+      },
+      "current_generic_error_code": {
+        "name": "Current generic error code"
       },
       "board1_device_type": {
         "name": "Board 1 device type"
@@ -1518,6 +1522,33 @@
         "state": {
           "locking": "Locking",
           "blocking": "Blocking",
+          "device_not_available": "Device not available",
+          "warning": "Warning",
+          "no_error": "No error"
+        }
+      },
+      "board5_error_code": {
+        "name": "Board 5 error code"
+      },
+      "board5_error_severity": {
+        "name": "Board 5 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "device_not_available": "Device not available",
+          "warning": "Warning",
+          "no_error": "No error"
+        }
+      },
+      "board6_error_code": {
+        "name": "Board 6 error code"
+      },
+      "board6_error_severity": {
+        "name": "Board 6 error severity",
+        "state": {
+          "locking": "Locking",
+          "blocking": "Blocking",
+          "device_not_available": "Device not available",
           "warning": "Warning",
           "no_error": "No error"
         }
