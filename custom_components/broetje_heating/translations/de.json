@@ -988,6 +988,156 @@
       "gateway_device_type": {
         "name": "Gateway Gerätetyp"
       },
+      "board1_device_type": {
+        "name": "Platine 1 Gerätetyp"
+      },
+      "board1_software_version": {
+        "name": "Platine 1 Softwareversion"
+      },
+      "board1_config_table_version": {
+        "name": "Platine 1 Konfigurationstabellenversion"
+      },
+      "board1_hardware_version": {
+        "name": "Platine 1 Hardwareversion"
+      },
+      "board1_article_number": {
+        "name": "Platine 1 Artikelnummer"
+      },
+      "board2_device_type": {
+        "name": "Platine 2 Gerätetyp"
+      },
+      "board2_software_version": {
+        "name": "Platine 2 Softwareversion"
+      },
+      "board2_config_table_version": {
+        "name": "Platine 2 Konfigurationstabellenversion"
+      },
+      "board2_hardware_version": {
+        "name": "Platine 2 Hardwareversion"
+      },
+      "board2_article_number": {
+        "name": "Platine 2 Artikelnummer"
+      },
+      "board3_device_type": {
+        "name": "Platine 3 Gerätetyp"
+      },
+      "board3_software_version": {
+        "name": "Platine 3 Softwareversion"
+      },
+      "board3_config_table_version": {
+        "name": "Platine 3 Konfigurationstabellenversion"
+      },
+      "board3_hardware_version": {
+        "name": "Platine 3 Hardwareversion"
+      },
+      "board3_article_number": {
+        "name": "Platine 3 Artikelnummer"
+      },
+      "board4_device_type": {
+        "name": "Platine 4 Gerätetyp"
+      },
+      "board4_software_version": {
+        "name": "Platine 4 Softwareversion"
+      },
+      "board4_config_table_version": {
+        "name": "Platine 4 Konfigurationstabellenversion"
+      },
+      "board4_hardware_version": {
+        "name": "Platine 4 Hardwareversion"
+      },
+      "board4_article_number": {
+        "name": "Platine 4 Artikelnummer"
+      },
+      "board5_device_type": {
+        "name": "Platine 5 Gerätetyp"
+      },
+      "board5_software_version": {
+        "name": "Platine 5 Softwareversion"
+      },
+      "board5_config_table_version": {
+        "name": "Platine 5 Konfigurationstabellenversion"
+      },
+      "board5_hardware_version": {
+        "name": "Platine 5 Hardwareversion"
+      },
+      "board5_article_number": {
+        "name": "Platine 5 Artikelnummer"
+      },
+      "board6_device_type": {
+        "name": "Platine 6 Gerätetyp"
+      },
+      "board6_software_version": {
+        "name": "Platine 6 Softwareversion"
+      },
+      "board6_config_table_version": {
+        "name": "Platine 6 Konfigurationstabellenversion"
+      },
+      "board6_hardware_version": {
+        "name": "Platine 6 Hardwareversion"
+      },
+      "board6_article_number": {
+        "name": "Platine 6 Artikelnummer"
+      },
+      "board7_device_type": {
+        "name": "Platine 7 Gerätetyp"
+      },
+      "board7_software_version": {
+        "name": "Platine 7 Softwareversion"
+      },
+      "board7_config_table_version": {
+        "name": "Platine 7 Konfigurationstabellenversion"
+      },
+      "board7_hardware_version": {
+        "name": "Platine 7 Hardwareversion"
+      },
+      "board7_article_number": {
+        "name": "Platine 7 Artikelnummer"
+      },
+      "board8_device_type": {
+        "name": "Platine 8 Gerätetyp"
+      },
+      "board8_software_version": {
+        "name": "Platine 8 Softwareversion"
+      },
+      "board8_config_table_version": {
+        "name": "Platine 8 Konfigurationstabellenversion"
+      },
+      "board8_hardware_version": {
+        "name": "Platine 8 Hardwareversion"
+      },
+      "board8_article_number": {
+        "name": "Platine 8 Artikelnummer"
+      },
+      "board9_device_type": {
+        "name": "Platine 9 Gerätetyp"
+      },
+      "board9_software_version": {
+        "name": "Platine 9 Softwareversion"
+      },
+      "board9_config_table_version": {
+        "name": "Platine 9 Konfigurationstabellenversion"
+      },
+      "board9_hardware_version": {
+        "name": "Platine 9 Hardwareversion"
+      },
+      "board9_article_number": {
+        "name": "Platine 9 Artikelnummer"
+      },
+      "board10_device_type": {
+        "name": "Platine 10 Gerätetyp"
+      },
+      "board10_software_version": {
+        "name": "Platine 10 Softwareversion"
+      },
+      "board10_config_table_version": {
+        "name": "Platine 10 Konfigurationstabellenversion"
+      },
+      "board10_hardware_version": {
+        "name": "Platine 10 Hardwareversion"
+      },
+      "board10_article_number": {
+        "name": "Platine 10 Artikelnummer"
+      },
       "zone_count": {
         "name": "Erkannte Heizkreise"
       },
@@ -1688,6 +1838,12 @@
       },
       "board_article_number": {
         "name": "Platine {board} Artikelnummer"
+      },
+      "appliance_time": {
+        "name": "Gerätezeit"
+      },
+      "low_noise_mode_state": {
+        "name": "Status Leisebetrieb"
       }
     },
     "binary_sensor": {
@@ -1801,9 +1957,6 @@
       },
       "status_bitfields_number_3": {
         "name": "Status-Bitfeld Nummer 3"
-      },
-      "appliance_time": {
-        "name": "Gerätezeit"
       },
       "status_backup1_on": {
         "name": "Elektrischer Zusatzerzeuger 1 ein"

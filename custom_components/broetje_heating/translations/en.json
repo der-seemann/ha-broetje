@@ -988,6 +988,156 @@
       "gateway_device_type": {
         "name": "Gateway device type"
       },
+      "board1_device_type": {
+        "name": "Board 1 device type"
+      },
+      "board1_software_version": {
+        "name": "Board 1 software version"
+      },
+      "board1_config_table_version": {
+        "name": "Board 1 config table version"
+      },
+      "board1_hardware_version": {
+        "name": "Board 1 hardware version"
+      },
+      "board1_article_number": {
+        "name": "Board 1 article number"
+      },
+      "board2_device_type": {
+        "name": "Board 2 device type"
+      },
+      "board2_software_version": {
+        "name": "Board 2 software version"
+      },
+      "board2_config_table_version": {
+        "name": "Board 2 config table version"
+      },
+      "board2_hardware_version": {
+        "name": "Board 2 hardware version"
+      },
+      "board2_article_number": {
+        "name": "Board 2 article number"
+      },
+      "board3_device_type": {
+        "name": "Board 3 device type"
+      },
+      "board3_software_version": {
+        "name": "Board 3 software version"
+      },
+      "board3_config_table_version": {
+        "name": "Board 3 config table version"
+      },
+      "board3_hardware_version": {
+        "name": "Board 3 hardware version"
+      },
+      "board3_article_number": {
+        "name": "Board 3 article number"
+      },
+      "board4_device_type": {
+        "name": "Board 4 device type"
+      },
+      "board4_software_version": {
+        "name": "Board 4 software version"
+      },
+      "board4_config_table_version": {
+        "name": "Board 4 config table version"
+      },
+      "board4_hardware_version": {
+        "name": "Board 4 hardware version"
+      },
+      "board4_article_number": {
+        "name": "Board 4 article number"
+      },
+      "board5_device_type": {
+        "name": "Board 5 device type"
+      },
+      "board5_software_version": {
+        "name": "Board 5 software version"
+      },
+      "board5_config_table_version": {
+        "name": "Board 5 config table version"
+      },
+      "board5_hardware_version": {
+        "name": "Board 5 hardware version"
+      },
+      "board5_article_number": {
+        "name": "Board 5 article number"
+      },
+      "board6_device_type": {
+        "name": "Board 6 device type"
+      },
+      "board6_software_version": {
+        "name": "Board 6 software version"
+      },
+      "board6_config_table_version": {
+        "name": "Board 6 config table version"
+      },
+      "board6_hardware_version": {
+        "name": "Board 6 hardware version"
+      },
+      "board6_article_number": {
+        "name": "Board 6 article number"
+      },
+      "board7_device_type": {
+        "name": "Board 7 device type"
+      },
+      "board7_software_version": {
+        "name": "Board 7 software version"
+      },
+      "board7_config_table_version": {
+        "name": "Board 7 config table version"
+      },
+      "board7_hardware_version": {
+        "name": "Board 7 hardware version"
+      },
+      "board7_article_number": {
+        "name": "Board 7 article number"
+      },
+      "board8_device_type": {
+        "name": "Board 8 device type"
+      },
+      "board8_software_version": {
+        "name": "Board 8 software version"
+      },
+      "board8_config_table_version": {
+        "name": "Board 8 config table version"
+      },
+      "board8_hardware_version": {
+        "name": "Board 8 hardware version"
+      },
+      "board8_article_number": {
+        "name": "Board 8 article number"
+      },
+      "board9_device_type": {
+        "name": "Board 9 device type"
+      },
+      "board9_software_version": {
+        "name": "Board 9 software version"
+      },
+      "board9_config_table_version": {
+        "name": "Board 9 config table version"
+      },
+      "board9_hardware_version": {
+        "name": "Board 9 hardware version"
+      },
+      "board9_article_number": {
+        "name": "Board 9 article number"
+      },
+      "board10_device_type": {
+        "name": "Board 10 device type"
+      },
+      "board10_software_version": {
+        "name": "Board 10 software version"
+      },
+      "board10_config_table_version": {
+        "name": "Board 10 config table version"
+      },
+      "board10_hardware_version": {
+        "name": "Board 10 hardware version"
+      },
+      "board10_article_number": {
+        "name": "Board 10 article number"
+      },
       "zone_count": {
         "name": "Zones detected"
       },
@@ -1688,6 +1838,12 @@
       },
       "board_article_number": {
         "name": "Board {board} article number"
+      },
+      "appliance_time": {
+        "name": "Appliance time"
+      },
+      "low_noise_mode_state": {
+        "name": "Low noise mode state"
       }
     },
     "binary_sensor": {
@@ -1801,9 +1957,6 @@
       },
       "status_bitfields_number_3": {
         "name": "Status bitfields number 3"
-      },
-      "appliance_time": {
-        "name": "Appliance time"
       },
       "status_backup1_on": {
         "name": "Electrical backup 1 on"

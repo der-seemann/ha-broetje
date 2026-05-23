@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.7.0-beta.0
+- Feat: System-Discovery-Register für Board 1-10 als Sensoren ergänzt.
+- Fix: `gateway_device_type` und `board*_device_type` werden lesbar formatiert.
+- Fix: `low_noise_mode_state` und `appliance_time` korrekt als Sensoren übersetzt.
+
 ## v0.6.0-beta.5
 - Fix: `AP050` Appliance Time als Rohsensor ergänzt.
 
