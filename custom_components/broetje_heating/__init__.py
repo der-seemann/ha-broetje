@@ -11,8 +11,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, SUB_DEVICE_LABELS
+from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, SUB_DEVICE_LABELS
 from .coordinator import BroetjeModbusCoordinator
 from .devices import CONF_DEVICE_TYPE, DeviceType
 
@@ -61,6 +62,34 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
             "Migration to version 3 successful: zone_count=%d -> zones=%s",
             zone_count,
             new_data["zones"],
+        )
+
+    if config_entry.version == 3 and config_entry.minor_version < 2:
+        _LOGGER.debug("Migrating config entry from version 3.1 to 3.2")
+        entity_registry = er.async_get(hass)
+        stale_unique_ids = {
+            f"{config_entry.unique_id}_appliance_time",
+            f"{config_entry.unique_id}_low_noise_mode_state",
+        }
+        removed = 0
+
+        for entry in er.async_entries_for_config_entry(entity_registry, config_entry.entry_id):
+            if (
+                entry.platform == DOMAIN
+                and entry.domain == Platform.BINARY_SENSOR
+                and entry.unique_id in stale_unique_ids
+            ):
+                entity_registry.async_remove(entry.entity_id)
+                removed += 1
+
+        hass.config_entries.async_update_entry(
+            config_entry,
+            version=3,
+            minor_version=2,
+        )
+        _LOGGER.info(
+            "Migration to version 3.2 successful: removed %d stale binary sensor entries",
+            removed,
         )
 
     return True
