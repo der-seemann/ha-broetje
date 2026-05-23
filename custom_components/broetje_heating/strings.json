@@ -1297,6 +1297,9 @@
       "starts_since_service": {
         "name": "Starts since service"
       },
+      "manufacturer_code": {
+        "name": "Manufacturer code"
+      },
       "buffer_tank_active": {
         "name": "Buffer tank active",
         "state": {

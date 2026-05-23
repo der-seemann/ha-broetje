@@ -145,6 +145,7 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "output_3way_valve": ("diagnostic", False),
     "output_3way_valve_closed": ("diagnostic", False),
     # ===== Discovery / system metadata — Diagnostic, disabled by default =====
+    "manufacturer_code": ("diagnostic", False),
     "gateway_device_type": ("diagnostic", False),
     "zone_count": ("diagnostic", False),
     "zones_disabled": ("diagnostic", False),
@@ -743,6 +744,13 @@ ZONE_ADDRESSES: Final = {
 
 _IWR_STATIC_REGISTER_MAP: Final = {
     # --- Device Information GTW-08 (from German spec 7740782-01) ---
+    "manufacturer_code": {
+        "address": 1,
+        "type": REG_HOLDING,
+        "count": 10,
+        "data_type": "string",
+        "scale": 1,
+    },
     "gateway_device_type": {
         "address": 11,
         "type": REG_HOLDING,
@@ -2083,6 +2091,14 @@ _IWR_STATIC_REGISTER_MAP: Final = {
 
 _IWR_STATIC_SENSORS: Final = {
     # --- Device Information GTW-08 (from German spec 7740782-01) ---
+    "manufacturer_code": {
+        "register": "manufacturer_code",
+        "translation_key": "manufacturer_code",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:identifier",
+    },
     "gateway_device_type": {
         "register": "gateway_device_type",
         "translation_key": "gateway_device_type",

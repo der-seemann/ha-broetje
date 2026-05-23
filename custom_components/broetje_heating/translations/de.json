@@ -1543,6 +1543,9 @@
       "starts_since_service": {
         "name": "Erzeugerstarts seit Wartung"
       },
+      "manufacturer_code": {
+        "name": "Herstellercode"
+      },
       "buffer_tank_active": {
         "name": "Pufferspeicher aktiv",
         "state": {

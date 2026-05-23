@@ -5,6 +5,7 @@
 "System Discovery","130","1","uint16","Board 1 software version","Platine 1 Softwareversion","board1_software_version","","0-65535","mdi:memory","","German parameter list","R","R"
 "System Discovery","131","1","uint16","Board 1 config table version","Platine 1 Konfigurationstabellenversion","board1_config_table_version","","0-65535","mdi:memory","","German parameter list","R","R"
 "System Discovery","132","1","uint16","Board 1 hardware version","Platine 1 Hardwareversion","board1_hardware_version","","0-65535","mdi:memory","","German parameter list","R","R"
+"Device Information GTW-08","1","10","string","Manufacturer code (= VAT code) of the device","Herstellercode (MwSt.-Kennung) des Geräts","manufacturer_code","","ASCII / 20 Zeichen","mdi:identifier","","GTW-08 XLSX","R","R"
 "System Discovery","133","2","uint32","Board 1 article number","Platine 1 Artikelnummer","board1_article_number","","0-4294967295","mdi:barcode","","German parameter list","R","R"
 "System Discovery","135","1","uint16","Board 2 device type","Platine 2 Gerätetyp","board2_device_type","","0-65535","mdi:chip","","German parameter list","R","R"
 "System Discovery","136","1","uint16","Board 2 software version","Platine 2 Softwareversion","board2_software_version","","0-65535","mdi:memory","","German parameter list","R","R"
