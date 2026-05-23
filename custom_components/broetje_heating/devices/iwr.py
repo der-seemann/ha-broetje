@@ -2339,6 +2339,25 @@ _IWR_STATIC_SENSORS: Final = {
         "state_class": None,
         "icon": "mdi:barcode",
     },
+    "appliance_time_sensor": {
+        "register": "appliance_time",
+        "translation_key": "appliance_time",
+        "device_class": None,
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:clock-outline",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "low_noise_mode_state_sensor": {
+        "register": "low_noise_mode_state",
+        "translation_key": "low_noise_mode_state",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:volume-off",
+        "enum_map": "iwr_low_noise_mode_state",
+        "sub_device": SUBDEV_BOILER,
+    },
     # --- Zone Detection (Tab.24) ---
     "zone_count": {
         "register": "zone_count",
@@ -3431,25 +3450,6 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
         "state_class": "measurement",
         "icon": "mdi:counter",
         "sub_device": SUBDEV_SERVICE,
-    },
-    "appliance_time_sensor": {
-        "register": "appliance_time",
-        "translation_key": "appliance_time",
-        "device_class": None,
-        "unit": None,
-        "state_class": None,
-        "icon": "mdi:clock-outline",
-        "sub_device": SUBDEV_BOILER,
-    },
-    "low_noise_mode_state_sensor": {
-        "register": "low_noise_mode_state",
-        "translation_key": "low_noise_mode_state",
-        "device_class": "enum",
-        "unit": None,
-        "state_class": None,
-        "icon": "mdi:volume-off",
-        "enum_map": "iwr_low_noise_mode_state",
-        "sub_device": SUBDEV_BOILER,
     },
     # --- Bitfield 280: Output status 2 ---
     "output_pump": {

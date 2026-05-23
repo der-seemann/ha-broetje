@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.0-beta.4
+- Fix: `appliance_time_sensor` und `low_noise_mode_state_sensor` aus dem Binary-Sensor-Block in den Sensor-Block verschoben.
+
 ## v0.7.0-beta.3
 - Fix: Config-Entry-Migration 3.2 entfernt die alten fehlerhaften `binary_sensor`-Registry-Einträge für `appliance_time` und `low_noise_mode_state`.
 
