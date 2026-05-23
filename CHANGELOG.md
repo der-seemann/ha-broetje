@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.0-beta.1
+- Fix: fehlenden Register-Map-Eintrag für `low_noise_mode_state` ergänzt, damit der Sensor live gelesen wird.
+
 ## v0.7.0-beta.0
 - Feat: System-Discovery-Register für Board 1-10 als Sensoren ergänzt.
 - Fix: `gateway_device_type` und `board*_device_type` werden lesbar formatiert.

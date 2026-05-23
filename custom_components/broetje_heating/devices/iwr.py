@@ -1491,6 +1491,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "min": 0,
         "max": 1,
     },
+    "low_noise_mode_state": {
+        "address": 480,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+    },
     # --- Appliance Enable/Disable (from German spec 7740782-01) ---
     "ch_enabled": {
         "address": 500,
