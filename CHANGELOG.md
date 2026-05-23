@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.11.0-beta.0
+- Feat: Neuer Service-Block mit `board7_error_code`/`severity` und `board8_error_code`/`severity`.
+
 ## v0.10.0-beta.0
 - Feat: Neuer Service-Block mit `current_generic_error_code`, `board5_error_code`/`severity` und `board6_error_code`/`severity`.
 
