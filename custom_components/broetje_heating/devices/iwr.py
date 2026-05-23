@@ -10,6 +10,7 @@ from typing import Any, Final
 from ..const import (
     REG_HOLDING,
     SUBDEV_BOILER,
+    SUBDEV_BUFFER_TANK,
     SUBDEV_HYBRID,
     SUBDEV_SERVICE,
 )
