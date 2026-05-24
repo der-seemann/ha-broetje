@@ -70,6 +70,9 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - Block 16 / `7135-7138`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK (`disabled_by=None`)
 - Block 16 / `7135-7138`: `/api/states` HTTP 200 fuer `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_8` state `0`, `..._vorlauftemperatur_erzeuger_8` state `0.0`, `..._status_erzeuger_8` state `0`, `..._sonderanforderung_erzeuger_8` state `0`
 - Block 16 / `7135-7138`: DONE; naechster Block `7139-7142`
+- Block 17 / `7139-7142`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK (`disabled_by=None`)
+- Block 17 / `7139-7142`: `/api/states` HTTP 200 fuer `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_9` state `0`, `..._vorlauftemperatur_erzeuger_9` state `0.0`, `..._status_erzeuger_9` state `0`, `..._sonderanforderung_erzeuger_9` state `0`
+- Block 17 / `7139-7142`: DONE; naechster Block `7143-7146`
 
 ### Watchdog-/Arbeitsstand-Audit 2026-05-24
 - Register-Weiterarbeit gestoppt nach Block 15; Block 14/15 wurden durch vorherigen Watchdog-Agentjob noch ausgeführt, obwohl danach Audit angefordert wurde.

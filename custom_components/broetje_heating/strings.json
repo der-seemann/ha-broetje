@@ -1426,6 +1426,18 @@
       "cascade_appliance_8_special_request": {
         "name": "Appliance 8 special request"
       },
+      "cascade_appliance_9_power_output": {
+        "name": "Appliance 9 power output"
+      },
+      "cascade_appliance_9_flow_temperature": {
+        "name": "Appliance 9 flow temperature"
+      },
+      "cascade_appliance_9_status": {
+        "name": "Appliance 9 status"
+      },
+      "cascade_appliance_9_special_request": {
+        "name": "Appliance 9 special request"
+      },
       "buffer_tank_active": {
         "name": "Buffer tank active",
         "state": {
