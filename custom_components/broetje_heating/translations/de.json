@@ -1660,6 +1660,18 @@
       "cascade_appliance_7_special_request": {
         "name": "Sonderanforderung Erzeuger 7"
       },
+      "cascade_appliance_8_power_output": {
+        "name": "Leistungsabgabe Erzeuger 8"
+      },
+      "cascade_appliance_8_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 8"
+      },
+      "cascade_appliance_8_status": {
+        "name": "Status Erzeuger 8"
+      },
+      "cascade_appliance_8_special_request": {
+        "name": "Sonderanforderung Erzeuger 8"
+      },
       "buffer_tank_active": {
         "name": "Pufferspeicher aktiv",
         "state": {
