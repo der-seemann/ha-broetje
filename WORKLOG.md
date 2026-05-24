@@ -30,6 +30,56 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - [ ] Live-Wert gegen Scan-Daten und Doku prüfen: Einheit, Skalierung, Wertebereich
 - [ ] Erst nach Verifikation committen
 
+### Block-Stand 2026-05-24
+- Block 8 / `7105-7107`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK
+- Block 8 / `7105-7107`: `/api/states` fehlt wegen `disabled_by=integration`
+- Block 8 / `7105-7107`: Aktivierung BLOCKED (`homeassistant/enable_entity` -> `400`, `ha entity` nicht verfügbar)
+- Block 8 / `7105-7107`: kein globaler Blocker, direkt weiter mit Block 9 / `7108-7110`
+- Block 9 / `7108-7110`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK
+- Block 9 / `7108-7110`: `/api/states` fehlt wegen `disabled_by=integration`
+- Block 9 / `7108-7110`: Aktivierung BLOCKED wie Block 8; kein globaler Blocker, nächster Block `7111-7114`
+- Block 10 / `7111-7114`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 10 / `7111-7114`: keine neuen `broetje_iwr_*`-Registry-Einträge nachweisbar; sichtbar blieben nur alte `gtw08_*`/Template-Entities
+- Block 10 / `7111-7114`: BLOCKED auf Registry-/Nachweis-Ebene; kein globaler Blocker, nächster Block `7115-7118`
+- Block 11 / `7115-7118`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 11 / `7115-7118`: `broetje_iwr_*` nur für Erzeuger 1 per Registry vorhanden und `disabled_by=integration`; für Erzeuger 3 weiter nur alte `gtw08_*`/Template-Entities
+- Block 11 / `7115-7118`: BLOCKED auf Registry-/Nachweis-Ebene; kein globaler Blocker, nächster Block `7119-7122`
+- Block 12 / `7119-7122`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 12 / `7119-7122`: keine neuen `broetje_iwr_*`-Registry-Einträge; sichtbar blieben nur alte `gtw08_*`/Template-Entities für Erzeuger 4
+- Block 12 / `7119-7122`: BLOCKED auf Registry-/Nachweis-Ebene; kein globaler Blocker, nächster Block `7123-7126`
+- Block 13 / `7123-7126`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 13 / `7123-7126`: Code und `register_map.csv` auf HA nachweisbar, aber keine neuen `broetje_iwr_*`-Registry-Einträge für Erzeuger 5
+- Block 13 / `7123-7126`: BLOCKED auf Registry-/Nachweis-Ebene wie Block 10-12; kein globaler Blocker, nächster Block `7127-7130`
+- Block 14 / `7127-7130`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 14 / `7127-7130`: `broetje_iwr_*`-Registry-Einträge für Erzeuger 6 vorhanden, aber `disabled_by=integration`; `/api/states` liefert `404 Entity not found`
+- Block 14 / `7127-7130`: BLOCKED auf Aktivierungs-/Nachweis-Ebene wie Block 8-9; kein globaler Blocker, nächster Block `7131-7134`
+- Block 15 / `7131-7134`: lokal umgesetzt, lokale Checks OK, nach HA deployed
+- Block 15 / `7131-7134`: Code und `register_map.csv` auf HA nachweisbar, aber keine neuen `broetje_iwr_*`-Registry-Einträge für Erzeuger 7
+- Block 15 / `7131-7134`: BLOCKED auf Registry-/Nachweis-Ebene wie Block 10-13; kein globaler Blocker, nächster Block `7135-7138`
+- FIX 2 2026-05-24: Root Cause behoben: Cascade-Entities Block 8-15 standen in `IWR_STATIC_ENTITY_CLASSIFICATION` auf `("diagnostic", False)` und sind jetzt `("diagnostic", True)`.
+- FIX 2 Nachweis 2026-05-24: Registry `disabled_by=None` und `/api/states` HTTP 200 fuer je eine Entity pro Block:
+- Block 8 `7105`: `sensor.brotje_iwr_gtw_08_kaskadenleistungsanforderung` state `0`
+- Block 9 `7108`: `sensor.brotje_iwr_gtw_08_berechneter_kaskadenleistungssollwert` state `0`
+- Block 10 `7111`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_1` state `0`
+- Block 11 `7115`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_3` state `0`
+- Block 12 `7119`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_4` state `0`
+- Block 13 `7123`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_5` state `0`
+- Block 14 `7127`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_6` state `0`
+- Block 15 `7131`: `sensor.brotje_iwr_gtw_08_leistungsabgabe_erzeuger_7` state `0`
+- Ergebnis: Blocks 8-15 DONE fuer lokale Umsetzung, Deploy, Registry und `/api/states`-Nachweis; naechster Block `7135-7138`.
+
+### Watchdog-/Arbeitsstand-Audit 2026-05-24
+- Register-Weiterarbeit gestoppt nach Block 15; Block 14/15 wurden durch vorherigen Watchdog-Agentjob noch ausgeführt, obwohl danach Audit angefordert wurde.
+- `crontab -l`: `*/10 * * * * bash /home/kiki/.openclaw/workspace/bin/broetje_watchdog.sh >> /home/kiki/.openclaw/workspace/logs/broetje_watchdog.log 2>&1`.
+- Watchdog-Script: `/home/kiki/.openclaw/workspace/bin/broetje_watchdog.sh`; ausführbar (`-rwxrwxr-x`); jq-Filter gegen Nicht-Objekt/fehlendes `.jobs` gehärtet; `STATE_FILE`-Altfehler aus Script entfernt; Audit-/Pause-Marker verhindern künftig Register-Weiterarbeit.
+- Watchdog-Log-Befund: frühere Fehler waren `Permission denied`, ungültiges `--at`, falscher Main/AgentTurn-Modus, `STATE_FILE: unbound variable`; diese Fehler sind im Script korrigiert.
+- Manueller Stale-Test `WATCHDOG_THRESHOLD_MINUTES=0`: Telegram-Kickoff gesendet (`Message ID 1288/1290/1291`), Agentjob erzeugt (`52e1e466...`, `c8770866...`, `41b93755...`), Cron-Session sichtbar (`agent:main:cron:*`).
+- Nicht erfüllt: zuverlässige Agent-Delivery. Isolated-Agentjob `c8770866...` endete mit `cron: isolated agent setup timed out before runner start`, `deliveryStatus=unknown`; späterer Test `41b93755...` endete mit `gateway closed (1000)`, ebenfalls keine belastbare Final-Delivery.
+- Main-Session-SystemEvent-Test `42643fb1...`: `cron run --wait` endete `status=ok`, aber `deliveryStatus=not-requested` und erzeugte keinen Progress-/Telegram-Nachweis; damit nicht ausreichend als Watchdog-Fix.
+- Ergebnis: Keine Erfolgsmeldung "Watchdog läuft". Watchdog-Delivery bleibt BLOCKED auf OpenClaw-Cron/Agent-Delivery-Ebene; Git-/Arbeitsstand ist gesichert, Registerarbeit erst nach Entscheidung oder funktionierendem Delivery-Pfad fortsetzen.
+- Git-Stand: `main...origin/main [ahead 1]`; uncommitted: `WORKLOG.md`, `custom_components/broetje_heating/devices/iwr.py`, `register_map.csv`, `strings.json`, `translations/de.json`, `translations/en.json`, `.kiki/progress/`.
+- Diff-Stand: 6 getrackte Dateien, 845 Insertions; lokale/deployte, nicht commitete Registerblöcke: Block 8 bis Block 15.
+
 ## Phase 3 — Sonderfälle
 ### Bitfelder
 - [ ] Bitfeld-Register identifizieren

@@ -1558,6 +1558,108 @@
       "cascade_number_of_stages_required": {
         "name": "Angeforderte Kaskadenstufen"
       },
+      "cascade_power_request_power": {
+        "name": "Kaskadenleistungsanforderung"
+      },
+      "cascade_power_request_temperature_setpoint": {
+        "name": "Kaskaden-Temperatursollwert"
+      },
+      "cascade_power_request_heat_demand_type": {
+        "name": "Kaskaden-Wärmeanforderungstyp",
+        "state": {
+          "heating": "Heizen",
+          "cooling": "Kühlen",
+          "domestic_hot_water": "Warmwasser",
+          "pool": "Pool"
+        }
+      },
+      "cascade_system_power_setpoint_power": {
+        "name": "Berechneter Kaskadenleistungssollwert"
+      },
+      "cascade_system_power_setpoint_temperature_setpoint": {
+        "name": "Berechneter Kaskaden-Temperatursollwert"
+      },
+      "cascade_system_power_setpoint_heat_demand_type": {
+        "name": "Berechneter Kaskaden-Wärmeanforderungstyp",
+        "state": {
+          "heating": "Heizen",
+          "cooling": "Kühlen",
+          "domestic_hot_water": "Warmwasser",
+          "pool": "Pool"
+        }
+      },
+      "cascade_appliance_1_power_output": {
+        "name": "Leistungsabgabe Erzeuger 1"
+      },
+      "cascade_appliance_1_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 1"
+      },
+      "cascade_appliance_1_status": {
+        "name": "Status Erzeuger 1"
+      },
+      "cascade_appliance_1_special_request": {
+        "name": "Sonderanforderung Erzeuger 1"
+      },
+      "cascade_appliance_3_power_output": {
+        "name": "Leistungsabgabe Erzeuger 3"
+      },
+      "cascade_appliance_3_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 3"
+      },
+      "cascade_appliance_3_status": {
+        "name": "Status Erzeuger 3"
+      },
+      "cascade_appliance_3_special_request": {
+        "name": "Sonderanforderung Erzeuger 3"
+      },
+      "cascade_appliance_4_power_output": {
+        "name": "Leistungsabgabe Erzeuger 4"
+      },
+      "cascade_appliance_4_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 4"
+      },
+      "cascade_appliance_4_status": {
+        "name": "Status Erzeuger 4"
+      },
+      "cascade_appliance_4_special_request": {
+        "name": "Sonderanforderung Erzeuger 4"
+      },
+      "cascade_appliance_5_power_output": {
+        "name": "Leistungsabgabe Erzeuger 5"
+      },
+      "cascade_appliance_5_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 5"
+      },
+      "cascade_appliance_5_status": {
+        "name": "Status Erzeuger 5"
+      },
+      "cascade_appliance_5_special_request": {
+        "name": "Sonderanforderung Erzeuger 5"
+      },
+      "cascade_appliance_6_power_output": {
+        "name": "Leistungsabgabe Erzeuger 6"
+      },
+      "cascade_appliance_6_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 6"
+      },
+      "cascade_appliance_6_status": {
+        "name": "Status Erzeuger 6"
+      },
+      "cascade_appliance_6_special_request": {
+        "name": "Sonderanforderung Erzeuger 6"
+      },
+      "cascade_appliance_7_power_output": {
+        "name": "Leistungsabgabe Erzeuger 7"
+      },
+      "cascade_appliance_7_flow_temperature": {
+        "name": "Vorlauftemperatur Erzeuger 7"
+      },
+      "cascade_appliance_7_status": {
+        "name": "Status Erzeuger 7"
+      },
+      "cascade_appliance_7_special_request": {
+        "name": "Sonderanforderung Erzeuger 7"
+      },
       "buffer_tank_active": {
         "name": "Pufferspeicher aktiv",
         "state": {
