@@ -1696,6 +1696,15 @@
       "cascade_appliance_10_special_request": {
         "name": "Appliance 10 special request"
       },
+      "cascade_requested_power_heat_demand": {
+        "name": "Requested power to fulfil heat demand"
+      },
+      "cascade_outside_temperature_connected": {
+        "name": "Outside temperature connected"
+      },
+      "cascade_outside_temperature_used": {
+        "name": "Outside temperature used by cascade"
+      },
       "buffer_tank_active": {
         "name": "Buffer tank active",
         "state": {

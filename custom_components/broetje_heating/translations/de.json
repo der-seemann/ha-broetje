@@ -1696,6 +1696,15 @@
       "cascade_appliance_10_special_request": {
         "name": "Sonderanforderung Erzeuger 10"
       },
+      "cascade_requested_power_heat_demand": {
+        "name": "Angeforderte Leistung zur Wärmeanforderung"
+      },
+      "cascade_outside_temperature_connected": {
+        "name": "Außentemperatur angeschlossen"
+      },
+      "cascade_outside_temperature_used": {
+        "name": "Von Kaskade verwendete Außentemperatur"
+      },
       "buffer_tank_active": {
         "name": "Pufferspeicher aktiv",
         "state": {

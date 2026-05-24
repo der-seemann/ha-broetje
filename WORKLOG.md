@@ -76,6 +76,9 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - Block 18 / `7143-7146`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK (`disabled_by=None`)
 - Block 18 / `7143-7146`: `/api/states` HTTP 200 fuer alle vier Entities; `7143` state `255`, `7145` state `255`, `7146` state `255`; `7144` (`sensor.brotje_iwr_gtw_08_vorlauftemperatur_erzeuger_10`) bleibt nach 12 Polls `unknown`
 - Block 18 / `7143-7146`: STATE-BLOCKED fuer `7144`; HA-Log zeigt nur bekannte Modbus-Timeouts/ExceptionResponse, keinen neuen Import-/Codefehler; kein DONE/Commit fuer Block 18 vor Klärung
+- Block 19 / `7151-7154`: lokal umgesetzt, lokale Checks OK, nach HA deployed, Registry OK (`disabled_by=None`)
+- Block 19 / `7151-7154`: `/api/states` HTTP 200 fuer alle drei Entities; `7153` zeitweise `no`, `7154` zeitweise `-327.7`; `7151` bleibt `unknown`
+- Block 19 / `7151-7154`: ADDRESS/STATE-BLOCKED fuer `7151`; HA-Log zeigt `Modbus error reading address 7151: ExceptionResponse(dev_id=100, function_code=131, exception_code=3)`; kein DONE vor Klärung
 
 ### Watchdog-/Arbeitsstand-Audit 2026-05-24
 - Register-Weiterarbeit gestoppt nach Block 15; Block 14/15 wurden durch vorherigen Watchdog-Agentjob noch ausgeführt, obwohl danach Audit angefordert wurde.
