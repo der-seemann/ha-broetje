@@ -242,3 +242,8 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - Lokaler Release-Prep 2026-05-25 03:33 CEST: `CHANGELOG.md` um `v0.14.0-beta.0` ergänzt und `custom_components/broetje_heating/manifest.json` auf `v0.14.0-beta.0` angehoben.
 - Verifikation Release-Prep 2026-05-25 03:34 CEST: `manifest.json` JSON-Parse OK; Diff zeigt nur erwartete Aenderungen an `CHANGELOG.md`, `manifest.json` und Progress-Log.
 - Ergebnis: Lokaler Git-/Commit-/Release-Sync ist vorbereitet. Offener Rest ist nur noch externer Push/Tag/Release ausserhalb dieses Laufzeitblocks.
+- Watchdog-Kickoff 2026-05-25 03:50 CEST verarbeitet; Progress-Datei sofort aktualisiert. `disabled_by=integration` bleibt nur `BLOCK-BLOCKED`-Dokumentation und stoppt die Weiterarbeit nicht.
+- Release-Readiness-Check 2026-05-25 03:51 CEST: `WORKLOG.md`, `CHANGELOG.md` und `custom_components/broetje_heating/manifest.json` sind konsistent auf `v0.14.0-beta.0`; Branch steht lokal auf `main...origin/main [ahead 8]`.
+- Ergebnis: Kein weiterer unabhaengiger lokaler Arbeitsblock offen. Rest bleibt `BLOCK-BLOCKED` auf externer Push-/Tag-/Release-Ebene.
+- Watchdog-Kickoff 2026-05-25 04:10 CEST verarbeitet; Progress-Datei sofort aktualisiert. `disabled_by=integration` bleibt nur `BLOCK-BLOCKED`-Dokumentation und stoppt die Weiterarbeit nicht.
+- Lokaler Sync-Abschluss 2026-05-25 04:10 CEST: `WORKLOG.md` bestaetigt weiter keinen offenen lokalen Implementierungsblock; naechster unabhaengiger Schritt ist nur noch lokaler Git-Sync durch Commit der aktualisierten Doku-/Progress-Spuren.
