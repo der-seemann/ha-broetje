@@ -135,12 +135,50 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             self._attr_icon = icon
 
     @property
+    def available(self) -> bool:
+        """Return entity availability."""
+        if not super().available:
+            return False
+
+        detail = self.coordinator.last_read_details.get(self._register_key)
+        if detail is None:
+            return True
+
+        status = detail.get("status")
+
+        # Keep enum sensors available so mapped sentinel states like
+        # "device_not_available" remain visible. Numeric sentinel-only sensors
+        # should present as unavailable instead of generic "unknown".
+        if status == "sentinel_no_data":
+            return self._attr_device_class == SensorDeviceClass.ENUM
+
+        # Protocol/read failures should surface as unavailable instead of
+        # generic HA "unknown" states.
+        return status not in {
+            "read_error",
+            "incomplete_batch_retry_failed",
+            "invalid_value",
+        }
+
+    @property
     def native_value(self) -> float | str | None:
         """Return the sensor value."""
         if self.coordinator.data is None:
             return None
 
         value = self.coordinator.data.get(self._register_key)
+
+        if (
+            value is None
+            and self._attr_device_class == SensorDeviceClass.ENUM
+            and self._enum_map
+        ):
+            detail = self.coordinator.last_read_details.get(self._register_key, {})
+            if (
+                detail.get("status") == "sentinel_no_data"
+                and "device_not_available" in self._enum_map.values()
+            ):
+                return "device_not_available"
 
         if value is None:
             return None

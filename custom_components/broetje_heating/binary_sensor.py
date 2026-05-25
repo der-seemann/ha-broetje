@@ -83,6 +83,18 @@ class BroetjeBinarySensor(BroetjeEntity, BinarySensorEntity):
             self._attr_icon = icon
 
     @property
+    def available(self) -> bool:
+        """Return entity availability."""
+        if not super().available:
+            return False
+
+        detail = self.coordinator.last_read_details.get(self._register_key)
+        if detail is None:
+            return True
+
+        return detail.get("status") == "ok"
+
+    @property
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
         if self.coordinator.data is None:

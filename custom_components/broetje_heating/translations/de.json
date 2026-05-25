@@ -710,7 +710,8 @@
           "standby": "Standby",
           "heating": "Heizen",
           "dhw_high_priority": "TWW hohe Priorität",
-          "cooling": "Kühlung"
+          "cooling": "Kühlung",
+          "device_not_available": "Gerät nicht verfügbar"
         }
       },
       "system_flow_temperature_setpoint": {
@@ -1699,6 +1700,175 @@
       "cascade_requested_power_heat_demand": {
         "name": "Angeforderte Leistung zur Wärmeanforderung"
       },
+      "cascade_requested_power_percentage": {
+        "name": "Angeforderter Leistungsprozentsatz"
+      },
+      "cascade_time_to_start_next_stage": {
+        "name": "Zeit bis zum Start der nächsten Stufe"
+      },
+      "cascade_primary_pump_relay_active": {
+        "name": "Primärpumpenrelais aktiv",
+        "state": {
+          "device_not_available": "Gerät nicht verfügbar",
+          "no": "Nein",
+          "yes": "Ja"
+        }
+      },
+      "cascade_secondary_pump_relay_active": {
+        "name": "Sekundärpumpenrelais aktiv",
+        "state": {
+          "device_not_available": "Gerät nicht verfügbar",
+          "no": "Nein",
+          "yes": "Ja"
+        }
+      },
+      "cascade_system_state": {
+        "name": "Kaskadensystemstatus",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Wärmeanforderung",
+          "burner_start": "Brennerstart",
+          "burning_ch": "Heizbetrieb aktiv",
+          "burning_dhw": "Warmwasserbetrieb aktiv",
+          "burner_stop": "Brennerstopp",
+          "pump_post_run": "Pumpennachlauf",
+          "cooling_active": "Kühlung aktiv",
+          "controlled_stop": "Kontrollierter Stopp",
+          "blocking_mode": "Sperrbetrieb",
+          "locking_mode": "Verriegelungsbetrieb",
+          "cs_mode_l_ch": "CS-Modus niedrige Heizung",
+          "cs_mode_h_ch": "CS-Modus hohe Heizung",
+          "cs_mode_h_dhw": "CS-Modus hohes Warmwasser",
+          "cs_mode_custom": "CS-Modus benutzerdefiniert",
+          "manual_hd_ch_on": "Manuelle Wärmeanforderung Heizung ein",
+          "boiler_frost_prot": "Kesselfrostschutz",
+          "de_air": "Entlüftung",
+          "cu_cooling": "Steuerungskühlung",
+          "reset_in_progress": "Reset läuft",
+          "auto_filling": "Automatisches Befüllen",
+          "halted": "Angehalten",
+          "forced_calibration": "Erzwungene Kalibrierung",
+          "factory_test": "Werkstest",
+          "hydraulic_balancing_mode": "Hydraulischer Abgleich",
+          "device_mode": "Gerätemodus",
+          "device_not_available": "Gerät nicht verfügbar",
+          "unknown": "Unbekannt"
+        }
+      },
+      "cascade_operating_hours_heating": {
+        "name": "Kaskaden-Betriebsstunden Heizung"
+      },
+      "cascade_operating_hours_dhw": {
+        "name": "Kaskaden-Betriebsstunden Warmwasser"
+      },
+      "cascade_llh_return_temperature": {
+        "name": "Gemessene Kaskaden-Rücklauftemperatur an der hydraulischen Weiche"
+      },
+      "cascade_primary_llh_smart_pump_status": {
+        "name": "Kaskaden-Smartpumpenstatus Primärkreis an der hydraulischen Weiche"
+      },
+      "cascade_primary_pump_control_output": {
+        "name": "Primärer Pumpen-Stellwert"
+      },
+      "cascade_secondary_pump_control_output": {
+        "name": "Sekundärer Pumpen-Stellwert"
+      },
+      "cascade_llh_flow_temperature": {
+        "name": "Gemessene Kaskaden-Vorlauftemperatur an der hydraulischen Weiche"
+      },
+      "cascade_appliances_needed_for_heat_demand": {
+        "name": "Erzeuger zur Erfüllung der Wärmeanforderung"
+      },
+      "cascade_temporary_permutation_order": {
+        "name": "Temporäre Permutationsreihenfolge"
+      },
+      "cascade_s_bus_producers_status": {
+        "name": "S-Bus-Erzeugerstatus",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Wärmeanforderung",
+          "burner_start": "Brennerstart",
+          "burning_ch": "Heizbetrieb",
+          "burning_dhw": "Warmwasserbetrieb",
+          "burner_stop": "Brennerstopp",
+          "pump_post_run": "Pumpennachlauf",
+          "cooling_active": "Kühlbetrieb aktiv",
+          "controlled_stop": "Kontrollierter Stopp",
+          "blocking_mode": "Sperrmodus",
+          "locking_mode": "Verriegelungsmodus",
+          "cs_mode_l_ch": "CS-Modus niedrige Heizung",
+          "cs_mode_h_ch": "CS-Modus hohe Heizung",
+          "cs_mode_h_dhw": "CS-Modus hohes Warmwasser",
+          "cs_mode_custom": "CS-Modus benutzerdefiniert",
+          "manual_hd_ch_on": "Manuelle Wärmeanforderung Heizung ein",
+          "boiler_frost_prot": "Kesselfrostschutz",
+          "de_air": "Entlüftung",
+          "cu_cooling": "Reglereinheitskühlung",
+          "reset_in_progress": "Reset läuft",
+          "auto_filling": "Automatische Befüllung",
+          "halted": "Angehalten",
+          "forced_calibration": "Erzwungene Kalibrierung",
+          "factory_test": "Werkstest",
+          "hydraulic_balancing_mode": "Hydraulischer Abgleich",
+          "device_mode": "Gerätemodus",
+          "device_not_available": "Gerät nicht verfügbar",
+          "unknown": "Unbekannt"
+        }
+      },
+      "cascade_s_bus_producers_generic_error_code": {
+        "name": "Generischer Fehlercode der S-Bus-Erzeuger"
+      },
+      "cascade_em068_error_priority_brand_matrix": {
+        "name": "EM068-Matrix für Fehlerpriorität und markenspezifischen Fehlercode"
+      },
+      "cascade_appliance_flow_temperature": {
+        "name": "Kaskaden-Vorlauftemperatur eines Erzeugers"
+      },
+      "cascade_appliance_return_temperature": {
+        "name": "Kaskaden-Rücklauftemperatur eines Erzeugers"
+      },
+      "cascade_appliance_heat_exchanger_temperature": {
+        "name": "Kaskaden-Wärmetauschertemperatur eines Erzeugers"
+      },
+      "cascade_appliance_flue_gas_temperature": {
+        "name": "Kaskaden-Abgastemperatur eines Erzeugers"
+      },
+      "cascade_appliance_service_notification": {
+        "name": "Kaskaden-Wartungsmeldung eines Erzeugers",
+        "state": {
+          "device_not_available": "Gerät nicht verfügbar",
+          "none": "Keine",
+          "a": "Wartung A",
+          "b": "Wartung B",
+          "c": "Wartung C",
+          "custom": "Benutzerdefiniert",
+          "d": "Wartung D"
+        }
+      },
+      "cascade_appliance_water_pressure": {
+        "name": "Kaskaden-Wasserdruck eines Erzeugers"
+      },
+      "cascade_appliance_second_return_temperature": {
+        "name": "Kaskaden-zweite Rücklauftemperatur eines Erzeugers"
+      },
+      "cascade_appliance_current_pump_speed": {
+        "name": "Aktuelle Pumpendrehzahl eines Kaskadenerzeugers"
+      },
+      "cascade_appliance_actual_relative_power": {
+        "name": "Aktuelle relative Leistung eines Kaskadenerzeugers"
+      },
+      "cascade_appliance_total_burner_hours": {
+        "name": "Gesamte Brennerbetriebsstunden eines Kaskadenerzeugers"
+      },
+      "cascade_appliance_dhw_burner_hours": {
+        "name": "Brennerbetriebsstunden Warmwasser eines Kaskadenerzeugers"
+      },
+      "cascade_producer_order_node_id": {
+        "name": "Node-ID der Erzeugerreihenfolge"
+      },
+      "cascade_appliance_device_type": {
+        "name": "Gerätetyp eines Kaskadenerzeugers"
+      },
       "cascade_outside_temperature_connected": {
         "name": "Außentemperatur angeschlossen"
       },
@@ -2035,6 +2205,7 @@
         "name": "Heizkreis {zone} Regelstrategie",
         "state": {
           "auto": "Automatisch",
+          "device_not_available": "Gerät nicht verfügbar",
           "room": "Raumregelung",
           "outdoor": "Witterungsgeführt",
           "outdoor_and_room": "Witterungsgeführt + Raum"
@@ -2102,6 +2273,7 @@
       "zone_heating_mode": {
         "name": "Heizkreis {zone} Heizmodus",
         "state": {
+          "device_not_available": "Gerät nicht verfügbar",
           "standby": "Standby",
           "heating": "Heizen",
           "cooling": "Kühlen"

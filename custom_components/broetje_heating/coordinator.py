@@ -35,6 +35,17 @@ from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_con
 
 _LOGGER = logging.getLogger(__name__)
 _APPLIANCE_TIME_EPOCH = date(1984, 1, 1)
+_MODBUS_EXCEPTION_NAMES: dict[int, str] = {
+    1: "illegal_function",
+    2: "illegal_data_address",
+    3: "illegal_data_value",
+    4: "slave_device_failure",
+    5: "acknowledge",
+    6: "slave_device_busy",
+    8: "memory_parity_error",
+    10: "gateway_path_unavailable",
+    11: "gateway_target_no_response",
+}
 
 
 class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -73,6 +84,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entity_classification: dict[str, tuple[str | None, bool]] = (
             device_config.get("entity_classification", {})
         )
+        self.last_read_details: dict[str, dict[str, Any]] = {}
+        self._last_read_error_detail: dict[str, Any] | None = None
 
         # Device info
         self.device_serial: str | None = None
@@ -169,6 +182,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         register_type: str,
     ) -> list[int] | None:
         """Read registers from the Modbus device."""
+        self._last_read_error_detail = None
         async with self._lock:
             try:
                 await self._connect()
@@ -183,9 +197,30 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     )
                 else:
                     _LOGGER.error("Unknown register type: %s", register_type)
+                    self._last_read_error_detail = {
+                        "status": "read_error",
+                        "error_kind": "unknown_register_type",
+                        "register_type": register_type,
+                    }
                     return None
 
                 if result.isError():
+                    error_detail: dict[str, Any] = {
+                        "status": "read_error",
+                        "error_kind": "modbus_exception_response",
+                        "register_address": address,
+                        "register_count": count,
+                        "register_type": register_type,
+                        "response": str(result),
+                    }
+                    if hasattr(result, "function_code"):
+                        error_detail["function_code"] = result.function_code
+                    if hasattr(result, "exception_code"):
+                        error_detail["exception_code"] = result.exception_code
+                        error_detail["exception_name"] = _MODBUS_EXCEPTION_NAMES.get(
+                            result.exception_code, "unknown_exception"
+                        )
+                    self._last_read_error_detail = error_detail
                     _LOGGER.warning(
                         "Modbus error reading address %s: %s",
                         address,
@@ -196,6 +231,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 return list(result.registers)
 
             except ModbusException as err:
+                self._last_read_error_detail = {
+                    "status": "read_error",
+                    "error_kind": "modbus_exception",
+                    "register_address": address,
+                    "register_count": count,
+                    "register_type": register_type,
+                    "message": str(err),
+                }
                 _LOGGER.error("Modbus exception: %s", err)
                 await self._disconnect()
                 return None
@@ -386,6 +429,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Modbus device."""
         data: dict[str, Any] = {}
+        self.last_read_details = {}
 
         # Get only the registers needed by enabled entities
         needed_registers = self._get_needed_registers()
@@ -433,20 +477,69 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                             reg_values = result[offset : offset + reg_count]
 
                             if len(reg_values) == reg_count:
-                                data[reg["key"]] = self._process_register_value(
+                                processed = self._process_register_value(
                                     reg_values, reg["config"]
+                                )
+                                data[reg["key"]] = processed
+                                self.last_read_details[reg["key"]] = (
+                                    self._build_read_detail(
+                                        reg_values,
+                                        reg["config"],
+                                        processed,
+                                    )
                                 )
                             else:
                                 _LOGGER.warning(
-                                    "Incomplete data for register %s at address %d",
+                                    "Incomplete data for register %s at address %d; retrying individually",
                                     reg["key"],
                                     reg["address"],
                                 )
-                                data[reg["key"]] = None
+                                reg_result = await self._read_registers(
+                                    reg["address"], reg["count"], reg["type"]
+                                )
+                                if reg_result is None:
+                                    data[reg["key"]] = None
+                                    detail = self._consume_last_read_error_detail()
+                                    detail["status"] = "incomplete_batch_retry_failed"
+                                    self.last_read_details[reg["key"]] = detail
+                                else:
+                                    processed = self._process_register_value(
+                                        reg_result, reg["config"]
+                                    )
+                                    data[reg["key"]] = processed
+                                    detail = self._build_read_detail(
+                                        reg_result,
+                                        reg["config"],
+                                        processed,
+                                    )
+                                    detail["status_source"] = (
+                                        "single_retry_after_incomplete_batch"
+                                    )
+                                    self.last_read_details[reg["key"]] = detail
                     else:
-                        # Batch read failed, mark all registers in batch as None
+                        # Retry per register so one bad address does not blank
+                        # the entire contiguous block.
                         for reg in batch["registers"]:
-                            data[reg["key"]] = None
+                            reg_result = await self._read_registers(
+                                reg["address"], reg["count"], reg["type"]
+                            )
+                            if reg_result is None:
+                                data[reg["key"]] = None
+                                self.last_read_details[reg["key"]] = (
+                                    self._consume_last_read_error_detail()
+                                )
+                            else:
+                                processed = self._process_register_value(
+                                    reg_result, reg["config"]
+                                )
+                                data[reg["key"]] = processed
+                                self.last_read_details[reg["key"]] = (
+                                    self._build_read_detail(
+                                        reg_result,
+                                        reg["config"],
+                                        processed,
+                                    )
+                                )
 
         except TimeoutError as err:
             raise UpdateFailed("Timeout communicating with device") from err
@@ -458,11 +551,74 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Standard Modbus sentinel values indicating "not available" / "no data".
     # These are checked against the raw decoded value BEFORE scaling.
     _SENTINEL_VALUES: dict[str, set[int]] = {
+        "uint8": {0xFFFF},
+        "enum8": {0xFFFF},
         "int16": {-1},  # 0xFFFF signed
         "uint16": {0xFFFF},  # 65535
         "int32": {-1},  # 0xFFFFFFFF signed
         "uint32": {0xFFFFFFFF},  # 4294967295
     }
+
+    @staticmethod
+    def _format_raw_registers(registers: list[int]) -> list[str]:
+        """Return raw register words as zero-padded hex strings."""
+        return [f"0x{value:04X}" for value in registers]
+
+    def _consume_last_read_error_detail(self) -> dict[str, Any]:
+        """Return the latest protocol/transport error for one register read."""
+        detail = dict(self._last_read_error_detail or {"status": "read_error"})
+        self._last_read_error_detail = None
+        return detail
+
+    def _build_read_detail(
+        self,
+        registers: list[int],
+        config: dict[str, Any],
+        processed_value: Any,
+    ) -> dict[str, Any]:
+        """Build per-register read diagnostics for the last refresh."""
+        detail: dict[str, Any] = {
+            "raw_registers": list(registers),
+            "raw_registers_hex": self._format_raw_registers(registers),
+        }
+
+        data_type = config.get("data_type", "int16")
+
+        if processed_value is None:
+            if self._is_sentinel_value(registers, data_type):
+                detail["status"] = "sentinel_no_data"
+            else:
+                detail["status"] = "invalid_value"
+            return detail
+
+        detail["status"] = "ok"
+        return detail
+
+    def _is_sentinel_value(self, registers: list[int], data_type: str) -> bool:
+        """Return True if the raw register payload matches a known no-data sentinel."""
+        if data_type in {"uint8", "enum8"}:
+            return registers[0] in self._SENTINEL_VALUES.get(data_type, ())
+
+        if data_type == "int16":
+            value = registers[0]
+            if value >= 32768:
+                value -= 65536
+            return value in self._SENTINEL_VALUES.get("int16", ())
+
+        if data_type == "uint16":
+            return registers[0] in self._SENTINEL_VALUES.get("uint16", ())
+
+        if data_type == "int32":
+            value = (registers[0] << 16) | registers[1]
+            if value >= 2147483648:
+                value -= 4294967296
+            return value in self._SENTINEL_VALUES.get("int32", ())
+
+        if data_type == "uint32":
+            value = (registers[0] << 16) | registers[1]
+            return value in self._SENTINEL_VALUES.get("uint32", ())
+
+        return False
 
     def _process_register_value(
         self,
@@ -479,6 +635,12 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if bit is not None:
                 return bool(value & (1 << bit))
             return bool(value)
+
+        if data_type in {"uint8", "enum8"}:
+            raw_word = registers[0]
+            if raw_word in self._SENTINEL_VALUES.get(data_type, ()):
+                return None
+            return (raw_word & 0x00FF) * scale
 
         if data_type == "int16":
             value = registers[0]

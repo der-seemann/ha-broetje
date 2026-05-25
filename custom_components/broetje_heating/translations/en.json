@@ -710,7 +710,8 @@
           "standby": "Standby",
           "heating": "Heating",
           "dhw_high_priority": "DHW high priority",
-          "cooling": "Cooling"
+          "cooling": "Cooling",
+          "device_not_available": "Device not available"
         }
       },
       "system_flow_temperature_setpoint": {
@@ -1699,6 +1700,175 @@
       "cascade_requested_power_heat_demand": {
         "name": "Requested power to fulfil heat demand"
       },
+      "cascade_requested_power_percentage": {
+        "name": "Requested power percentage"
+      },
+      "cascade_time_to_start_next_stage": {
+        "name": "Time to start next stage"
+      },
+      "cascade_primary_pump_relay_active": {
+        "name": "Primary pump relay active",
+        "state": {
+          "device_not_available": "Device not available",
+          "no": "No",
+          "yes": "Yes"
+        }
+      },
+      "cascade_secondary_pump_relay_active": {
+        "name": "Secondary pump relay active",
+        "state": {
+          "device_not_available": "Device not available",
+          "no": "No",
+          "yes": "Yes"
+        }
+      },
+      "cascade_system_state": {
+        "name": "Cascade system state",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Heat demand",
+          "burner_start": "Burner start",
+          "burning_ch": "Burning CH",
+          "burning_dhw": "Burning DHW",
+          "burner_stop": "Burner stop",
+          "pump_post_run": "Pump post run",
+          "cooling_active": "Cooling active",
+          "controlled_stop": "Controlled stop",
+          "blocking_mode": "Blocking mode",
+          "locking_mode": "Locking mode",
+          "cs_mode_l_ch": "CS mode low CH",
+          "cs_mode_h_ch": "CS mode high CH",
+          "cs_mode_h_dhw": "CS mode high DHW",
+          "cs_mode_custom": "CS mode custom",
+          "manual_hd_ch_on": "Manual heat demand CH on",
+          "boiler_frost_prot": "Boiler frost protection",
+          "de_air": "Deaeration",
+          "cu_cooling": "Control unit cooling",
+          "reset_in_progress": "Reset in progress",
+          "auto_filling": "Auto filling",
+          "halted": "Halted",
+          "forced_calibration": "Forced calibration",
+          "factory_test": "Factory test",
+          "hydraulic_balancing_mode": "Hydraulic balancing mode",
+          "device_mode": "Device mode",
+          "device_not_available": "Device not available",
+          "unknown": "Unknown"
+        }
+      },
+      "cascade_operating_hours_heating": {
+        "name": "Cascade operating hours for central heating"
+      },
+      "cascade_operating_hours_dhw": {
+        "name": "Cascade operating hours for DHW"
+      },
+      "cascade_llh_return_temperature": {
+        "name": "Measured cascade return temperature at LLH"
+      },
+      "cascade_primary_llh_smart_pump_status": {
+        "name": "Cascade smart pump status for primary circuit at LLH"
+      },
+      "cascade_primary_pump_control_output": {
+        "name": "Primary pump control output"
+      },
+      "cascade_secondary_pump_control_output": {
+        "name": "Secondary pump control output"
+      },
+      "cascade_llh_flow_temperature": {
+        "name": "Measured cascade flow temperature at LLH"
+      },
+      "cascade_appliances_needed_for_heat_demand": {
+        "name": "Appliances needed to fulfil heat demand"
+      },
+      "cascade_temporary_permutation_order": {
+        "name": "Temporary permutation order"
+      },
+      "cascade_s_bus_producers_status": {
+        "name": "S-Bus producers status",
+        "state": {
+          "standby": "Standby",
+          "heat_demand": "Heat demand",
+          "burner_start": "Burner start",
+          "burning_ch": "Burning CH",
+          "burning_dhw": "Burning DHW",
+          "burner_stop": "Burner stop",
+          "pump_post_run": "Pump post run",
+          "cooling_active": "Cooling active",
+          "controlled_stop": "Controlled stop",
+          "blocking_mode": "Blocking mode",
+          "locking_mode": "Locking mode",
+          "cs_mode_l_ch": "CS mode low CH",
+          "cs_mode_h_ch": "CS mode high CH",
+          "cs_mode_h_dhw": "CS mode high DHW",
+          "cs_mode_custom": "CS mode custom",
+          "manual_hd_ch_on": "Manual heat demand CH on",
+          "boiler_frost_prot": "Boiler frost protection",
+          "de_air": "Deaeration",
+          "cu_cooling": "Control unit cooling",
+          "reset_in_progress": "Reset in progress",
+          "auto_filling": "Auto filling",
+          "halted": "Halted",
+          "forced_calibration": "Forced calibration",
+          "factory_test": "Factory test",
+          "hydraulic_balancing_mode": "Hydraulic balancing mode",
+          "device_mode": "Device mode",
+          "device_not_available": "Device not available",
+          "unknown": "Unknown"
+        }
+      },
+      "cascade_s_bus_producers_generic_error_code": {
+        "name": "S-Bus producers generic error code"
+      },
+      "cascade_em068_error_priority_brand_matrix": {
+        "name": "EM068 error priority and brand error code matrix"
+      },
+      "cascade_appliance_flow_temperature": {
+        "name": "Cascade appliance flow temperature"
+      },
+      "cascade_appliance_return_temperature": {
+        "name": "Cascade appliance return temperature"
+      },
+      "cascade_appliance_heat_exchanger_temperature": {
+        "name": "Cascade appliance heat exchanger temperature"
+      },
+      "cascade_appliance_flue_gas_temperature": {
+        "name": "Cascade appliance flue gas temperature"
+      },
+      "cascade_appliance_service_notification": {
+        "name": "Cascade appliance service notification",
+        "state": {
+          "device_not_available": "Device not available",
+          "none": "None",
+          "a": "Service A",
+          "b": "Service B",
+          "c": "Service C",
+          "custom": "Custom",
+          "d": "Service D"
+        }
+      },
+      "cascade_appliance_water_pressure": {
+        "name": "Cascade appliance water pressure"
+      },
+      "cascade_appliance_second_return_temperature": {
+        "name": "Cascade appliance second return temperature"
+      },
+      "cascade_appliance_current_pump_speed": {
+        "name": "Current pump speed of cascade appliance"
+      },
+      "cascade_appliance_actual_relative_power": {
+        "name": "Actual relative power of cascade appliance"
+      },
+      "cascade_appliance_total_burner_hours": {
+        "name": "Total burner hours of cascade appliance"
+      },
+      "cascade_appliance_dhw_burner_hours": {
+        "name": "DHW burner hours of cascade appliance"
+      },
+      "cascade_producer_order_node_id": {
+        "name": "Producer order node ID"
+      },
+      "cascade_appliance_device_type": {
+        "name": "Cascade appliance device type"
+      },
       "cascade_outside_temperature_connected": {
         "name": "Outside temperature connected"
       },
@@ -2035,6 +2205,7 @@
         "name": "Zone {zone} heating control strategy",
         "state": {
           "auto": "Automatic",
+          "device_not_available": "Device not available",
           "room": "Room control",
           "outdoor": "Weather-compensated",
           "outdoor_and_room": "Weather-compensated + room"
@@ -2102,6 +2273,7 @@
       "zone_heating_mode": {
         "name": "Zone {zone} heating mode",
         "state": {
+          "device_not_available": "Device not available",
           "standby": "Standby",
           "heating": "Heating",
           "cooling": "Cooling"

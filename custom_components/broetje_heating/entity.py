@@ -104,4 +104,22 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
         if bit := reg_config.get("bit"):
             attrs["bit_position"] = bit
 
+        if detail := self.coordinator.last_read_details.get(self._register_key):
+            attrs["last_read_status"] = detail.get("status")
+            if raw_registers := detail.get("raw_registers"):
+                attrs["last_raw_registers"] = raw_registers
+            if raw_hex := detail.get("raw_registers_hex"):
+                attrs["last_raw_registers_hex"] = raw_hex
+            for key in (
+                "status_source",
+                "error_kind",
+                "exception_code",
+                "exception_name",
+                "function_code",
+                "message",
+                "response",
+            ):
+                if value := detail.get(key):
+                    attrs[key] = value
+
         return attrs
