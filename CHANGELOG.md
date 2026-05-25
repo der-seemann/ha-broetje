@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.14.0-beta.0
+- Feat: Kaskaden-Register `7105-7146` und `7151-7227` als neue IWR/GTW-08-Entities ergänzt, inklusive Erzeuger-8/9/10-Statusblöcke und Kaskadenleistungs-Sollwerten.
+- Fix: Neue Kaskaden-Entities standardmäßig aktiviert statt `disabled_by=integration`.
+- Fix: Modbus-Coordinator robuster gegen Batch-Fehler, Incomplete-Reads und Sentinel-Werte; Diagnoseattribute (`last_read_status`, Rohregister, Fehlerdetails) werden exponiert.
+- Fix: `unknown`-Restfälle auf sinnvolle Zustände reduziert (`unavailable` bzw. `device_not_available`) für Sensoren, Binary-Sensoren und betroffene Enum-Zonen.
+- Docs: `WORKLOG.md`, `ENTITY_STATUS.md` und `UNDOCUMENTED.md` auf den verifizierten Endstand der Broetje-/HA-Validierung synchronisiert.
+
 ## v0.13.0-beta.0
 - Feat: Neuer Buffer-Tank-Block mit `buffer_tank_temperature_bottom`, `buffer_tank_temperature_top`, `buffer_tank_pump_state`, `buffer_tank_mode`.
 

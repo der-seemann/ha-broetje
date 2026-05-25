@@ -238,4 +238,7 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - Einziger Rest mit `last_read_status=sentinel_no_data` ist `sensor.brotje_iwr_gtw_08_boiler_betriebsart_aussengerat`, bereits korrekt als `device_not_available`; kein weiterer Funktionspatch noetig.
 - Watchdog-Kickoff 2026-05-25 03:11 CEST verarbeitet; Progress-Datei sofort aktualisiert. `disabled_by=integration` bleibt nur `BLOCK-BLOCKED`-Dokumentation und stoppt die Weiterarbeit nicht.
 - Git-/Doku-Audit 2026-05-25 03:12 CEST: `WORKLOG.md` bestaetigt keine offenen Laufzeit-/Registerbloecke mehr. Arbeitsbaum auf `main...origin/main [ahead 6]` enthaelt genau die erwarteten Broetje-Code-, Doku- und Progress-Aenderungen sowie die neuen Berichte `ENTITY_STATUS.md` und `UNDOCUMENTED.md`.
-- Ergebnis: Funktionsarbeit fuer diesen Zyklus ist dokumentiert abgeschlossen. Offene Folgearbeit ist nur noch Git-/Commit-/Release-Sync ausserhalb des Laufzeit-/Sensorblocks.
+- Watchdog-Kickoff 2026-05-25 03:32 CEST verarbeitet; Progress-Datei sofort aktualisiert. `disabled_by=integration` bleibt nur `BLOCK-BLOCKED`-Dokumentation und stoppt die Weiterarbeit nicht.
+- Lokaler Release-Prep 2026-05-25 03:33 CEST: `CHANGELOG.md` um `v0.14.0-beta.0` ergänzt und `custom_components/broetje_heating/manifest.json` auf `v0.14.0-beta.0` angehoben.
+- Verifikation Release-Prep 2026-05-25 03:34 CEST: `manifest.json` JSON-Parse OK; Diff zeigt nur erwartete Aenderungen an `CHANGELOG.md`, `manifest.json` und Progress-Log.
+- Ergebnis: Lokaler Git-/Commit-/Release-Sync ist vorbereitet. Offener Rest ist nur noch externer Push/Tag/Release ausserhalb dieses Laufzeitblocks.
