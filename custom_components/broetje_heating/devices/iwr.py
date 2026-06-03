@@ -2184,6 +2184,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "writable": True,
     },
     "low_noise_stop_time": {
         "address": 492,
@@ -2191,6 +2192,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "writable": True,
     },
     # --- Appliance Measurements (Tab.15 / GTW-08 spec) ---
     "total_pump_starts": {
@@ -2756,6 +2758,268 @@ _IWR_STATIC_REGISTER_MAP: Final = {
     },
 
 }
+
+_IWR_STATIC_WRITABLE_UPDATES: Final[dict[str, dict[str, Any]]] = {
+    "control_power": {
+        "writable": True,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "poll_profile": "normal",
+    },
+    "control_temperature": {
+        "writable": True,
+        "min": 0.0,
+        "max": 100.0,
+        "step": 0.5,
+        "poll_profile": "normal",
+    },
+    "control_algorithm_type": {
+        "writable": True,
+        "min": 0,
+        "max": 3,
+        "poll_profile": "normal",
+    },
+    "control_heat_demand_type": {
+        "writable": True,
+        "min": 0,
+        "max": 8,
+        "poll_profile": "normal",
+    },
+    "control_cooling_temperature": {
+        "writable": True,
+        "min": 0.0,
+        "max": 50.0,
+        "step": 0.5,
+        "poll_profile": "normal",
+    },
+    "summer_winter_threshold": {
+        "writable": True,
+        "min": -20.0,
+        "max": 40.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "neutral_band": {
+        "writable": True,
+        "min": 0.0,
+        "max": 20.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "frost_protection_threshold": {
+        "writable": True,
+        "min": -30.0,
+        "max": 20.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "force_summer_mode": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "slow",
+    },
+    "hybrid_mode_selected": {
+        "writable": True,
+        "min": 0,
+        "max": 3,
+        "poll_profile": "slow",
+    },
+    "hybrid_electricity_cost_high_tariff": {
+        "writable": True,
+        "min": 0,
+        "max": 255,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "hybrid_electricity_cost_low_tariff": {
+        "writable": True,
+        "min": 0,
+        "max": 255,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "fossil_energy_cost": {
+        "writable": True,
+        "min": 0,
+        "max": 255,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "electrical_co2_emission_heating_mode": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "electrical_co2_emission_dhw_mode": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "gas_or_oil_co2_emission": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "boiler_efficiency": {
+        "writable": True,
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "cop_threshold_primary_energy": {
+        "writable": True,
+        "min": 0,
+        "max": 100,
+        "step": 0.1,
+        "poll_profile": "slow",
+    },
+    "blocking_input_1_contact": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "slow",
+    },
+    "blocking_input_2_contact": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "slow",
+    },
+    "blocking_input_2_setting": {
+        "writable": True,
+        "min": 0,
+        "max": 12,
+        "poll_profile": "slow",
+    },
+    "function_blocking_input": {
+        "writable": True,
+        "min": 0,
+        "max": 12,
+        "poll_profile": "slow",
+    },
+    "dhw_min_heating_time": {
+        "writable": True,
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "dhw_max_production_time": {
+        "writable": True,
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "dhw_eco_comfort_mode": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "normal",
+    },
+    "backup_type": {
+        "writable": True,
+        "min": 0,
+        "max": 3,
+        "poll_profile": "slow",
+    },
+    "hybrid_electricity_cost_high_tariff_accurate": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "hybrid_electricity_cost_low_tariff_accurate": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "fossil_energy_cost_accurate": {
+        "writable": True,
+        "min": 0,
+        "max": 65535,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "outside_temperature_level_backup_blocked": {
+        "writable": True,
+        "min": -30.0,
+        "max": 40.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "next_generator_start_delay": {
+        "writable": True,
+        "min": 0,
+        "max": 1440,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "minimum_outside_temperature_heat_pump_stopped": {
+        "writable": True,
+        "min": -30.0,
+        "max": 40.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "heat_pump_silent_mode": {
+        "writable": True,
+        "min": 0,
+        "max": 5,
+        "poll_profile": "normal",
+    },
+    "low_noise_start_time": {
+        "writable": True,
+        "min": 0,
+        "max": 143,
+        "poll_profile": "slow",
+    },
+    "low_noise_stop_time": {
+        "writable": True,
+        "min": 0,
+        "max": 143,
+        "poll_profile": "slow",
+    },
+    "ch_enabled": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "normal",
+    },
+    "dhw_enabled": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "normal",
+    },
+    "cooling_enabled": {
+        "writable": True,
+        "min": 0,
+        "max": 2,
+        "poll_profile": "normal",
+    },
+    "cooling_forced": {
+        "writable": True,
+        "min": 0,
+        "max": 1,
+        "poll_profile": "normal",
+    },
+}
+
+for _register_key, _updates in _IWR_STATIC_WRITABLE_UPDATES.items():
+    _IWR_STATIC_REGISTER_MAP[_register_key].update(_updates)
 
 # ===== Static Sensor Definitions =====
 
@@ -3941,44 +4205,6 @@ _IWR_STATIC_SENSORS: Final = {
         "state_class": None,
         "icon": "mdi:source-branch",
         "enum_map": "iwr_cascade_role",
-    },
-    # --- Temperature and Power Control Sensors (Tab.18) ---
-    "control_power": {
-        "register": "control_power",
-        "translation_key": "control_power",
-        "device_class": None,
-        "unit": "%",
-        "state_class": "measurement",
-        "icon": "mdi:gauge",
-        "sub_device": SUBDEV_BOILER,
-    },
-    "control_temperature": {
-        "register": "control_temperature",
-        "translation_key": "control_temperature",
-        "device_class": "temperature",
-        "unit": "°C",
-        "state_class": "measurement",
-        "sub_device": SUBDEV_BOILER,
-    },
-    "control_algorithm_type": {
-        "register": "control_algorithm_type",
-        "translation_key": "control_algorithm_type",
-        "device_class": "enum",
-        "unit": None,
-        "state_class": None,
-        "icon": "mdi:cog-outline",
-        "enum_map": "iwr_algorithm_type",
-        "sub_device": SUBDEV_BOILER,
-    },
-    "control_heat_demand_type": {
-        "register": "control_heat_demand_type",
-        "translation_key": "control_heat_demand_type",
-        "device_class": "enum",
-        "unit": None,
-        "state_class": None,
-        "icon": "mdi:fire-circle",
-        "enum_map": "iwr_heat_demand_type",
-        "sub_device": SUBDEV_BOILER,
     },
     "control_cooling_temperature": {
         "register": "control_cooling_temperature",
@@ -5210,6 +5436,275 @@ def _zone_addr(base: int, zone_idx: int) -> int:
     return base + ZONE_ADDR_OFFSET * zone_idx
 
 
+_ZONE_WRITABLE_REGISTER_UPDATES: Final[dict[str, dict[str, Any]]] = {
+    "control_mode": {"writable": True, "min": 0, "max": 2, "poll_profile": "normal"},
+    "comfort_setpoint_1": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "comfort_setpoint_2": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "comfort_setpoint_3": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "comfort_setpoint_4": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "comfort_setpoint_5": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "night_setback": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_room_setpoint_1": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_room_setpoint_2": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_room_setpoint_3": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_room_setpoint_4": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_room_setpoint_5": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_night_setback": {
+        "writable": True,
+        "min": 10.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "holiday_setpoint": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "temporary_setpoint": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "normal",
+    },
+    "room_setpoint_manual": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "normal",
+    },
+    "dhw_comfort_setpoint": {
+        "writable": True,
+        "min": 10.0,
+        "max": 80.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_reduced_setpoint": {
+        "writable": True,
+        "min": 10.0,
+        "max": 80.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_holiday_setpoint": {
+        "writable": True,
+        "min": 10.0,
+        "max": 80.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_antilegionella_setpoint": {
+        "writable": True,
+        "min": 10.0,
+        "max": 80.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "swimming_pool_setpoint": {
+        "writable": True,
+        "min": 5.0,
+        "max": 40.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "process_heat_setpoint": {
+        "writable": True,
+        "min": 0.0,
+        "max": 90.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "heating_control_strategy": {
+        "writable": True,
+        "min": 0,
+        "max": 3,
+        "poll_profile": "slow",
+    },
+    "max_flow_setpoint": {
+        "writable": True,
+        "min": 0.0,
+        "max": 90.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "cooling_mixing_setpoint": {
+        "writable": True,
+        "min": 0.0,
+        "max": 35.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "heating_curve_footpoint_night": {
+        "writable": True,
+        "min": 5.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "max_preheat_time": {
+        "writable": True,
+        "min": 0,
+        "max": 600,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "mixing_valve_shift": {
+        "writable": True,
+        "min": -20.0,
+        "max": 20.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "mixing_valve_bandwidth": {
+        "writable": True,
+        "min": 0.0,
+        "max": 40.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_hysteresis": {
+        "writable": True,
+        "min": 0.5,
+        "max": 20.0,
+        "step": 0.1,
+        "poll_profile": "slow",
+    },
+    "dhw_calorifier_offset": {
+        "writable": True,
+        "min": 0.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_calorifier_raise": {
+        "writable": True,
+        "min": 0.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "process_heat_hysteresis": {
+        "writable": True,
+        "min": 0.5,
+        "max": 20.0,
+        "step": 0.1,
+        "poll_profile": "slow",
+    },
+    "process_heat_offset": {
+        "writable": True,
+        "min": 0.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "process_heat_calorifier_raise": {
+        "writable": True,
+        "min": 0.0,
+        "max": 30.0,
+        "step": 0.5,
+        "poll_profile": "slow",
+    },
+    "dhw_calorifier_hysteresis": {
+        "writable": True,
+        "min": 0.5,
+        "max": 20.0,
+        "step": 0.1,
+        "poll_profile": "slow",
+    },
+    "pump_post_run": {
+        "writable": True,
+        "min": 0,
+        "max": 600,
+        "step": 1,
+        "poll_profile": "slow",
+    },
+    "time_program_selected": {
+        "writable": True,
+        "min": 0,
+        "max": 2,
+        "poll_profile": "slow",
+    },
+    "room_temp_measured": {
+        "writable": True,
+        "min": -30.0,
+        "max": 50.0,
+        "step": 0.1,
+        "poll_profile": "normal",
+    },
+}
+
+
 def _build_zone_registers(zones: list[int]) -> dict[str, Any]:
     """Generate register map entries for the given zone numbers (1-based)."""
     registers: dict[str, Any] = {}
@@ -5691,6 +6186,9 @@ def _build_zone_registers(zones: list[int]) -> dict[str, Any]:
             "data_type": "int16",
             "scale": IWR_SCALE_TEMP,
         }
+
+        for suffix, updates in _ZONE_WRITABLE_REGISTER_UPDATES.items():
+            registers[f"{prefix}_{suffix}"].update(updates)
 
     return registers
 
@@ -6326,81 +6824,237 @@ def _build_board_sensors() -> dict[str, Any]:
 # ===== Writable Entity Builders =====
 
 
+_ZONE_NUMBER_DEFINITIONS: Final[dict[str, dict[str, Any]]] = {
+    "comfort_setpoint_1": {
+        "translation_key": "zone_comfort_setpoint_1",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "comfort_setpoint_2": {
+        "translation_key": "zone_comfort_setpoint_2",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "comfort_setpoint_3": {
+        "translation_key": "zone_comfort_setpoint_3",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "comfort_setpoint_4": {
+        "translation_key": "zone_comfort_setpoint_4",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "comfort_setpoint_5": {
+        "translation_key": "zone_comfort_setpoint_5",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "night_setback": {
+        "translation_key": "zone_night_setback",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_room_setpoint_1": {
+        "translation_key": "zone_cooling_room_setpoint_1",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_room_setpoint_2": {
+        "translation_key": "zone_cooling_room_setpoint_2",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_room_setpoint_3": {
+        "translation_key": "zone_cooling_room_setpoint_3",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_room_setpoint_4": {
+        "translation_key": "zone_cooling_room_setpoint_4",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_room_setpoint_5": {
+        "translation_key": "zone_cooling_room_setpoint_5",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_night_setback": {
+        "translation_key": "zone_cooling_night_setback",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "holiday_setpoint": {
+        "translation_key": "zone_holiday_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "temporary_setpoint": {
+        "translation_key": "zone_temporary_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "room_setpoint_manual": {
+        "translation_key": "zone_room_setpoint_manual",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "slider",
+    },
+    "dhw_comfort_setpoint": {
+        "translation_key": "zone_dhw_comfort_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_reduced_setpoint": {
+        "translation_key": "zone_dhw_reduced_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_holiday_setpoint": {
+        "translation_key": "zone_dhw_holiday_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_antilegionella_setpoint": {
+        "translation_key": "zone_dhw_antilegionella_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "swimming_pool_setpoint": {
+        "translation_key": "zone_swimming_pool_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "process_heat_setpoint": {
+        "translation_key": "zone_process_heat_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "max_flow_setpoint": {
+        "translation_key": "zone_max_flow_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "cooling_mixing_setpoint": {
+        "translation_key": "zone_cooling_mixing_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "heating_curve_footpoint_night": {
+        "translation_key": "zone_heating_curve_footpoint_night",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "max_preheat_time": {
+        "translation_key": "zone_max_preheat_time",
+        "device_class": None,
+        "unit": "min",
+        "mode": "box",
+    },
+    "mixing_valve_shift": {
+        "translation_key": "zone_mixing_valve_shift",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "mixing_valve_bandwidth": {
+        "translation_key": "zone_mixing_valve_bandwidth",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_hysteresis": {
+        "translation_key": "zone_dhw_hysteresis",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_calorifier_offset": {
+        "translation_key": "zone_dhw_calorifier_offset",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_calorifier_raise": {
+        "translation_key": "zone_dhw_calorifier_raise",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "process_heat_hysteresis": {
+        "translation_key": "zone_process_heat_hysteresis",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "process_heat_offset": {
+        "translation_key": "zone_process_heat_offset",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "process_heat_calorifier_raise": {
+        "translation_key": "zone_process_heat_calorifier_raise",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "dhw_calorifier_hysteresis": {
+        "translation_key": "zone_dhw_calorifier_hysteresis",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+    "pump_post_run": {
+        "translation_key": "zone_pump_post_run",
+        "device_class": None,
+        "unit": "min",
+        "mode": "box",
+    },
+    "room_temp_measured": {
+        "translation_key": "zone_room_temp_measured",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+    },
+}
+
+
 def _build_zone_numbers(zones: list[int]) -> dict[str, Any]:
     """Generate number entity definitions for writable numeric zone registers."""
     numbers: dict[str, Any] = {}
     for zn in zones:
         prefix = f"zone{zn}"
-
-        # 665 - DHW comfort setpoint (R/W)
-        numbers[f"{prefix}_dhw_comfort_setpoint"] = {
-            "register": f"{prefix}_dhw_comfort_setpoint",
-            "translation_key": "zone_dhw_comfort_setpoint",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # 666 - DHW reduced setpoint (R/W)
-        numbers[f"{prefix}_dhw_reduced_setpoint"] = {
-            "register": f"{prefix}_dhw_reduced_setpoint",
-            "translation_key": "zone_dhw_reduced_setpoint",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # 667 - DHW holiday setpoint (R/W)
-        numbers[f"{prefix}_dhw_holiday_setpoint"] = {
-            "register": f"{prefix}_dhw_holiday_setpoint",
-            "translation_key": "zone_dhw_holiday_setpoint",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # 668 - DHW anti-legionella setpoint (R/W)
-        numbers[f"{prefix}_dhw_antilegionella_setpoint"] = {
-            "register": f"{prefix}_dhw_antilegionella_setpoint",
-            "translation_key": "zone_dhw_antilegionella_setpoint",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # 686 - DHW calorifier hysteresis (R/W)
-        numbers[f"{prefix}_dhw_calorifier_hysteresis"] = {
-            "register": f"{prefix}_dhw_calorifier_hysteresis",
-            "translation_key": "zone_dhw_calorifier_hysteresis",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # 1105 - Zone room temperature measured (R/W, external sensor override)
-        numbers[f"{prefix}_room_temp_measured"] = {
-            "register": f"{prefix}_room_temp_measured",
-            "translation_key": "zone_room_temp_measured",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "box",
-            "zone_number": zn,
-        }
-
-        # CP20X - Zone room temp setpoint manual (R/W)
-        numbers[f"{prefix}_room_setpoint_manual"] = {
-            "register": f"{prefix}_room_setpoint_manual",
-            "translation_key": "zone_room_setpoint_manual",
-            "device_class": "temperature",
-            "unit": "°C",
-            "mode": "slider",
-            "zone_number": zn,
-        }
+        for suffix, definition in _ZONE_NUMBER_DEFINITIONS.items():
+            numbers[f"{prefix}_{suffix}"] = {
+                "register": f"{prefix}_{suffix}",
+                "zone_number": zn,
+                **definition,
+            }
 
     return numbers
 
@@ -6536,20 +7190,72 @@ _IWR_STATIC_NUMBERS: Final[dict[str, Any]] = {
         "mode": "box",
         "sub_device": SUBDEV_BOILER,
     },
+    "control_cooling_temperature": {
+        "register": "control_cooling_temperature",
+        "translation_key": "control_cooling_temperature",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "summer_winter_threshold": {
+        "register": "summer_winter_threshold",
+        "translation_key": "summer_winter_threshold",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "neutral_band": {
+        "register": "neutral_band",
+        "translation_key": "neutral_band",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "frost_protection_threshold": {
+        "register": "frost_protection_threshold",
+        "translation_key": "frost_protection_threshold",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+    # --- Remote Power / Temperature Control (Tab.18, registers 256-257, R/W) ---
+    "control_power": {
+        "register": "control_power",
+        "translation_key": "control_power",
+        "device_class": None,
+        "unit": "%",
+        "mode": "box",
+        "icon": "mdi:gauge",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "control_temperature": {
+        "register": "control_temperature",
+        "translation_key": "control_temperature",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BOILER,
+    },
+}
+
+
+_IWR_STATIC_TIMES: Final[dict[str, Any]] = {
     "low_noise_start_time": {
         "register": "low_noise_start_time",
         "translation_key": "low_noise_start_time",
-        "device_class": None,
-        "unit": None,
-        "mode": "box",
+        "slot_minutes": 10,
+        "icon": "mdi:clock-start",
         "sub_device": SUBDEV_BOILER,
     },
     "low_noise_stop_time": {
         "register": "low_noise_stop_time",
         "translation_key": "low_noise_stop_time",
-        "device_class": None,
-        "unit": None,
-        "mode": "box",
+        "slot_minutes": 10,
+        "icon": "mdi:clock-stop",
         "sub_device": SUBDEV_BOILER,
     },
 }
@@ -6615,6 +7321,56 @@ _IWR_STATIC_SELECTS: Final[dict[str, Any]] = {
         "icon": "mdi:volume-off",
         "sub_device": SUBDEV_BOILER,
     },
+    # --- Remote Control Algorithm & Heat Demand (Tab.18, registers 258-259, R/W) ---
+    "control_algorithm_type": {
+        "register": "control_algorithm_type",
+        "translation_key": "control_algorithm_type",
+        "icon": "mdi:cog-outline",
+        "enum_map": "iwr_algorithm_type",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "control_heat_demand_type": {
+        "register": "control_heat_demand_type",
+        "translation_key": "control_heat_demand_type",
+        "icon": "mdi:fire-circle",
+        "enum_map": "iwr_heat_demand_type",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "force_summer_mode": {
+        "register": "force_summer_mode",
+        "translation_key": "force_summer_mode",
+        "icon": "mdi:weather-sunny",
+        "enum_map": "iwr_on_off",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "ch_enabled": {
+        "register": "ch_enabled",
+        "translation_key": "ch_enabled",
+        "icon": "mdi:radiator",
+        "enum_map": "iwr_on_off",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "dhw_enabled": {
+        "register": "dhw_enabled",
+        "translation_key": "dhw_enabled",
+        "icon": "mdi:water-boiler",
+        "enum_map": "iwr_on_off",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "cooling_enabled": {
+        "register": "cooling_enabled",
+        "translation_key": "cooling_enabled",
+        "icon": "mdi:snowflake",
+        "enum_map": "iwr_cooling_enabled",
+        "sub_device": SUBDEV_BOILER,
+    },
+    "cooling_forced": {
+        "register": "cooling_forced",
+        "translation_key": "cooling_forced",
+        "icon": "mdi:snowflake-alert",
+        "enum_map": "iwr_on_off",
+        "sub_device": SUBDEV_BOILER,
+    },
 }
 
 
@@ -6630,6 +7386,20 @@ def _build_zone_selects(zones: list[int]) -> dict[str, Any]:
             "translation_key": "zone_control_mode",
             "enum_map": "iwr_zone_control_mode",
             "icon": "mdi:cog",
+            "zone_number": zn,
+        }
+        selects[f"{prefix}_heating_control_strategy"] = {
+            "register": f"{prefix}_heating_control_strategy",
+            "translation_key": "zone_heating_control_strategy",
+            "enum_map": "iwr_heating_control_strategy",
+            "icon": "mdi:home-thermometer-outline",
+            "zone_number": zn,
+        }
+        selects[f"{prefix}_time_program_selected"] = {
+            "register": f"{prefix}_time_program_selected",
+            "translation_key": "zone_time_program_selected",
+            "enum_map": "iwr_time_program_selected",
+            "icon": "mdi:clock-outline",
             "zone_number": zn,
         }
 
@@ -6656,13 +7426,56 @@ def _build_zone_climates(zones: list[int]) -> dict[str, Any]:
 # no longer appear as read-only sensors.
 _WRITABLE_ZONE_SENSOR_KEYS: Final[set[str]] = {
     "control_mode",
+    "comfort_setpoint_1",
+    "comfort_setpoint_2",
+    "comfort_setpoint_3",
+    "comfort_setpoint_4",
+    "comfort_setpoint_5",
+    "night_setback",
+    "cooling_room_setpoint_1",
+    "cooling_room_setpoint_2",
+    "cooling_room_setpoint_3",
+    "cooling_room_setpoint_4",
+    "cooling_room_setpoint_5",
+    "cooling_night_setback",
+    "holiday_setpoint",
+    "temporary_setpoint",
     "dhw_comfort_setpoint",
     "dhw_reduced_setpoint",
     "dhw_holiday_setpoint",
     "dhw_antilegionella_setpoint",
+    "swimming_pool_setpoint",
+    "process_heat_setpoint",
+    "heating_control_strategy",
+    "max_flow_setpoint",
+    "cooling_mixing_setpoint",
+    "heating_curve_footpoint_night",
+    "max_preheat_time",
+    "mixing_valve_shift",
+    "mixing_valve_bandwidth",
+    "dhw_hysteresis",
+    "dhw_calorifier_offset",
+    "dhw_calorifier_raise",
+    "process_heat_hysteresis",
+    "process_heat_offset",
+    "process_heat_calorifier_raise",
     "dhw_calorifier_hysteresis",
+    "pump_post_run",
+    "time_program_selected",
     "room_setpoint_manual",
     "room_temp_measured",
+}
+
+_WRITABLE_STATIC_SENSOR_KEYS: Final[set[str]] = {
+    "ch_enabled",
+    "control_cooling_temperature",
+    "cooling_enabled",
+    "cooling_forced",
+    "dhw_enabled",
+    "force_summer_mode",
+    "frost_protection_threshold",
+    "neutral_band",
+    "summer_winter_threshold",
 }
 
 
@@ -6674,6 +7487,7 @@ def _build_entity_classification(
     binary_sensors: dict[str, Any],
     numbers: dict[str, Any],
     selects: dict[str, Any],
+    times: dict[str, Any],
 ) -> dict[str, tuple[str | None, bool]]:
     """Build a merged classification map for all IWR entities.
 
@@ -6683,9 +7497,11 @@ def _build_entity_classification(
     """
     classification: dict[str, tuple[str | None, bool]] = {}
 
-    all_entities = {**sensors, **binary_sensors, **numbers, **selects}
+    all_entities = {**sensors, **binary_sensors, **numbers, **selects, **times}
     for entity_key, config in all_entities.items():
-        translation_key = config.get("translation_key", entity_key)
+        translation_key = config.get(
+            "classification_key", config.get("translation_key", entity_key)
+        )
 
         if entity_key in IWR_STATIC_ENTITY_CLASSIFICATION:
             classification[entity_key] = IWR_STATIC_ENTITY_CLASSIFICATION[entity_key]
@@ -6719,12 +7535,13 @@ def get_iwr_device_config(zones: list[int] | None = None) -> dict[str, Any]:
     }
     numbers = {**_IWR_STATIC_NUMBERS, **_build_zone_numbers(zones)}
     selects = {**_IWR_STATIC_SELECTS, **_build_zone_selects(zones)}
+    times = _IWR_STATIC_TIMES
     climates = _build_zone_climates(zones)
 
     # Remove sensor entries for registers that now have number/select entities
     for key in list(sensors):
         suffix = key.split("_", 1)[1] if "_" in key else key
-        if suffix in _WRITABLE_ZONE_SENSOR_KEYS:
+        if key in _WRITABLE_STATIC_SENSOR_KEYS or suffix in _WRITABLE_ZONE_SENSOR_KEYS:
             del sensors[key]
 
     return {
@@ -6733,9 +7550,10 @@ def get_iwr_device_config(zones: list[int] | None = None) -> dict[str, Any]:
         "binary_sensors": binary_sensors,
         "numbers": numbers,
         "selects": selects,
+        "times": times,
         "climates": climates,
         "enum_maps": IWR_ENUM_MAPS,
         "entity_classification": _build_entity_classification(
-            sensors, binary_sensors, numbers, selects
+            sensors, binary_sensors, numbers, selects, times
         ),
     }

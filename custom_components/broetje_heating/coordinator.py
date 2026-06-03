@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from datetime import date, timedelta
 from typing import Any
 
@@ -24,9 +25,14 @@ from .const import (
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
     DOMAIN,
+    EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD,
+    EXCEPTION_CODE3_BACKOFF_SECONDS,
+    EXCEPTION_CODE3_BACKOFF_THRESHOLD,
     MANUFACTURER,
     REG_HOLDING,
     REG_INPUT,
+    SENTINEL_AUTO_DISABLE_THRESHOLD,
+    SENTINEL_RETRY_INTERVAL_SECONDS,
     SUBDEV_BUFFER_TANK,
     SUBDEV_HYBRID,
     SUBDEV_SOLAR,
@@ -46,6 +52,37 @@ _MODBUS_EXCEPTION_NAMES: dict[int, str] = {
     10: "gateway_path_unavailable",
     11: "gateway_target_no_response",
 }
+POLL_PROFILE_FAST = "fast"
+POLL_PROFILE_NORMAL = "normal"
+POLL_PROFILE_SLOW = "slow"
+POLL_PROFILE_OFF = "off"
+POLL_PROFILES: dict[str, int | None] = {
+    POLL_PROFILE_FAST: 30,
+    POLL_PROFILE_NORMAL: DEFAULT_SCAN_INTERVAL,
+    POLL_PROFILE_SLOW: 600,
+    POLL_PROFILE_OFF: None,
+}
+FAST_POLL_REGISTER_ADDRESSES: frozenset[int] = frozenset(
+    {
+        384,
+        400,
+        401,
+        409,
+        1612,
+        1613,
+        1619,
+        1620,
+        2128,
+        2129,
+        2131,
+        2133,
+    }
+)
+SLOW_POLL_REGISTER_ADDRESSES: frozenset[int] = frozenset({1177, 1178, 1179})
+SLOW_POLL_REGISTER_RANGES: tuple[tuple[int, int], ...] = (
+    (0, 199),
+    (1700, 1799),
+)
 
 
 class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -56,12 +93,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
         scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        self._poll_profiles = dict(POLL_PROFILES)
+        self._poll_profiles[POLL_PROFILE_NORMAL] = scan_interval
         super().__init__(
             hass,
             _LOGGER,
             name=DOMAIN,
             config_entry=entry,
-            update_interval=timedelta(seconds=scan_interval),
+            update_interval=timedelta(seconds=self._coordinator_tick_seconds()),
         )
         self._host = entry.data[CONF_HOST]
         self._port = entry.data[CONF_PORT]
@@ -79,6 +118,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.binary_sensors: dict[str, Any] = device_config["binary_sensors"]
         self.numbers: dict[str, Any] = device_config.get("numbers", {})
         self.selects: dict[str, Any] = device_config.get("selects", {})
+        self.times: dict[str, Any] = device_config.get("times", {})
         self.climates: dict[str, Any] = device_config.get("climates", {})
         self.enum_maps: dict[str, dict[int, str]] = device_config["enum_maps"]
         self.entity_classification: dict[str, tuple[str | None, bool]] = (
@@ -86,6 +126,12 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self.last_read_details: dict[str, dict[str, Any]] = {}
         self._last_read_error_detail: dict[str, Any] | None = None
+        self._sentinel_fail_counts: dict[str, int] = {}
+        self._exception10_fail_counts: dict[str, int] = {}
+        self._exception3_fail_counts: dict[str, int] = {}
+        self._register_poll_state: dict[str, dict[str, Any]] = {}
+        self._last_poll_monotonic: dict[str, float] = {}
+        self._register_entities = self._build_register_entities()
 
         # Device info
         self.device_serial: str | None = None
@@ -98,8 +144,17 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def update_scan_interval(self, scan_interval: int) -> None:
         """Update the polling interval (called when options change)."""
-        self.update_interval = timedelta(seconds=scan_interval)
+        self._poll_profiles[POLL_PROFILE_NORMAL] = scan_interval
+        self.update_interval = timedelta(seconds=self._coordinator_tick_seconds())
         _LOGGER.info("Scan interval updated to %d seconds", scan_interval)
+
+    def _coordinator_tick_seconds(self) -> int:
+        """Return the fastest enabled profile interval for coordinator wakeups."""
+        return min(
+            interval
+            for interval in self._poll_profiles.values()
+            if interval is not None
+        )
 
     async def _async_setup(self) -> None:
         """Set up the coordinator (called during first refresh)."""
@@ -319,6 +374,21 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if entry and not entry.disabled:
                 needed_registers.add(entity_config["register"])
 
+        # Check time entities
+        for entity_key, entity_config in self.times.items():
+            unique_id = f"{device_id}_{entity_key}"
+            entity_id = entity_registry.async_get_entity_id(
+                Platform.TIME, DOMAIN, unique_id
+            )
+
+            if entity_id is None:
+                needed_registers.add(entity_config["register"])
+                continue
+
+            entry = entity_registry.async_get(entity_id)
+            if entry and not entry.disabled:
+                needed_registers.add(entity_config["register"])
+
         # Check climate entities — each uses multiple registers
         for entity_key, climate_config in self.climates.items():
             unique_id = f"{device_id}_{entity_key}"
@@ -341,7 +411,400 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if entry and not entry.disabled:
                 needed_registers.update(climate_registers)
 
-        return needed_registers
+        filtered_registers: set[str] = set()
+        skipped_registers: set[str] = set()
+        now_monotonic = time.monotonic()
+
+        for register_key in needed_registers:
+            state = self._register_poll_state.get(register_key)
+            if state is None:
+                filtered_registers.add(register_key)
+                continue
+
+            mode = state.get("mode")
+            retry_at = state.get("retry_at_monotonic")
+
+            if mode == "sentinel_permanent":
+                skipped_registers.add(register_key)
+                continue
+
+            if mode == "exception10_permanent":
+                skipped_registers.add(register_key)
+                continue
+
+            if mode in {"sentinel_temp", "exception3_backoff"}:
+                if retry_at is not None and now_monotonic < retry_at:
+                    skipped_registers.add(register_key)
+                    continue
+
+                state["reprobe_active"] = mode == "sentinel_temp"
+                state["reprobe_attempted"] = mode == "sentinel_temp"
+                filtered_registers.add(register_key)
+                continue
+
+            filtered_registers.add(register_key)
+
+        for register_key in skipped_registers:
+            self.last_read_details[register_key] = self._build_disabled_detail(register_key)
+
+        return self._get_due_registers(filtered_registers)
+
+    def _resolve_poll_profile(self, register_key: str) -> str:
+        """Return the polling profile for a register."""
+        state = self._register_poll_state.get(register_key)
+        if state is not None:
+            mode = state.get("mode")
+            if mode in {"sentinel_permanent", "exception10_permanent"}:
+                return POLL_PROFILE_OFF
+            if mode == "exception3_backoff":
+                return POLL_PROFILE_SLOW
+
+        config = self.register_map.get(register_key, {})
+        profile = config.get("poll_profile", POLL_PROFILE_NORMAL)
+        if (
+            profile == POLL_PROFILE_NORMAL
+            and config.get("address") in FAST_POLL_REGISTER_ADDRESSES
+        ):
+            profile = POLL_PROFILE_FAST
+        if profile == POLL_PROFILE_NORMAL and self._is_static_slow_register(config):
+            profile = POLL_PROFILE_SLOW
+        if profile == POLL_PROFILE_NORMAL and self._is_diagnostic_register(
+            register_key
+        ):
+            profile = POLL_PROFILE_SLOW
+        if profile not in self._poll_profiles:
+            _LOGGER.warning(
+                "Unknown poll profile %s for register %s; using normal",
+                profile,
+                register_key,
+            )
+            return POLL_PROFILE_NORMAL
+        return profile
+
+    @staticmethod
+    def _is_static_slow_register(config: dict[str, Any]) -> bool:
+        """Return true for static register ranges that do not need fast polling."""
+        address = config.get("address")
+        if not isinstance(address, int):
+            return False
+        if address in SLOW_POLL_REGISTER_ADDRESSES:
+            return True
+        return any(
+            start_address <= address <= end_address
+            for start_address, end_address in SLOW_POLL_REGISTER_RANGES
+        )
+
+    def _is_diagnostic_register(self, register_key: str) -> bool:
+        """Return true if all entities using a register are diagnostic."""
+        entity_keys = self._register_entities.get(register_key, [])
+        if not entity_keys:
+            return False
+
+        for entity_key in entity_keys:
+            category, _enabled = self.entity_classification.get(entity_key, (None, True))
+            if category != "diagnostic":
+                return False
+        return True
+
+    def _get_due_registers(self, register_keys: set[str]) -> set[str]:
+        """Filter registers to those due for this coordinator tick."""
+        due_registers: set[str] = set()
+        now_monotonic = time.monotonic()
+
+        for register_key in register_keys:
+            profile = self._resolve_poll_profile(register_key)
+            interval = self._poll_profiles[profile]
+            if interval is None:
+                self.last_read_details[register_key] = self._build_disabled_detail(
+                    register_key
+                )
+                continue
+
+            last_poll = self._last_poll_monotonic.get(register_key)
+            if last_poll is not None and now_monotonic - last_poll < interval:
+                continue
+
+            due_registers.add(register_key)
+            self._last_poll_monotonic[register_key] = now_monotonic
+
+        return due_registers
+
+    def _build_register_entities(self) -> dict[str, list[str]]:
+        """Map register keys to the entity keys that depend on them."""
+        register_entities: dict[str, list[str]] = {}
+
+        def add(register_key: str, entity_key: str) -> None:
+            register_entities.setdefault(register_key, []).append(entity_key)
+
+        for entity_key, sensor_config in self.sensors.items():
+            add(sensor_config["register"], entity_key)
+
+        for entity_key, sensor_config in self.binary_sensors.items():
+            add(sensor_config["register"], entity_key)
+
+        for entity_key, entity_config in self.numbers.items():
+            add(entity_config["register"], entity_key)
+
+        for entity_key, entity_config in self.selects.items():
+            add(entity_config["register"], entity_key)
+
+        for entity_key, entity_config in self.times.items():
+            add(entity_config["register"], entity_key)
+
+        for entity_key, climate_config in self.climates.items():
+            add(climate_config["temperature_register"], entity_key)
+            add(climate_config["setpoint_register"], entity_key)
+            add(climate_config["control_mode_register"], entity_key)
+            add(climate_config["heating_mode_register"], entity_key)
+
+        return register_entities
+
+    def _describe_register(self, register_key: str) -> tuple[int | None, str]:
+        """Return register address and related entity keys for logging."""
+        reg_config = self.register_map.get(register_key, {})
+        address = reg_config.get("address")
+        entity_keys = ", ".join(self._register_entities.get(register_key, [register_key]))
+        return address, entity_keys
+
+    def _log_register_auto_disable(
+        self,
+        register_key: str,
+        *,
+        reason: str,
+        state: str,
+        count: int,
+        retry_after_seconds: int | None = None,
+    ) -> None:
+        """Write a warning for an automatic register state change."""
+        address, entity_keys = self._describe_register(register_key)
+        retry_text = ""
+        if retry_after_seconds is not None:
+            retry_text = f", retry_after={retry_after_seconds}s"
+        _LOGGER.warning(
+            "Auto-disabling register %s (address=%s, entities=%s): reason=%s, state=%s, count=%d%s",
+            register_key,
+            address,
+            entity_keys,
+            reason,
+            state,
+            count,
+            retry_text,
+        )
+
+    def _build_disabled_detail(self, register_key: str) -> dict[str, Any]:
+        """Expose skipped/disabled register state as read detail."""
+        state = self._register_poll_state.get(register_key, {})
+        reg_config = self.register_map.get(register_key, {})
+        detail: dict[str, Any] = {
+            "status": state.get("detail_status", "auto_disabled"),
+            "error_kind": state.get("reason", "auto_disabled"),
+            "register_address": reg_config.get("address"),
+            "register_type": reg_config.get("type"),
+        }
+        if entity_keys := self._register_entities.get(register_key):
+            detail["entity_keys"] = list(entity_keys)
+        detail["sentinel_fail_count"] = self._sentinel_fail_counts.get(register_key, 0)
+        detail["exception10_fail_count"] = self._exception10_fail_counts.get(
+            register_key, 0
+        )
+        detail["exception3_fail_count"] = self._exception3_fail_counts.get(
+            register_key, 0
+        )
+        if poll_mode := state.get("mode"):
+            detail["poll_mode"] = poll_mode
+        detail["poll_profile"] = self._resolve_poll_profile(register_key)
+        if exception_code := state.get("exception_code"):
+            detail["exception_code"] = exception_code
+            detail["exception_name"] = _MODBUS_EXCEPTION_NAMES.get(
+                exception_code, "unknown_exception"
+            )
+        if retry_after_seconds := state.get("retry_after_seconds"):
+            detail["retry_after_seconds"] = retry_after_seconds
+        return detail
+
+    def _apply_register_poll_state_to_detail(
+        self,
+        register_key: str,
+        detail: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Overlay auto-disable state onto a read detail when applicable."""
+        state = self._register_poll_state.get(register_key)
+        if state is None:
+            return detail
+        if state.get("mode") not in {
+            "sentinel_temp",
+            "sentinel_permanent",
+            "exception10_permanent",
+            "exception3_backoff",
+        }:
+            return detail
+        merged = dict(detail)
+        merged.update(self._build_disabled_detail(register_key))
+        return merged
+
+    def _annotate_runtime_detail(
+        self,
+        register_key: str,
+        detail: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Attach live counter/state info to any detail payload."""
+        merged = dict(detail)
+        merged["sentinel_fail_count"] = self._sentinel_fail_counts.get(register_key, 0)
+        merged["exception10_fail_count"] = self._exception10_fail_counts.get(
+            register_key, 0
+        )
+        merged["exception3_fail_count"] = self._exception3_fail_counts.get(
+            register_key, 0
+        )
+        if state := self._register_poll_state.get(register_key):
+            if poll_mode := state.get("mode"):
+                merged["poll_mode"] = poll_mode
+            if retry_after_seconds := state.get("retry_after_seconds"):
+                merged["retry_after_seconds"] = retry_after_seconds
+        merged["poll_profile"] = self._resolve_poll_profile(register_key)
+        return merged
+
+    def _clear_register_poll_state(self, register_key: str) -> None:
+        """Reset failure counters and temp state after a healthy read."""
+        self._sentinel_fail_counts.pop(register_key, None)
+        self._exception10_fail_counts.pop(register_key, None)
+        self._exception3_fail_counts.pop(register_key, None)
+        self._register_poll_state.pop(register_key, None)
+
+    def _mark_register_sentinel_disabled(
+        self,
+        register_key: str,
+        *,
+        permanent: bool,
+    ) -> None:
+        """Disable a register after repeated 0xFFFF sentinel reads."""
+        count = self._sentinel_fail_counts.get(register_key, 0)
+        state = {
+            "mode": "sentinel_permanent" if permanent else "sentinel_temp",
+            "reason": "sentinel_0xFFFF",
+            "detail_status": (
+                "auto_disabled_sentinel_permanent"
+                if permanent
+                else "auto_disabled_sentinel_retry_pending"
+            ),
+            "retry_after_seconds": SENTINEL_RETRY_INTERVAL_SECONDS,
+            "reprobe_active": False,
+            "reprobe_attempted": permanent,
+        }
+        if not permanent:
+            state["retry_at_monotonic"] = time.monotonic() + SENTINEL_RETRY_INTERVAL_SECONDS
+        self._register_poll_state[register_key] = state
+        self._log_register_auto_disable(
+            register_key,
+            reason="sentinel_0xFFFF",
+            state=state["mode"],
+            count=count,
+            retry_after_seconds=None if permanent else SENTINEL_RETRY_INTERVAL_SECONDS,
+        )
+
+    def _mark_register_exception10_disabled(self, register_key: str) -> None:
+        """Disable a register after repeated exception_code=10 responses."""
+        count = self._exception10_fail_counts.get(register_key, 0)
+        self._register_poll_state[register_key] = {
+            "mode": "exception10_permanent",
+            "reason": "exception_code_10",
+            "detail_status": "auto_disabled_exception_code_10",
+            "exception_code": 10,
+        }
+        self._log_register_auto_disable(
+            register_key,
+            reason="exception_code_10",
+            state="exception10_permanent",
+            count=count,
+        )
+
+    def _mark_register_exception3_backoff(self, register_key: str) -> None:
+        """Temporarily reduce polling frequency for exception_code=3 registers."""
+        count = self._exception3_fail_counts.get(register_key, 0)
+        self._register_poll_state[register_key] = {
+            "mode": "exception3_backoff",
+            "reason": "exception_code_3",
+            "detail_status": "auto_disabled_exception_code_3_backoff",
+            "exception_code": 3,
+            "retry_at_monotonic": time.monotonic() + EXCEPTION_CODE3_BACKOFF_SECONDS,
+            "retry_after_seconds": EXCEPTION_CODE3_BACKOFF_SECONDS,
+            "reprobe_active": False,
+            "reprobe_attempted": False,
+        }
+        self._log_register_auto_disable(
+            register_key,
+            reason="exception_code_3",
+            state="exception3_backoff",
+            count=count,
+            retry_after_seconds=EXCEPTION_CODE3_BACKOFF_SECONDS,
+        )
+
+    def _handle_successful_register_read(
+        self,
+        register_key: str,
+        registers: list[int],
+        config: dict[str, Any],
+    ) -> None:
+        """Update register health state after a successful protocol read."""
+        sentinel_detected = self._is_sentinel_value(
+            registers, config.get("data_type", "int16")
+        )
+        self._exception10_fail_counts.pop(register_key, None)
+        self._exception3_fail_counts.pop(register_key, None)
+
+        state = self._register_poll_state.get(register_key)
+        reprobe_active = bool(state and state.get("reprobe_active"))
+
+        if sentinel_detected:
+            self._sentinel_fail_counts[register_key] = (
+                self._sentinel_fail_counts.get(register_key, 0) + 1
+            )
+            count = self._sentinel_fail_counts[register_key]
+            if reprobe_active:
+                self._mark_register_sentinel_disabled(register_key, permanent=True)
+            elif count >= SENTINEL_AUTO_DISABLE_THRESHOLD:
+                self._mark_register_sentinel_disabled(register_key, permanent=False)
+            return
+
+        self._sentinel_fail_counts.pop(register_key, None)
+        if state is not None and state.get("mode") in {"sentinel_temp", "exception3_backoff"}:
+            self._register_poll_state.pop(register_key, None)
+
+    def _handle_failed_register_read(
+        self,
+        register_key: str,
+        detail: dict[str, Any],
+    ) -> None:
+        """Update register health state after a failed protocol read."""
+        self._sentinel_fail_counts.pop(register_key, None)
+        exception_code = detail.get("exception_code")
+
+        if exception_code == 10:
+            self._exception3_fail_counts.pop(register_key, None)
+            self._exception10_fail_counts[register_key] = (
+                self._exception10_fail_counts.get(register_key, 0) + 1
+            )
+            if (
+                self._exception10_fail_counts[register_key]
+                >= EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD
+            ):
+                self._mark_register_exception10_disabled(register_key)
+            return
+
+        self._exception10_fail_counts.pop(register_key, None)
+
+        if exception_code == 3:
+            self._exception3_fail_counts[register_key] = (
+                self._exception3_fail_counts.get(register_key, 0) + 1
+            )
+            if (
+                self._exception3_fail_counts[register_key]
+                >= EXCEPTION_CODE3_BACKOFF_THRESHOLD
+            ):
+                self._mark_register_exception3_backoff(register_key)
+            return
+
+        self._exception3_fail_counts.pop(register_key, None)
 
     def _group_registers_for_batch_read(
         self, register_keys: set[str]
@@ -428,8 +891,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the Modbus device."""
-        data: dict[str, Any] = {}
-        self.last_read_details = {}
+        data: dict[str, Any] = dict(self.data or {})
+        previous_read_details = self.last_read_details
+        self.last_read_details = dict(previous_read_details)
 
         # Get only the registers needed by enabled entities
         needed_registers = self._get_needed_registers()
@@ -480,12 +944,21 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                 processed = self._process_register_value(
                                     reg_values, reg["config"]
                                 )
+                                self._handle_successful_register_read(
+                                    reg["key"], reg_values, reg["config"]
+                                )
                                 data[reg["key"]] = processed
+                                detail = self._build_read_detail(
+                                    reg_values,
+                                    reg["config"],
+                                    processed,
+                                )
+                                detail = self._annotate_runtime_detail(
+                                    reg["key"], detail
+                                )
                                 self.last_read_details[reg["key"]] = (
-                                    self._build_read_detail(
-                                        reg_values,
-                                        reg["config"],
-                                        processed,
+                                    self._apply_register_poll_state_to_detail(
+                                        reg["key"], detail
                                     )
                                 )
                             else:
@@ -501,10 +974,23 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                     data[reg["key"]] = None
                                     detail = self._consume_last_read_error_detail()
                                     detail["status"] = "incomplete_batch_retry_failed"
-                                    self.last_read_details[reg["key"]] = detail
+                                    self._handle_failed_register_read(
+                                        reg["key"], detail
+                                    )
+                                    detail = self._annotate_runtime_detail(
+                                        reg["key"], detail
+                                    )
+                                    self.last_read_details[reg["key"]] = (
+                                        self._apply_register_poll_state_to_detail(
+                                            reg["key"], detail
+                                        )
+                                    )
                                 else:
                                     processed = self._process_register_value(
                                         reg_result, reg["config"]
+                                    )
+                                    self._handle_successful_register_read(
+                                        reg["key"], reg_result, reg["config"]
                                     )
                                     data[reg["key"]] = processed
                                     detail = self._build_read_detail(
@@ -515,7 +1001,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                     detail["status_source"] = (
                                         "single_retry_after_incomplete_batch"
                                     )
-                                    self.last_read_details[reg["key"]] = detail
+                                    detail = self._annotate_runtime_detail(
+                                        reg["key"], detail
+                                    )
+                                    self.last_read_details[reg["key"]] = (
+                                        self._apply_register_poll_state_to_detail(
+                                            reg["key"], detail
+                                        )
+                                    )
                     else:
                         # Retry per register so one bad address does not blank
                         # the entire contiguous block.
@@ -525,19 +1018,35 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                             )
                             if reg_result is None:
                                 data[reg["key"]] = None
+                                detail = self._consume_last_read_error_detail()
+                                self._handle_failed_register_read(reg["key"], detail)
+                                detail = self._annotate_runtime_detail(
+                                    reg["key"], detail
+                                )
                                 self.last_read_details[reg["key"]] = (
-                                    self._consume_last_read_error_detail()
+                                    self._apply_register_poll_state_to_detail(
+                                        reg["key"], detail
+                                    )
                                 )
                             else:
                                 processed = self._process_register_value(
                                     reg_result, reg["config"]
                                 )
+                                self._handle_successful_register_read(
+                                    reg["key"], reg_result, reg["config"]
+                                )
                                 data[reg["key"]] = processed
+                                detail = self._build_read_detail(
+                                    reg_result,
+                                    reg["config"],
+                                    processed,
+                                )
+                                detail = self._annotate_runtime_detail(
+                                    reg["key"], detail
+                                )
                                 self.last_read_details[reg["key"]] = (
-                                    self._build_read_detail(
-                                        reg_result,
-                                        reg["config"],
-                                        processed,
+                                    self._apply_register_poll_state_to_detail(
+                                        reg["key"], detail
                                     )
                                 )
 

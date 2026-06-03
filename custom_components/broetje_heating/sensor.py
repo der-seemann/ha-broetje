@@ -149,7 +149,11 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         # Keep enum sensors available so mapped sentinel states like
         # "device_not_available" remain visible. Numeric sentinel-only sensors
         # should present as unavailable instead of generic "unknown".
-        if status == "sentinel_no_data":
+        if status in {
+            "sentinel_no_data",
+            "auto_disabled_sentinel_retry_pending",
+            "auto_disabled_sentinel_permanent",
+        }:
             return self._attr_device_class == SensorDeviceClass.ENUM
 
         # Protocol/read failures should surface as unavailable instead of
@@ -158,6 +162,10 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             "read_error",
             "incomplete_batch_retry_failed",
             "invalid_value",
+            "auto_disabled_sentinel_retry_pending",
+            "auto_disabled_sentinel_permanent",
+            "auto_disabled_exception_code_10",
+            "auto_disabled_exception_code_3_backoff",
         }
 
     @property
@@ -175,7 +183,12 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         ):
             detail = self.coordinator.last_read_details.get(self._register_key, {})
             if (
-                detail.get("status") == "sentinel_no_data"
+                detail.get("status")
+                in {
+                    "sentinel_no_data",
+                    "auto_disabled_sentinel_retry_pending",
+                    "auto_disabled_sentinel_permanent",
+                }
                 and "device_not_available" in self._enum_map.values()
             ):
                 return "device_not_available"

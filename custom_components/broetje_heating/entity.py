@@ -41,8 +41,13 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
         category, enabled = coordinator.entity_classification.get(
             entity_key, (None, True)
         )
+        if coordinator.register_map.get(entity_key, {}).get("writable"):
+            category = "config"
+            enabled = True
         if category == "diagnostic":
             self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        elif category == "config":
+            self._attr_entity_category = EntityCategory.CONFIG
         self._attr_entity_registry_enabled_default = enabled
 
     @property
@@ -118,6 +123,13 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
                 "function_code",
                 "message",
                 "response",
+                "retry_after_seconds",
+                "entity_keys",
+                "sentinel_fail_count",
+                "exception10_fail_count",
+                "exception3_fail_count",
+                "poll_mode",
+                "poll_profile",
             ):
                 if value := detail.get(key):
                     attrs[key] = value

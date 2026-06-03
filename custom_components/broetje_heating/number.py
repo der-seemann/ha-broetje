@@ -65,10 +65,18 @@ class BroetjeNumber(BroetjeEntity, NumberEntity):
         )
 
         self._register_key = entity_config["register"]
-        self._attr_translation_key = entity_config.get("translation_key", entity_key)
 
-        if zone_number := entity_config.get("zone_number"):
-            self._attr_translation_placeholders = {"zone": str(zone_number)}
+        zone_number = entity_config.get("zone_number")
+        if translation_key := entity_config.get("translation_key"):
+            self._attr_translation_key = translation_key
+            if zone_number:
+                self._attr_translation_placeholders = {"zone": str(zone_number)}
+        elif name := entity_config.get("name"):
+            self._attr_name = (
+                name.format(zone=zone_number) if zone_number is not None else name
+            )
+        else:
+            self._attr_name = entity_key.replace("_", " ")
 
         self._attr_device_class = None
         device_class = entity_config.get("device_class")
@@ -92,6 +100,25 @@ class BroetjeNumber(BroetjeEntity, NumberEntity):
             self._attr_native_max_value = reg_config["max"]
         if "step" in reg_config:
             self._attr_native_step = reg_config["step"]
+
+    @property
+    def available(self) -> bool:
+        """Return entity availability."""
+        if not super().available:
+            return False
+
+        detail = self.coordinator.last_read_details.get(self._register_key)
+        if detail is None:
+            return True
+
+        return detail.get("status") in {
+            "ok",
+            "sentinel_no_data",
+            "auto_disabled_sentinel_retry_pending",
+            "auto_disabled_sentinel_permanent",
+            "auto_disabled_exception_code_10",
+            "auto_disabled_exception_code_3_backoff",
+        }
 
     @property
     def native_value(self) -> float | None:

@@ -285,7 +285,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Brötje Heatpump."""
 
     VERSION = 3
-    MINOR_VERSION = 2
+    MINOR_VERSION = 3
 
     @staticmethod
     def async_get_options_flow(

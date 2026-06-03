@@ -53,10 +53,18 @@ class BroetjeSelect(BroetjeEntity, SelectEntity):
         )
 
         self._register_key = entity_config["register"]
-        self._attr_translation_key = entity_config.get("translation_key", entity_key)
 
-        if zone_number := entity_config.get("zone_number"):
-            self._attr_translation_placeholders = {"zone": str(zone_number)}
+        zone_number = entity_config.get("zone_number")
+        if translation_key := entity_config.get("translation_key"):
+            self._attr_translation_key = translation_key
+            if zone_number:
+                self._attr_translation_placeholders = {"zone": str(zone_number)}
+        elif name := entity_config.get("name"):
+            self._attr_name = (
+                name.format(zone=zone_number) if zone_number is not None else name
+            )
+        else:
+            self._attr_name = entity_key.replace("_", " ")
 
         if icon := entity_config.get("icon"):
             self._attr_icon = icon
@@ -65,6 +73,18 @@ class BroetjeSelect(BroetjeEntity, SelectEntity):
         self._enum_map: dict[int, str] = coordinator.enum_maps.get(enum_map_name, {})
         self._reverse_map: dict[str, int] = {v: k for k, v in self._enum_map.items()}
         self._attr_options = list(self._enum_map.values())
+
+    @property
+    def available(self) -> bool:
+        """Return entity availability."""
+        if not super().available:
+            return False
+
+        detail = self.coordinator.last_read_details.get(self._register_key)
+        if detail is None:
+            return True
+
+        return detail.get("status") == "ok"
 
     @property
     def current_option(self) -> str | None:

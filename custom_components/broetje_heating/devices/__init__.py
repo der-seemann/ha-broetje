@@ -42,6 +42,7 @@ def get_device_config(
             "binary_sensors": ISR_BINARY_SENSORS,
             "enum_maps": ISR_ENUM_MAPS,
             "entity_classification": ISR_ENTITY_CLASSIFICATION,
+            "times": {},
             "climates": {},
         }
 

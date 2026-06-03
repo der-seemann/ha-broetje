@@ -83,6 +83,25 @@ class BroetjeClimate(BroetjeEntity, ClimateEntity):
                 self._attr_target_temperature_step = float(setpoint_reg["step"])
 
     @property
+    def available(self) -> bool:
+        """Return entity availability."""
+        if not super().available:
+            return False
+
+        for register_key in (
+            self._temperature_register,
+            self._setpoint_register,
+            self._control_mode_register,
+            self._heating_mode_register,
+        ):
+            detail = self.coordinator.last_read_details.get(register_key)
+            if detail is None:
+                continue
+            if detail.get("status") != "ok":
+                return False
+        return True
+
+    @property
     def current_temperature(self) -> float | None:
         """Return the current measured room temperature."""
         if self.coordinator.data is None:
