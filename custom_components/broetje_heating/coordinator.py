@@ -1273,8 +1273,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         register_words = self._encode_register_value(raw_value, data_type)
         address = config["address"]
 
-        _LOGGER.debug(
-            "Writing register %s (addr=%d): value=%s, raw=%d, words=%s",
+        _LOGGER.info(
+            "RW write start register=%s addr=%d value=%s raw=%d words=%s",
             register_key,
             address,
             value,
@@ -1293,11 +1293,30 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 )
 
                 if result.isError():
+                    _LOGGER.info(
+                        "RW write error register=%s addr=%d response=%s",
+                        register_key,
+                        address,
+                        result,
+                    )
                     raise HomeAssistantError(
                         f"Modbus write error for {register_key}: {result}"
                     )
 
+                _LOGGER.info(
+                    "RW write success register=%s addr=%d words=%s",
+                    register_key,
+                    address,
+                    register_words,
+                )
+
             except ModbusException as err:
+                _LOGGER.info(
+                    "RW write exception register=%s addr=%d error=%s",
+                    register_key,
+                    address,
+                    err,
+                )
                 await self._disconnect()
                 raise HomeAssistantError(
                     f"Modbus exception writing {register_key}: {err}"
@@ -1309,6 +1328,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         if readback is not None:
             readback_words = readback[: len(register_words)]
+            _LOGGER.info(
+                "RW readback register=%s addr=%d expected=%s actual=%s",
+                register_key,
+                address,
+                register_words,
+                readback_words,
+            )
             if readback_words != register_words:
                 _LOGGER.warning(
                     "Read-back mismatch for %s: wrote %s, read %s",
@@ -1316,6 +1342,28 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     register_words,
                     readback_words,
                 )
+
+            # Push the verified read-back value into coordinator state immediately
+            # so writable config entities do not stay stale until their next
+            # poll_profile interval becomes due.
+            processed = self._process_register_value(readback, config)
+            updated_data = dict(self.data or {})
+            updated_data[register_key] = processed
+            detail = self._build_read_detail(readback, config, processed)
+            detail["status_source"] = "write_readback"
+            detail = self._annotate_runtime_detail(register_key, detail)
+            self.last_read_details[register_key] = (
+                self._apply_register_poll_state_to_detail(register_key, detail)
+            )
+            self._last_poll_monotonic[register_key] = time.monotonic()
+            self.async_set_updated_data(updated_data)
+        else:
+            _LOGGER.info(
+                "RW readback missing register=%s addr=%d expected=%s",
+                register_key,
+                address,
+                register_words,
+            )
 
         await self.async_request_refresh()
 
