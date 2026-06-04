@@ -234,6 +234,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
     entry.runtime_data = coordinator
 
     _cleanup_replaced_registry_entities(hass, entry, coordinator)
+    _cleanup_inactive_subdevice_registry_entities(hass, entry, coordinator)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
@@ -257,6 +258,7 @@ def _cleanup_replaced_registry_entities(
     unique_root = entry.unique_id or entry.entry_id
 
     current_domain_by_key: dict[str, set[str]] = {}
+    known_entity_keys: set[str] = set()
     for domain, entity_map in (
         (Platform.SENSOR, coordinator.sensors),
         (Platform.BINARY_SENSOR, coordinator.binary_sensors),
@@ -265,7 +267,14 @@ def _cleanup_replaced_registry_entities(
         (Platform.TIME, coordinator.times),
         (Platform.CLIMATE, coordinator.climates),
     ):
-        for entity_key in entity_map:
+        for entity_key, config in entity_map.items():
+            known_entity_keys.add(entity_key)
+            sub_device = config.get("sub_device")
+            if (
+                sub_device is not None
+                and sub_device not in coordinator.active_sub_devices
+            ):
+                continue
             current_domain_by_key.setdefault(entity_key, set()).add(domain)
 
     removed = 0
@@ -283,6 +292,10 @@ def _cleanup_replaced_registry_entities(
 
         entity_key = registry_entry.unique_id[len(prefix) :]
         expected_domains = current_domain_by_key.get(entity_key)
+        if entity_key in known_entity_keys and expected_domains is None:
+            entity_registry.async_remove(registry_entry.entity_id)
+            removed += 1
+            continue
         if expected_domains is None:
             continue
         if registry_entry.domain in expected_domains:
@@ -304,6 +317,53 @@ def _cleanup_replaced_registry_entities(
         _LOGGER.info("Removed %d stale registry entries replaced by RW entities", removed)
     if enabled:
         _LOGGER.info("Enabled %d writable RW registry entries", enabled)
+
+
+def _cleanup_inactive_subdevice_registry_entities(
+    hass: HomeAssistant,
+    entry: BroetjeConfigEntry,
+    coordinator: BroetjeModbusCoordinator,
+) -> None:
+    """Remove registry entries for entities gated behind inactive sub-devices."""
+    entity_registry = er.async_get(hass)
+    unique_root = entry.unique_id or entry.entry_id
+
+    inactive_entity_keys: set[str] = set()
+    for entity_map in (
+        coordinator.sensors,
+        coordinator.binary_sensors,
+        coordinator.numbers,
+        coordinator.selects,
+        coordinator.times,
+    ):
+        for entity_key, config in entity_map.items():
+            sub_device = config.get("sub_device")
+            if (
+                sub_device is not None
+                and sub_device not in coordinator.active_sub_devices
+            ):
+                inactive_entity_keys.add(entity_key)
+
+    removed = 0
+    prefix = f"{unique_root}_"
+    for registry_entry in er.async_entries_for_config_entry(entity_registry, entry.entry_id):
+        if registry_entry.platform != DOMAIN:
+            continue
+        if not registry_entry.unique_id.startswith(prefix):
+            continue
+
+        entity_key = registry_entry.unique_id[len(prefix) :]
+        if entity_key not in inactive_entity_keys:
+            continue
+
+        entity_registry.async_remove(registry_entry.entity_id)
+        removed += 1
+
+    if removed:
+        _LOGGER.info(
+            "Removed %d registry entries for inactive sub-device entities",
+            removed,
+        )
 
 
 def _cleanup_orphan_zone_devices(
