@@ -3,11 +3,27 @@
 🇬🇧 [English Version](README.md)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/henrywiechert/ha-broetje)](https://github.com/henrywiechert/ha-broetje/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/der-seemann/ha-broetje)](https://github.com/der-seemann/ha-broetje/releases)
 
 <img src="custom_components/broetje_heating/images/logo.png" alt="Brötje Logo" width="200">
 
-Home Assistant Integration für Brötje Heizsysteme über Modbus TCP, mit Unterstützung für das **IWR/GTW-08** Gateway (Wärmepumpen) und das **ISR Plus** Modul (Gasheizungen und ältere Systeme).
+Home Assistant Integration für Brötje Heizsysteme über Modbus TCP. Dieser Fork bildet den aktuellen Implementierungsstand für das **IWR/GTW-08** Gateway und das **ISR Plus** Modul ab und spiegelt bewusst nicht blind veraltete Upstream-README-Abschnitte.
+
+Aktuelle BLW-12.1-Referenzinstallation:
+
+- `244 sensor`
+- `32 number`
+- `10 select`
+- `2 climate`
+- `47 binary_sensor`
+- `117` schreibbare Home-Assistant-Entitäten
+
+Der aktuelle Code-Stand enthält außerdem:
+
+- automatische Backoff-/Auto-Disable-Logik für Sentinel-Werte und wiederkehrende Modbus-Exceptions
+- drei Poll-Profile (`fast` / `normal` / `slow`)
+- Schreibsupport mit sofortigem Readback und In-Memory-State-Refresh
+- Bereinigung verwaister Entitäten und Sub-Devices beim Reload
 
 ## Unterstützte Module
 
@@ -53,7 +69,7 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 
 ### Getestete Modelle
 - **Brötje BLW Eco 10.1** (getestet mit GTW-08 und ISR MODBM)
-- **Brötje BLW Eco 12.1** (GTW-08)
+- **Brötje BLW Eco 12.1** (im aktuellen Fork explizit getestet)
 - **Brötje BLW Mono 8** (Hybrid Setup, Remeha GTW-08)
 
 *Andere Brötje Heizsysteme mit den genannten Modbus-Schnittstellen sollten ebenfalls funktionieren. Über Feedback für andere Modelle freuen wir uns :-)*
@@ -62,12 +78,15 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 
 - **Zwei Modultypen**: IWR/GTW-08 und ISR Plus, bei der Einrichtung auswählbar
 - **Parallelbetrieb**: Beide Module können gleichzeitig für verschiedene Geräte laufen
-- **Lese- und Schreibunterstützung (ausgewählte Register)**: Schwerpunkt bleibt Monitoring; für ausgewählte IWR Holding-Register ist sicheres Schreiben über `number`/`select`/`climate` Entitäten möglich
-- **IWR**: ~213 Entitäten (1 Zone) bis ~884 Entitäten (12 Zonen) — Hauptgerät, Zonenparameter & -messwerte, Geräteinformationen, Wartung, Fehlerdiagnose
+- **Schreibfähige IWR-Steuerung**: Schreibsupport für ausgewählte IWR-Holding-Register über `number`, `select`, `time` und `climate`, mit sofortigem Readback und State-Refresh nach erfolgreichem Write
+- **Auto-Disable-Logik**: Register mit Sentinel-Werten oder wiederkehrenden Modbus-Exceptions werden automatisch gedrosselt oder deaktiviert, statt dauerhaft fehlerhafte Zustände zu produzieren
+- **Poll-Strategie**: `fast`, `normal` und `slow` reduzieren Buslast und halten gleichzeitig laufzeitrelevante Werte reaktionsfähig
+- **Orphan-Cleanup**: Ersetzte Entitäten, entfernte Sub-Devices und veraltete Zonengeräte werden beim Reload automatisch aufgeräumt
+- **IWR**: Die Entitätszahl hängt von Zonen und erkannten Sub-Devices ab; die aktuelle BLW-12.1-Referenzinstallation entspricht den oben genannten Werten
 - **ISR**: 117 Entitäten (100 Sensoren + 17 Binärsensoren) in 6 Kategorien
 - **Zonenerkennung** (IWR): Erkennt aktive Zonen automatisch durch Auslesen der Zonentyp- und Zonenfunktionsregister vom Gerät; aktive Zonen werden vorausgewählt, inaktive angezeigt aber nicht ausgewählt. Manuelle Auswahl ebenfalls möglich.
 - **Climate-Subsystem** (IWR): Pro Zone werden Home-Assistant-`climate` Entitäten bereitgestellt (Thermostat-Karte kompatibel) mit Isttemperatur, Solltemperatur und HVAC-Modus/Aktion.
-- **Schreibbare Zonensteuerung** (IWR): Schreibfähige Entitäten für ausgewählte Zonenregister, u. a. Steuerungsmodus, Raumsollwert (manuell), gemessene Raumtemperatur (externer Fühlerwert), TWW-Speicher-Hysterese sowie TWW-Komfort-, Reduziert- und Feriensollwert.
+- **Schreibbare Zonensteuerung** (IWR): Umfasst Steuerungsmodus, Raumsollwert, externe Raumtemperaturvorgabe, TWW-Sollwerte/Hysteresen, Leisefunktions-Zeitfenster, Fernsteuer-Register `256-259` und die aktuell dokumentierten schreibbaren Zonenfamilien in [ENTITIES.md](ENTITIES.md)
 - **Sub-Devices**: Entitäten werden unter funktionalen Untergeräten gruppiert (z. B. Kessel/Service/Solar/Pufferspeicher/Hybrid). Nur erkannte Untergeräte werden geführt; verwaiste Untergeräte werden beim Reload automatisch entfernt.
 - **Konfigurierbare Zonen** (IWR): 1–12 Zonen bei der Einrichtung auswählbar oder über Integrationsoptionen neu konfigurierbar
 - **Konfigurierbares Abfrageintervall**: Über Integrationsoptionen einstellbar (Standard: 120 Sekunden)
@@ -110,10 +129,12 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 2. Auf "Integrationen" klicken
 3. Die drei Punkte oben rechts anklicken
 4. "Benutzerdefinierte Repositories" auswählen
-5. `https://github.com/henrywiechert/ha-broetje` hinzufügen und "Integration" als Kategorie wählen
+5. `https://github.com/der-seemann/ha-broetje` hinzufügen und "Integration" als Kategorie wählen
 6. "Hinzufügen" klicken
 7. Nach "Brötje" suchen und installieren
 8. Home Assistant neu starten
+
+Diese README dokumentiert ausdrücklich den Fork-Stand in `der-seemann/ha-broetje`. Für HACS also den Fork verwenden, nicht das ursprüngliche Upstream-Repository.
 
 ### Manuelle Installation
 
@@ -142,11 +163,16 @@ Um ein zweites Modul hinzuzufügen (z.B. ISR und IWR), die Integration einfach e
 Nach der Einrichtung kann über das **Konfigurieren**-Symbol (Zahnrad) am Integrationseintrag Folgendes angepasst werden:
 
 - **Abfrageintervall**: Wie oft die Integration das Modbus-Gerät abfragt (Standard: 120 Sekunden, Bereich: 10–3600). Änderungen werden sofort ohne Neustart wirksam.
+- **Poll-Profile**: Intern werden Register den Profilen `fast`, `normal` und `slow` zugeordnet. Das konfigurierte Scan-Intervall definiert `normal`; schnelle Laufzeitwerte und langsame Service-/Konfigurationsregister nutzen eigene Kadenz.
 - **Zonenkonfiguration** (nur IWR): Automatische Erkennung erneut ausführen oder aktive Zonen manuell ändern. Änderungen lösen einen Neustart der Integration aus.
 
 ## Entitäten
 
-Siehe [ENTITIES.md](ENTITIES.md) für eine vollständige Liste der ISR Entitäten mit Modbus-Registeradressen und Beschreibungen.
+Siehe [ENTITIES.md](ENTITIES.md) für:
+
+- das vollständige ISR-Inventar mit Registeradressen und Beschreibungen
+- die aktuell dokumentierten schreibbaren IWR-Entitätsgruppen
+- anlagenabhängige Auto-Disable-Register und aktuelle Einschränkungen
 
 Für IWR-Entitäten siehe [`custom_components/broetje_heating/register_map.csv`](custom_components/broetje_heating/register_map.csv) für eine umfassende Registertabelle mit Adressen, Datentypen, Beschreibungen (DE/EN), Einheiten, Skalierungsfaktoren sowie Lese-/Schreibstatus (`rw_spec` und `rw_implemented`).
 
@@ -174,7 +200,7 @@ Nicht jeder Sensor ist in allen Heizsystemen verfügbar! Z.B. Gasverbrauch bei W
 
 - Die Registeradressen müssen möglicherweise für das spezifische Modell angepasst werden
 - Home Assistant Logs auf Modbus-Kommunikationsfehler prüfen
-- Manche Sensoren zeigen „Nicht verfügbar" wenn das Gerät Sentinel-Werte meldet (0xFFFF) — das ist normal für nicht genutzte Funktionen
+- Manche Sensoren zeigen „Nicht verfügbar", wenn das Gerät Sentinel-Werte meldet oder wenn die Integration ein anlagenabhängiges Register nach wiederholten Fehlern temporär oder dauerhaft automatisch deaktiviert
 
 ## Entwicklung
 
@@ -189,11 +215,23 @@ Beiträge sind willkommen! Bitte:
 
 1. Repository forken
 2. Feature-Branch erstellen
-3. Pull Request einreichen
+3. `ruff check` und `ruff format --check custom_components/broetje_heating` ausführen (oder den Pre-Commit-Hook nutzen)
+4. Pull Request einreichen
+
+### Pre-Commit-Hook
+
+Vor jedem Commit kann automatisch `ruff check` und `ruff format` auf `custom_components/broetje_heating` laufen. Einrichtung:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
 
 ## Roadmap
 
 - [~] Schreibunterstützung für ausgewählte R/W Register (laufende Erweiterung)
+- [ ] Feature-Erkennung und intelligentere anlagenabhängige Bereinigung: [Issue #2](https://github.com/der-seemann/ha-broetje/issues/2)
+- [ ] Anti-Short-Cycling / Verdichterschutz-Logik: [Issue #3](https://github.com/der-seemann/ha-broetje/issues/3)
 - [ ] Zusätzliche Heizkreise für ISR (HK2, HK3)
 - [X] Brötje Logo im offiziellen HA brand repo
 
