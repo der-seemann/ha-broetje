@@ -17,22 +17,66 @@ This document covers the ISR Plus module in detail. For IWR/GTW-08 entities, see
 
 ## IWR / GTW-08 Summary
 
+- Current BLW 12.1 reference setup for this fork is documented as `244 sensor`, `32 number`, `10 select`, `2 climate`, `47 binary_sensor`, plus `117` writable Home Assistant entities.
 - IWR includes a **climate subsystem** with per-zone thermostat entities (`climate`), including current temperature, target setpoint, and HVAC mode/action mapping.
-- IWR supports **write access for selected holding registers** via `number` and `select` entities:
-
-  | Register | Entity | Description |
-  |----------|--------|-------------|
-  | 649–651 | Zone comfort setpoints | Comfort room temperature setpoints (per zone) |
-  | CP02X | Zone control mode | Operating mode per zone (scheduling / manual / off) |
-  | CP20X | Zone room setpoint (manual) | Manual room temperature setpoint |
-  | 665 | DHW comfort setpoint | DHW target temperature in comfort mode (10–80 °C) |
-  | 666 | DHW reduced setpoint | DHW target temperature in reduced mode (10–80 °C) |
-  | 667 | DHW holiday setpoint | DHW target temperature in holiday mode (10–80 °C) |
-  | 668 | DHW anti-legionella setpoint | DHW target temperature for legionella protection (10–80 °C) |
-  | 686 | DHW calorifier hysteresis | DHW storage hysteresis (0.5–20 °C) |
-  | 1105 | Zone room temp measured | External room temperature sensor injection |
-
+- IWR supports **write access for selected holding registers** via `number`, `select`, `time`, and `climate` entities, with immediate readback and in-memory state refresh after a successful write.
+- The coordinator applies **auto-disable/backoff logic** for plant-dependent registers that repeatedly return sentinel values or recurring Modbus exception responses.
 - IWR entities are grouped under **zone devices** and **functional sub-devices** (boiler / service / solar / buffer / hybrid). Sub-devices are auto-detected; orphaned entries are removed on reload.
+
+### IWR Writable Inventory
+
+The fork currently exposes the following writable IWR groups.
+
+#### Global boiler / controller writes
+
+| Register | Entity | HA domain | Description |
+|----------|--------|-----------|-------------|
+| 256 | `control_power` | `number` | Remote power limit |
+| 257 | `control_temperature` | `number` | Remote temperature setpoint |
+| 258 | `control_algorithm_type` | `select` | Remote control algorithm |
+| 259 | `control_heat_demand_type` | `select` | Remote heat demand type |
+| 491 | `low_noise_start_time` | `time` | Low-noise schedule start |
+| 492 | `low_noise_stop_time` | `time` | Low-noise schedule stop |
+
+#### Per-zone writable families
+
+These groups are generated for each configured IWR zone. The current BLW 12.1 reference setup uses zones 2 and 3.
+
+| Family | HA domain | Description |
+|--------|-----------|-------------|
+| `zoneX_climate` | `climate` | Zone thermostat entity with target temperature and HVAC mode |
+| `zoneX_control_mode` | `select` | Scheduling / manual / off |
+| `zoneX_heating_control_strategy` | `select` | Heating control strategy |
+| `zoneX_time_program_selected` | `select` | Active time program |
+| `zoneX_room_setpoint_manual` | `number` | Manual room setpoint |
+| `zoneX_room_temp_measured` | `number` | External room temperature injection |
+| `zoneX_comfort_setpoint_1..5` | `number` | Comfort setpoints |
+| `zoneX_cooling_room_setpoint_1..5` | `number` | Cooling setpoints |
+| `zoneX_night_setback` / `zoneX_cooling_night_setback` | `number` | Night setback values |
+| `zoneX_holiday_setpoint` / `zoneX_temporary_setpoint` | `number` | Holiday / temporary setpoints |
+| `zoneX_dhw_comfort_setpoint` / `zoneX_dhw_reduced_setpoint` / `zoneX_dhw_holiday_setpoint` / `zoneX_dhw_antilegionella_setpoint` | `number` | DHW target temperatures |
+| `zoneX_dhw_calorifier_hysteresis` / `zoneX_dhw_hysteresis` | `number` | DHW hysteresis parameters |
+| `zoneX_dhw_calorifier_offset` / `zoneX_dhw_calorifier_raise` | `number` | DHW storage offset / raise |
+| `zoneX_process_heat_setpoint` / `zoneX_process_heat_hysteresis` / `zoneX_process_heat_offset` / `zoneX_process_heat_calorifier_raise` | `number` | Process heat parameters |
+| `zoneX_swimming_pool_setpoint` | `number` | Swimming pool setpoint |
+| `zoneX_max_flow_setpoint` / `zoneX_cooling_mixing_setpoint` | `number` | Flow / mixing limits |
+| `zoneX_heating_curve_footpoint_night` / `zoneX_max_preheat_time` | `number` | Heating curve / preheat parameters |
+| `zoneX_mixing_valve_shift` / `zoneX_mixing_valve_bandwidth` | `number` | Mixing valve parameters |
+| `zoneX_pump_post_run` | `number` | Pump post-run time |
+
+#### Plant-dependent auto-disabled registers
+
+These registers are known to be installation-dependent. If the appliance repeatedly returns sentinel values or recurring Modbus exceptions, the coordinator automatically backs them off or disables them instead of keeping them in a noisy error loop.
+
+| Register | Entity / key | Status |
+|----------|---------------|--------|
+| 457 | `outdoor_unit_operation_mode` | plant-dependent, automatically disabled when unsupported |
+| 472 | `cop_threshold_primary_energy` | plant-dependent, automatically disabled when unsupported |
+| 484 | `hybrid_electricity_cost_high_tariff_accurate` | plant-dependent, automatically disabled when unsupported |
+| 485 | `hybrid_electricity_cost_low_tariff_accurate` | plant-dependent, automatically disabled when unsupported |
+| 486 | `fossil_energy_cost_accurate` | plant-dependent, automatically disabled when unsupported |
+| 1176 | `zone2_room_setpoint_manual` | plant-dependent, automatically disabled when unsupported |
+| 1617 | `zone2_room_temp_measured` | plant-dependent, automatically disabled when unsupported |
 
 For the complete IWR register inventory and read/write status, see:
 [`custom_components/broetje_heating/register_map.csv`](custom_components/broetje_heating/register_map.csv)

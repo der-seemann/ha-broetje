@@ -3,11 +3,27 @@
 🇩🇪 [Deutsche Version](README.de.md)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/henrywiechert/ha-broetje)](https://github.com/henrywiechert/ha-broetje/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/der-seemann/ha-broetje)](https://github.com/der-seemann/ha-broetje/releases)
 
 <img src="custom_components/broetje_heating/images/logo.png" alt="Brötje Logo" width="200">
 
-Home Assistant integration for Brötje heating systems via Modbus TCP, supporting both the **IWR/GTW-08** gateway (heat pumps) and the **ISR Plus** module (gas boilers and older systems).
+Home Assistant integration for Brötje heating systems via Modbus TCP. This fork tracks the current implementation status of the **IWR/GTW-08** gateway and the **ISR Plus** module and does not intentionally mirror outdated upstream README sections.
+
+Current BLW 12.1 reference setup:
+
+- `244 sensor`
+- `32 number`
+- `10 select`
+- `2 climate`
+- `47 binary_sensor`
+- `117` writable Home Assistant entities
+
+The current codebase also includes:
+
+- automatic register backoff/disable handling for sentinel values and recurring Modbus exceptions
+- three poll profiles (`fast` / `normal` / `slow`)
+- write support with immediate readback and in-memory state refresh
+- orphan entity and orphan sub-device cleanup on reload
 
 ## Supported Modules
 
@@ -53,7 +69,7 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 
 ### Tested Models
 - **Brötje BLW Eco 10.1** (tested with ISR and IWR/GTW-08)
-- **Brötje BLW Eco 12.1**
+- **Brötje BLW Eco 12.1** (explicitly tested on the current fork)
 - **Brötje BLW Mono 8** (Hybrid Setup, Remeha GTW-08)
 
 *Other Brötje heating systems with Modbus interface should also work. I appreciate any feedback for other models*
@@ -62,17 +78,20 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 
 - **Two module types**: IWR/GTW-08 and ISR Plus, selectable during setup
 - **Parallel operation**: Both modules can run side by side for different appliances
-- **Read + write support (selected registers)**: Monitoring remains read-focused, with safe write support for selected IWR holding registers exposed as `number`/`select`/`climate` entities
-- **IWR**: ~213 entities (1 zone) up to ~884 entities (12 zones) — main appliance, zone parameters & measurements, device info, service, error diagnostics
+- **Writable IWR controls**: Write-enabled IWR entities are exposed as `number`, `select`, `time`, and `climate` entities, with immediate readback and state refresh after writes
+- **Auto-disable logic**: Registers that repeatedly return sentinel values or recurring Modbus exceptions are automatically throttled or disabled instead of spamming invalid states
+- **Poll strategy**: `fast`, `normal`, and `slow` poll profiles reduce bus load while still keeping relevant runtime values responsive
+- **Orphan cleanup**: Replaced entities, removed sub-devices, and stale zone devices are cleaned up on reload
+- **IWR**: entity count depends on configured zones and detected sub-devices; the current BLW 12.1 reference setup exposes the counts listed above
 - **ISR**: 117 entities (100 sensors + 17 binary sensors) across 6 categories
 - **Zone detection** (IWR): Automatically detects active zones by reading zone type and function registers from the device; active zones are pre-selected, inactive ones shown but unchecked. Manual selection also available.
 - **Climate subsystem** (IWR): Zone thermostat entities are exposed via Home Assistant `climate` entities (Thermostat card compatible) with current temperature, target setpoint, and HVAC mode/action mapping.
-- **Writable zone controls** (IWR): Write-enabled entities for selected zone registers, including control mode, room setpoint (manual), room temperature measured (external sensor injection), DHW calorifier hysteresis, and DHW comfort/reduced/holiday setpoints.
+- **Writable zone controls** (IWR): Includes control mode, room setpoint, external room temperature injection, DHW setpoints/hysteresis, low-noise schedule, remote control registers `256-259`, and the current per-zone writable parameter families documented in [ENTITIES.md](ENTITIES.md)
 - **Sub-devices**: Entities are grouped under functional sub-devices (for example boiler/service/solar/buffer/hybrid). Only detected sub-devices are kept; stale/orphaned sub-devices are removed automatically on reload.
 - **Configurable zones** (IWR): 1–12 zones selectable during setup or reconfigurable via integration options
 - **Configurable scan interval**: Adjustable polling interval via integration options (default: 120 seconds)
 - **German and English translations**
-- **Sentinel value filtering**: Invalid Modbus readings (0xFFFF, 0xFFFFFFFF) are shown as "Unavailable" instead of bogus numbers
+- **Sentinel value filtering**: Invalid Modbus readings (for example `0xFFFF`, `0xFFFFFFFF`) are shown as unavailable instead of bogus numbers
 
 ### ISR Coverage
 
@@ -110,14 +129,16 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 2. Click on "Integrations"
 3. Click the three dots in the top right corner
 4. Select "Custom repositories"
-5. Add `https://github.com/henrywiechert/ha-broetje` and select "Integration" as the category
+5. Add `https://github.com/der-seemann/ha-broetje` and select "Integration" as the category
 6. Click "Add"
 7. Search for "Brötje" and install it
 8. Restart Home Assistant
 
+This README documents the fork state at `der-seemann/ha-broetje`. If you install from HACS, make sure you use the fork URL above rather than the original upstream repository.
+
 ### Manual Installation
 
-1. Download the `custom_components/broetje_heating` folder
+1. Download or clone `https://github.com/der-seemann/ha-broetje`
 2. Copy it to your Home Assistant `config/custom_components/` directory
 3. Restart Home Assistant
 
@@ -142,11 +163,16 @@ To add a second module (e.g., both ISR and IWR), simply add the integration agai
 After setup, click the **Configure** (gear icon) button on the integration entry to adjust:
 
 - **Scan interval**: How often the integration polls the Modbus device (default: 120 seconds, range: 10–3600). Changes take effect immediately without restart.
+- **Poll profiles**: The coordinator internally assigns registers to `fast`, `normal`, or `slow` profiles. The configured scan interval defines the `normal` profile, while fast-changing runtime values and slow-changing service/config registers use dedicated profiles.
 - **Zone configuration** (IWR only): Re-run autodetection or manually change which zones are active. Changes trigger an integration reload.
 
 ## Entities
 
-See [ENTITIES.md](ENTITIES.md) for a complete list of ISR entities with their Modbus register addresses and descriptions.
+See [ENTITIES.md](ENTITIES.md) for:
+
+- the full ISR entity inventory with register addresses and descriptions
+- the currently documented writable IWR entity groups
+- plant-dependent auto-disabled registers and current limitations
 
 For IWR entities, see [`custom_components/broetje_heating/register_map.csv`](custom_components/broetje_heating/register_map.csv) for a comprehensive register map including addresses, data types, descriptions (EN/DE), units, scaling factors, and read/write status (`rw_spec` and `rw_implemented`).
 
@@ -191,7 +217,7 @@ entities:
 
 - The register addresses may need adjustment for your specific model
 - Check Home Assistant logs for Modbus communication errors
-- Some sensors show "Unavailable" when the appliance reports sentinel values (0xFFFF) — this is normal for unused features
+- Some sensors show unavailable when the appliance reports sentinel values or when the coordinator temporarily/permanently auto-disables a plant-dependent register after repeated failures
 
 ## Development
 
@@ -221,6 +247,8 @@ Contributions are welcome! Please:
 ## Roadmap
 
 - [~] Write support for selected R/W registers (ongoing expansion)
+- [ ] Feature detection and smarter installation-specific pruning: [Issue #2](https://github.com/der-seemann/ha-broetje/issues/2)
+- [ ] Anti-short-cycling / generator protection logic: [Issue #3](https://github.com/der-seemann/ha-broetje/issues/3)
 - [ ] Additional heating circuits for ISR (HC2, HC3)
 - [X] Brötje logo in official HA brand repo
 

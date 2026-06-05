@@ -1,5 +1,14 @@
 # Changelog
 
+## Current fork status
+- Docs: `README.md` and `ENTITIES.md` synchronized to the current fork state, including the BLW 12.1 reference installation, current entity counts, HACS installation via `der-seemann/ha-broetje`, writable entity groups, and installation-dependent auto-disable notes.
+- Fix/Behavior: Auto-disable logic for sentinel values and recurring Modbus exceptions is part of the active fork and documented as a first-class integration feature.
+- Fix/Behavior: Poll strategy now uses three profiles (`fast`, `normal`, `slow`) instead of treating every register equally.
+- Feat: Writable support currently spans `117` writable Home Assistant entities on the documented BLW 12.1 reference installation.
+- Fix: Immediate write readback and state refresh after successful writes landed in commit `6e5c1cb`.
+- Fix: Replaced/orphaned entities and stale sub-devices are cleaned up on reload.
+- Fix: Poll-profile handling for registers `256-259` was corrected so the remote-control writes are polled on the intended cadence.
+
 ## v0.14.0-beta.0
 - Feat: Kaskaden-Register `7105-7146` und `7151-7227` als neue IWR/GTW-08-Entities ergänzt, inklusive Erzeuger-8/9/10-Statusblöcke und Kaskadenleistungs-Sollwerten.
 - Fix: Neue Kaskaden-Entities standardmäßig aktiviert statt `disabled_by=integration`.
