@@ -32,6 +32,41 @@ Jeden Block immer mit einem dieser Status protokollieren:
 
 Kein Commit, kein Tag, kein Release ohne diese Checks in dieser Reihenfolge:
 
+### Home-Assistant-REST-API
+
+Agent-Jobs verwenden fuer HA-State-Verifikation immer REST mit absolutem Tokenpfad und deaktivierter TLS-Pruefung, weil `homeassistant.local` lokal ein nicht oeffentlich vertrauenswuerdiges Zertifikat nutzt.
+
+```bash
+HA_URL="${HA_URL:-https://homeassistant.local:8123}"
+HA_TOKEN_FILE="${HA_TOKEN_FILE:-/home/kiki/.openclaw/secrets/homeassistant_token.txt}"
+
+curl -sk \
+  -H "Authorization: Bearer $(cat "$HA_TOKEN_FILE")" \
+  "$HA_URL/api/"
+```
+
+Kanonischer Pfad ist `/home/kiki/.openclaw/secrets/homeassistant_token.txt`. Der relative Pfad `homeassistant_token.txt` darf nur als ignorierter Symlink fuer alte Agent-Jobs existieren, nie als echte Token-Datei im Repo.
+
+### Home-Assistant-SSH-Tooling
+
+Auf `root@homeassistant.local` ist `rg` nicht installiert. HA-SSH-Kommandos duerfen fuer Textsuche nur POSIX/Bash-Bordmittel und `grep` verwenden, z. B. `grep -i`, `grep -n` oder `grep -l`. `rg` ist nur lokal auf `kikis-yoga` erlaubt, also ausserhalb des SSH-Kommandos.
+
+Richtig:
+```bash
+ssh -i ~/.openclaw/secrets/rpi4_ha_ed25519 root@homeassistant.local \
+ 'ha core logs' | grep -i "broetje\|traceback\|error\|setup" | tail -30
+```
+
+Nicht erlaubt: ripgrep innerhalb des HA-SSH-Kommandos aufrufen.
+
+### Verifikation
+
+Verifikation erfolgt immer direkt per Shell-Kommando, nicht per Agent-Tool-Search.
+
+- `grep`, `find`, `ls`, `rg` und vergleichbare Shell-Befehle direkt im Terminal verwenden, wenn Shell-Zugriff moeglich ist.
+- Agent-Tools wie "search in directory" nur verwenden, wenn Shell-Zugriff nicht moeglich ist.
+- Denselben Check nie doppelt ausfuehren, also nicht Shell plus Agent-Tool fuer dieselbe Pruefung.
+
 ### 1. Code geändert
 
 ### 2. Lokale Checks erfolgreich
@@ -84,6 +119,12 @@ Für jede neue Entity:
 **A) Entity aktiv (disabled_by = null):**
 - Entity muss in `/api/states` erscheinen → Status: `LIVE_VERIFIED`
 - State, Attribute und unavailable/unknown dokumentieren
+- REST-Aufruf:
+ ```
+ curl -sk \
+   -H "Authorization: Bearer $(cat /home/kiki/.openclaw/secrets/homeassistant_token.txt)" \
+   "https://homeassistant.local:8123/api/states/<entity_id>"
+ ```
 
 **B) Entity disabled_by=integration:**
 - Das ist nur `REGISTRY_ONLY` — kein vollständiger Nachweis
@@ -147,6 +188,7 @@ Pro Block in `.kiki/progress/YYYY-MM-DD_progress.md`:
 | Nach 10 Versuchen kein HA | `BLOCKED`, Telegram, nächster Block |
 | Modbus-Timeout/ExceptionResponse | Separat dokumentieren, nicht als Code-Fehler werten |
 | Lokale Checks fehlgeschlagen | Kein Deploy, Bug fixen, neu prüfen |
+| Agent nutzt `rg` in HA-SSH-Kommandos | Fehler: `rg` existiert auf HA nicht. SSH-Kommando auf `grep -i`/`grep -n`/`grep -l` umstellen; `rg` nur lokal auf `kikis-yoga` verwenden |
 
 **Nie wegen eines Fehlers komplett stoppen** — immer mit dem nächsten unabhängigen Block weitermachen.
 

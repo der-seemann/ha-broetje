@@ -79,3 +79,4 @@ venv.bak/
 *.db
 *.log
 home-assistant.log*
+homeassistant_token.txt
