@@ -1140,12 +1140,15 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     # Standard Modbus sentinel values indicating "not available" / "no data".
     # These are checked against the raw decoded value BEFORE scaling.
     _SENTINEL_VALUES: dict[str, set[int]] = {
-        "uint8": {0xFFFF},
-        "enum8": {0xFFFF},
+        # 8-bit values arrive in one 16-bit Modbus register. No-data shows up as
+        # either 0x00FF (actual 8-bit max) or 0xFFFF depending on device/bridge.
+        "uint8": {0x00FF, 0xFFFF},
+        "enum8": {0x00FF, 0xFFFF},
         # GTW-08 returns both 0xFFFF and 0x8000 for signed "no data" registers.
         "int16": {-1, -32768},
         "uint16": {0xFFFF},  # 65535
-        "int32": {-1},  # 0xFFFFFFFF signed
+        # Reserve both common signed no-data patterns.
+        "int32": {-1, -2147483648},
         "uint32": {0xFFFFFFFF},  # 4294967295
     }
 
