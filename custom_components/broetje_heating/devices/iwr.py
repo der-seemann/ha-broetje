@@ -8,6 +8,10 @@ from __future__ import annotations
 from typing import Any, Final
 
 from ..const import (
+    FEATURE_BUFFER_TANK,
+    FEATURE_CASCADE,
+    FEATURE_COOLING,
+    FEATURE_HYBRID,
     REG_HOLDING,
     SUBDEV_BOILER,
     SUBDEV_BUFFER_TANK,
@@ -7484,6 +7488,163 @@ _WRITABLE_STATIC_SENSOR_KEYS: Final[set[str]] = {
     "summer_winter_threshold",
 }
 
+_ZONE_ROLE_HEATING: Final = "heating"
+_ZONE_ROLE_DHW: Final = "dhw"
+_ZONE_ROLE_INACTIVE: Final = "inactive"
+
+_ZONE_INACTIVE_KEEP_SUFFIXES: Final[set[str]] = {"zone_type", "function", "device_type"}
+_ZONE_DHW_ONLY_SUFFIXES: Final[set[str]] = {
+    "dhw_comfort_setpoint",
+    "dhw_reduced_setpoint",
+    "dhw_holiday_setpoint",
+    "dhw_antilegionella_setpoint",
+    "dhw_hysteresis",
+    "dhw_calorifier_offset",
+    "dhw_calorifier_raise",
+    "dhw_calorifier_hysteresis",
+    "dhw_tank_temp_bottom",
+    "dhw_tank_temp_top",
+}
+_ZONE_HEATING_ONLY_SUFFIXES: Final[set[str]] = {
+    "room_setpoint_manual",
+    "comfort_setpoint_1",
+    "comfort_setpoint_2",
+    "comfort_setpoint_3",
+    "comfort_setpoint_4",
+    "comfort_setpoint_5",
+    "night_setback",
+    "holiday_setpoint",
+    "temporary_setpoint",
+    "swimming_pool_setpoint",
+    "process_heat_setpoint",
+    "heating_control_strategy",
+    "max_flow_setpoint",
+    "heating_curve_footpoint_night",
+    "max_preheat_time",
+    "mixing_valve_shift",
+    "mixing_valve_bandwidth",
+    "process_heat_hysteresis",
+    "process_heat_offset",
+    "process_heat_calorifier_raise",
+    "pump_post_run",
+    "climate",
+}
+
+
+def _zone_key_parts(entity_key: str) -> tuple[int, str] | None:
+    """Split a zone-prefixed entity/register key into zone number and suffix."""
+    if not entity_key.startswith("zone"):
+        return None
+    prefix, separator, suffix = entity_key.partition("_")
+    if not separator:
+        return None
+    try:
+        return int(prefix[4:]), suffix
+    except ValueError:
+        return None
+
+
+def _zone_role(zone_number: int, zone_details: dict[str, Any] | None) -> str:
+    """Return the persisted zone role for a zone number."""
+    if not zone_details:
+        return _ZONE_ROLE_HEATING
+    return zone_details.get(str(zone_number), {}).get("role", _ZONE_ROLE_HEATING)
+
+
+def _is_zone_key_allowed(
+    entity_key: str,
+    zone_details: dict[str, Any] | None,
+    features: dict[str, bool],
+) -> bool:
+    """Return True when a zone-scoped register/entity is enabled."""
+    parts = _zone_key_parts(entity_key)
+    if parts is None:
+        return True
+
+    zone_number, suffix = parts
+    role = _zone_role(zone_number, zone_details)
+
+    if role == _ZONE_ROLE_INACTIVE:
+        return suffix in _ZONE_INACTIVE_KEEP_SUFFIXES
+
+    if not features.get(FEATURE_COOLING, True) and "cooling" in suffix:
+        return False
+
+    if role == _ZONE_ROLE_DHW:
+        if suffix in _ZONE_HEATING_ONLY_SUFFIXES or "cooling" in suffix:
+            return False
+    else:
+        if suffix in _ZONE_DHW_ONLY_SUFFIXES:
+            return False
+
+    return True
+
+
+def _feature_for_register(entity_key: str, register_config: dict[str, Any]) -> str | None:
+    """Map a register definition to an optional feature group."""
+    address = int(register_config.get("address", -1))
+    sub_device = register_config.get("sub_device")
+
+    if entity_key.startswith("cascade_"):
+        return FEATURE_CASCADE
+    if sub_device == SUBDEV_BUFFER_TANK or 7600 <= address <= 7699:
+        return FEATURE_BUFFER_TANK
+    if sub_device == SUBDEV_HYBRID or 464 <= address <= 486:
+        return FEATURE_HYBRID
+    if "cooling" in entity_key:
+        return FEATURE_COOLING
+    return None
+
+
+def _filter_iwr_register_map(
+    register_map: dict[str, Any],
+    features: dict[str, bool],
+    zone_details: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Filter register definitions according to selected feature groups."""
+    filtered: dict[str, Any] = {}
+    for entity_key, register_config in register_map.items():
+        if not _is_zone_key_allowed(entity_key, zone_details, features):
+            continue
+
+        feature = _feature_for_register(entity_key, register_config)
+        if feature is not None and not features.get(feature, False):
+            continue
+
+        filtered[entity_key] = register_config
+
+    return filtered
+
+
+def _filter_register_entities(
+    entity_map: dict[str, Any],
+    register_map: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep only entities whose backing register still exists."""
+    return {
+        entity_key: entity_config
+        for entity_key, entity_config in entity_map.items()
+        if entity_config.get("register") in register_map
+    }
+
+
+def _filter_climate_entities(
+    climates: dict[str, Any],
+    register_map: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep only climates whose backing registers still exist."""
+    filtered: dict[str, Any] = {}
+    for entity_key, entity_config in climates.items():
+        required_registers = (
+            entity_config["temperature_register"],
+            entity_config["setpoint_register"],
+            entity_config["control_mode_register"],
+            entity_config["heating_mode_register"],
+        )
+        if all(register_key in register_map for register_key in required_registers):
+            filtered[entity_key] = entity_config
+    return filtered
+
 
 # ===== Public API =====
 
@@ -7520,10 +7681,21 @@ def _build_entity_classification(
     return classification
 
 
-def get_iwr_device_config(zones: list[int] | None = None) -> dict[str, Any]:
+def get_iwr_device_config(
+    zones: list[int] | None = None,
+    features: dict[str, bool] | None = None,
+    zone_details: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Build the complete IWR device config for the given zone numbers (1-based)."""
     if zones is None:
         zones = [1]
+    if features is None:
+        features = {
+            FEATURE_HYBRID: True,
+            FEATURE_CASCADE: True,
+            FEATURE_COOLING: True,
+            FEATURE_BUFFER_TANK: True,
+        }
     # Merge static + dynamic registers
     register_map = {
         **_IWR_STATIC_REGISTER_MAP,
@@ -7549,6 +7721,14 @@ def get_iwr_device_config(zones: list[int] | None = None) -> dict[str, Any]:
         suffix = key.split("_", 1)[1] if "_" in key else key
         if key in _WRITABLE_STATIC_SENSOR_KEYS or suffix in _WRITABLE_ZONE_SENSOR_KEYS:
             del sensors[key]
+
+    register_map = _filter_iwr_register_map(register_map, features, zone_details)
+    sensors = _filter_register_entities(sensors, register_map)
+    binary_sensors = _filter_register_entities(binary_sensors, register_map)
+    numbers = _filter_register_entities(numbers, register_map)
+    selects = _filter_register_entities(selects, register_map)
+    times = _filter_register_entities(times, register_map)
+    climates = _filter_climate_entities(climates, register_map)
 
     return {
         "register_map": register_map,

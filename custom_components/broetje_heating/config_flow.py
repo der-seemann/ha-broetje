@@ -22,15 +22,22 @@ from homeassistant.helpers.selector import (
 )
 
 from .const import (
+    CONF_IWR_FEATURES,
+    CONF_IWR_ZONE_DETAILS,
     CONF_SCAN_INTERVAL,
     CONF_UNIT_ID,
+    CONF_ZONES,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
     DOMAIN,
+    FEATURE_BUFFER_TANK,
+    FEATURE_CASCADE,
+    FEATURE_COOLING,
+    FEATURE_HYBRID,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType
-from .devices.iwr import ZONE_ADDR_OFFSET, ZONE_FUNCTION_BASE_ADDR, ZONE_TYPE_BASE_ADDR
+from .iwr_setup import detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,113 +49,29 @@ STEP_CONNECTION_DATA_SCHEMA = vol.Schema(
     }
 )
 
-_ZONE_TYPE_LABELS: dict[int, str] = {
-    0: "not present",
-    1: "CH only",
-    2: "CH + cooling",
-    3: "DHW",
-    4: "process heat",
-    5: "swimming pool",
-    254: "other",
-    255: "undefined",
-}
-
-_ZONE_FUNCTION_LABELS: dict[int, str] = {
-    0: "disable",
-    1: "direct",
-    2: "mixing circuit",
-    3: "swimming pool",
-    4: "high temperature",
-    5: "fan convector",
-    6: "DHW tank",
-    7: "electrical DHW",
-    8: "time program",
-    9: "process heat",
-    10: "DHW layered",
-    11: "DHW internal tank",
-    12: "DHW commercial tank",
-    13: "occupied",
-    254: "DHW primary",
-    255: "undefined",
-}
-
-_ZONE_TYPE_INACTIVE: frozenset[int] = frozenset({0, 255})
-
-
 class CannotConnect(Exception):
     """Error to indicate we cannot connect."""
 
 
-async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
-    """Read zone_type and zone_function registers for all 12 zones.
-
-    Returns list of 12 dicts with keys: zone, zone_type, zone_function, active, label.
-    """
-    results: list[dict[str, Any]] = []
-    for z in range(12):
-        zn = z + 1
-        type_addr = ZONE_TYPE_BASE_ADDR + ZONE_ADDR_OFFSET * z
-        func_addr = ZONE_FUNCTION_BASE_ADDR + ZONE_ADDR_OFFSET * z
-
-        zone_type = 0
-        zone_function = 0
-
-        try:
-            type_result = await client.read_holding_registers(
-                address=type_addr, count=1, device_id=unit_id
-            )
-            if type_result.isError():
-                _LOGGER.warning(
-                    "Zone %d: zone_type read error at addr %d: %s",
-                    zn,
-                    type_addr,
-                    type_result,
-                )
-            else:
-                zone_type = type_result.registers[0]
-
-            func_result = await client.read_holding_registers(
-                address=func_addr, count=1, device_id=unit_id
-            )
-            if func_result.isError():
-                _LOGGER.warning(
-                    "Zone %d: zone_function read error at addr %d: %s",
-                    zn,
-                    func_addr,
-                    func_result,
-                )
-            else:
-                zone_function = func_result.registers[0]
-        except Exception:
-            _LOGGER.exception("Zone %d: exception reading registers", zn)
-
-        active = zone_type not in _ZONE_TYPE_INACTIVE
-        type_label = _ZONE_TYPE_LABELS.get(zone_type, f"type {zone_type}")
-        func_label = _ZONE_FUNCTION_LABELS.get(zone_function, f"func {zone_function}")
-
-        if zone_type in _ZONE_TYPE_INACTIVE:
-            label = f"Zone {zn} — {type_label}"
-        else:
-            label = f"Zone {zn} — {type_label}, {func_label}"
-
-        results.append(
-            {
-                "zone": zn,
-                "zone_type": zone_type,
-                "zone_function": zone_function,
-                "active": active,
-                "label": label,
-            }
-        )
-
-    return results
+def _normalize_feature_selection(
+    selected: dict[str, Any] | None,
+) -> dict[str, bool]:
+    """Return feature flags with explicit bool defaults."""
+    selected = selected or {}
+    return {
+        FEATURE_HYBRID: bool(selected.get(FEATURE_HYBRID, False)),
+        FEATURE_CASCADE: bool(selected.get(FEATURE_CASCADE, False)),
+        FEATURE_COOLING: bool(selected.get(FEATURE_COOLING, False)),
+        FEATURE_BUFFER_TANK: bool(selected.get(FEATURE_BUFFER_TANK, False)),
+    }
 
 
-def _build_zone_select_schema(
+def _build_iwr_setup_schema(
     zone_options: list[SelectOptionDict],
     preselected: list[str],
+    features: dict[str, bool],
 ) -> vol.Schema:
-    """Build a voluptuous schema with a multi-select zone selector."""
+    """Build a voluptuous schema for zone + feature selection."""
     return vol.Schema(
         {
             vol.Required("zones", default=preselected): SelectSelector(
@@ -157,7 +80,20 @@ def _build_zone_select_schema(
                     multiple=True,
                     mode=SelectSelectorMode.LIST,
                 )
-            )
+            ),
+            vol.Required(
+                FEATURE_HYBRID, default=features.get(FEATURE_HYBRID, False)
+            ): bool,
+            vol.Required(
+                FEATURE_CASCADE, default=features.get(FEATURE_CASCADE, False)
+            ): bool,
+            vol.Required(
+                FEATURE_COOLING, default=features.get(FEATURE_COOLING, False)
+            ): bool,
+            vol.Required(
+                FEATURE_BUFFER_TANK,
+                default=features.get(FEATURE_BUFFER_TANK, False),
+            ): bool,
         }
     )
 
@@ -179,6 +115,7 @@ class BroetjeOptionsFlow(OptionsFlow):
         """Initialize options flow."""
         self._zone_options: list[SelectOptionDict] = []
         self._preselected: list[str] = []
+        self._detected_setup: dict[str, Any] | None = None
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -228,20 +165,26 @@ class BroetjeOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         """Autodetect zones via the running coordinator."""
         if user_input is not None:
-            return await self._async_save_zones(user_input)
+            return await self._async_save_iwr_setup(user_input)
 
         coordinator = self.config_entry.runtime_data
-        zone_info = await detect_zones(coordinator._client, coordinator._unit_id)
+        await coordinator._connect()
+        self._detected_setup = await detect_iwr_setup(
+            coordinator._client, coordinator._unit_id
+        )
+        zone_info = self._detected_setup["zone_info"]
 
         self._zone_options = [
             SelectOptionDict(value=str(z["zone"]), label=z["label"]) for z in zone_info
         ]
-        self._preselected = [str(z["zone"]) for z in zone_info if z["active"]]
+        self._preselected = [str(z) for z in self._detected_setup[CONF_ZONES]]
 
         return self.async_show_form(
             step_id="zones_auto",
-            data_schema=_build_zone_select_schema(
-                self._zone_options, self._preselected
+            data_schema=_build_iwr_setup_schema(
+                self._zone_options,
+                self._preselected,
+                _normalize_feature_selection(self._detected_setup["features"]),
             ),
         )
 
@@ -250,9 +193,24 @@ class BroetjeOptionsFlow(OptionsFlow):
     ) -> ConfigFlowResult:
         """Manually select zones with current zones pre-checked."""
         if user_input is not None:
-            return await self._async_save_zones(user_input)
+            return await self._async_save_iwr_setup(user_input)
 
-        current_zones = self.config_entry.data.get("zones", [1])
+        coordinator = self.config_entry.runtime_data
+        try:
+            await coordinator._connect()
+            self._detected_setup = await detect_iwr_setup(
+                coordinator._client, coordinator._unit_id
+            )
+        except Exception:
+            _LOGGER.exception("Manual IWR setup detection failed")
+            self._detected_setup = {
+                "zone_info": [],
+                CONF_ZONES: self.config_entry.data.get(CONF_ZONES, [1]),
+                "features": self.config_entry.data.get(CONF_IWR_FEATURES, {}),
+                "zone_details": self.config_entry.data.get(CONF_IWR_ZONE_DETAILS, {}),
+            }
+
+        current_zones = self.config_entry.data.get(CONF_ZONES, self._detected_setup[CONF_ZONES])
         self._zone_options = [
             SelectOptionDict(value=str(z), label=f"Zone {z}") for z in range(1, 13)
         ]
@@ -260,15 +218,31 @@ class BroetjeOptionsFlow(OptionsFlow):
 
         return self.async_show_form(
             step_id="zones_manual",
-            data_schema=_build_zone_select_schema(
-                self._zone_options, self._preselected
+            data_schema=_build_iwr_setup_schema(
+                self._zone_options,
+                self._preselected,
+                _normalize_feature_selection(
+                    self._detected_setup["features"]
+                    or self.config_entry.data.get(CONF_IWR_FEATURES, {})
+                ),
             ),
         )
 
-    async def _async_save_zones(self, user_input: dict[str, Any]) -> ConfigFlowResult:
-        """Save the selected zones to entry.data and trigger reload."""
+    async def _async_save_iwr_setup(
+        self, user_input: dict[str, Any]
+    ) -> ConfigFlowResult:
+        """Save selected zones and feature groups to entry.data and reload."""
         zones = _parse_zone_selection(user_input)
-        new_data = {**self.config_entry.data, "zones": zones}
+        features = _normalize_feature_selection(user_input)
+        zone_details = (self._detected_setup or {}).get(
+            "zone_details", self.config_entry.data.get(CONF_IWR_ZONE_DETAILS, {})
+        )
+        new_data = {
+            **self.config_entry.data,
+            CONF_ZONES: zones,
+            CONF_IWR_FEATURES: features,
+            CONF_IWR_ZONE_DETAILS: zone_details,
+        }
         self.hass.config_entries.async_update_entry(self.config_entry, data=new_data)
         self.hass.async_create_task(
             self.hass.config_entries.async_reload(self.config_entry.entry_id)
@@ -285,7 +259,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Brötje Heatpump."""
 
     VERSION = 3
-    MINOR_VERSION = 3
+    MINOR_VERSION = 4
 
     @staticmethod
     def async_get_options_flow(
@@ -300,6 +274,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         self._connection_data: dict[str, Any] = {}
         self._zone_options: list[SelectOptionDict] = []
         self._preselected: list[str] = []
+        self._detected_setup: dict[str, Any] | None = None
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -369,7 +344,14 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Autodetect zones and present multi-select with pre-checked active zones."""
         if user_input is not None:
-            self._connection_data["zones"] = _parse_zone_selection(user_input)
+            self._connection_data[CONF_ZONES] = _parse_zone_selection(user_input)
+            self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
+                user_input
+            )
+            if self._detected_setup is not None:
+                self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[
+                    "zone_details"
+                ]
             return await self._async_create_entry(self._connection_data)
 
         from pymodbus.client import AsyncModbusTcpClient
@@ -382,19 +364,24 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             connected = await client.connect()
             if not connected:
                 _LOGGER.error("Zone detection: failed to connect to Modbus device")
-            zone_info = await detect_zones(client, self._connection_data[CONF_UNIT_ID])
+            self._detected_setup = await detect_iwr_setup(
+                client, self._connection_data[CONF_UNIT_ID]
+            )
         finally:
             client.close()
 
+        zone_info = self._detected_setup["zone_info"]
         self._zone_options = [
             SelectOptionDict(value=str(z["zone"]), label=z["label"]) for z in zone_info
         ]
-        self._preselected = [str(z["zone"]) for z in zone_info if z["active"]]
+        self._preselected = [str(z) for z in self._detected_setup[CONF_ZONES]]
 
         return self.async_show_form(
             step_id="iwr_zones_auto",
-            data_schema=_build_zone_select_schema(
-                self._zone_options, self._preselected
+            data_schema=_build_iwr_setup_schema(
+                self._zone_options,
+                self._preselected,
+                _normalize_feature_selection(self._detected_setup["features"]),
             ),
         )
 
@@ -403,8 +390,30 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Manually select zones from all 12 options."""
         if user_input is not None:
-            self._connection_data["zones"] = _parse_zone_selection(user_input)
+            self._connection_data[CONF_ZONES] = _parse_zone_selection(user_input)
+            self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
+                user_input
+            )
+            if self._detected_setup is not None:
+                self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[
+                    "zone_details"
+                ]
             return await self._async_create_entry(self._connection_data)
+
+        from pymodbus.client import AsyncModbusTcpClient
+
+        client = AsyncModbusTcpClient(
+            host=self._connection_data[CONF_HOST],
+            port=self._connection_data[CONF_PORT],
+        )
+        try:
+            connected = await client.connect()
+            if connected:
+                self._detected_setup = await detect_iwr_setup(
+                    client, self._connection_data[CONF_UNIT_ID]
+                )
+        finally:
+            client.close()
 
         self._zone_options = [
             SelectOptionDict(value=str(z), label=f"Zone {z}") for z in range(1, 13)
@@ -412,7 +421,13 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="iwr_zones_manual",
-            data_schema=_build_zone_select_schema(self._zone_options, []),
+            data_schema=_build_iwr_setup_schema(
+                self._zone_options,
+                [str(z) for z in (self._detected_setup or {}).get(CONF_ZONES, [])],
+                _normalize_feature_selection(
+                    (self._detected_setup or {}).get("features", {})
+                ),
+            ),
         )
 
     async def _async_create_entry(

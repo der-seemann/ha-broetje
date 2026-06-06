@@ -22,7 +22,10 @@ DEVICE_MODELS: Final[dict[DeviceType, str]] = {
 
 
 def get_device_config(
-    device_type: DeviceType | str, zones: list[int] | None = None
+    device_type: DeviceType | str,
+    zones: list[int] | None = None,
+    features: dict[str, bool] | None = None,
+    zone_details: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Return register_map, sensors, binary_sensors, enum_maps for a device type."""
     device_type = DeviceType(device_type)
@@ -49,7 +52,11 @@ def get_device_config(
     if device_type == DeviceType.IWR:
         from .iwr import get_iwr_device_config
 
-        return get_iwr_device_config(zones=zones)
+        return get_iwr_device_config(
+            zones=zones,
+            features=features,
+            zone_details=zone_details,
+        )
 
     msg = f"Unknown device type: {device_type}"
     raise ValueError(msg)

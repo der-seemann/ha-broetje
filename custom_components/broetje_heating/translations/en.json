@@ -47,16 +47,24 @@
       },
       "iwr_zones_auto": {
         "title": "Autodetected Zones",
-        "description": "The following zones were detected on your system. Active zones are pre-selected. Adjust the selection as needed.",
+        "description": "The following zones and feature groups were detected on your system. Active zones and optional features are pre-selected. Adjust the selection as needed before the entities are created.",
         "data": {
-          "zones": "Zones"
+          "zones": "Zones",
+          "hybrid": "Enable hybrid entities",
+          "cascade": "Enable cascade entities",
+          "cooling": "Enable cooling entities",
+          "buffer_tank": "Enable buffer tank entities"
         }
       },
       "iwr_zones_manual": {
         "title": "Manual Zone Selection",
-        "description": "Select the zones configured on your system.",
+        "description": "Select the zones configured on your system and adjust the optional feature groups.",
         "data": {
-          "zones": "Zones"
+          "zones": "Zones",
+          "hybrid": "Enable hybrid entities",
+          "cascade": "Enable cascade entities",
+          "cooling": "Enable cooling entities",
+          "buffer_tank": "Enable buffer tank entities"
         }
       }
     },
@@ -98,16 +106,24 @@
       },
       "zones_auto": {
         "title": "Autodetected Zones",
-        "description": "The following zones were detected on your system. Active zones are pre-selected. Adjust the selection as needed.",
+        "description": "The following zones and feature groups were detected on your system. Active zones and optional features are pre-selected. Adjust the selection as needed.",
         "data": {
-          "zones": "Zones"
+          "zones": "Zones",
+          "hybrid": "Enable hybrid entities",
+          "cascade": "Enable cascade entities",
+          "cooling": "Enable cooling entities",
+          "buffer_tank": "Enable buffer tank entities"
         }
       },
       "zones_manual": {
         "title": "Manual Zone Selection",
-        "description": "Select the zones configured on your system. Currently configured zones are pre-selected.",
+        "description": "Select the zones configured on your system. Currently configured zones are pre-selected and optional feature groups can be adjusted.",
         "data": {
-          "zones": "Zones"
+          "zones": "Zones",
+          "hybrid": "Enable hybrid entities",
+          "cascade": "Enable cascade entities",
+          "cooling": "Enable cooling entities",
+          "buffer_tank": "Enable buffer tank entities"
         }
       }
     }

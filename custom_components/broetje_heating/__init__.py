@@ -7,15 +7,29 @@ import re
 import shutil
 from pathlib import Path
 
+from pymodbus.client import AsyncModbusTcpClient
+
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
-from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, SUB_DEVICE_LABELS
+from .const import (
+    CONF_IWR_FEATURES,
+    CONF_IWR_ZONE_DETAILS,
+    CONF_SCAN_INTERVAL,
+    CONF_UNIT_ID,
+    CONF_ZONES,
+    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_UNIT_ID,
+    DOMAIN,
+    IWR_OPTIONAL_FEATURES,
+    SUB_DEVICE_LABELS,
+)
 from .coordinator import BroetjeModbusCoordinator
 from .devices import CONF_DEVICE_TYPE, DeviceType
+from .iwr_setup import detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -146,6 +160,14 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
             renamed,
         )
 
+    if config_entry.version == 3 and config_entry.minor_version < 4:
+        hass.config_entries.async_update_entry(
+            config_entry,
+            version=3,
+            minor_version=4,
+        )
+        _LOGGER.info("Migration to version 3.4 successful: setup-flow feature flags enabled")
+
     return True
 
 
@@ -226,6 +248,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
     """Set up Brötje Heatpump from a config entry."""
     # Copy images to www folder for dashboard use
     await hass.async_add_executor_job(_copy_images_to_www, hass)
+
+    await _async_apply_iwr_detection_defaults(hass, entry)
 
     coordinator = BroetjeModbusCoordinator(hass, entry)
 
@@ -425,6 +449,52 @@ async def _async_update_options(hass: HomeAssistant, entry: BroetjeConfigEntry) 
     coordinator: BroetjeModbusCoordinator = entry.runtime_data
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     coordinator.update_scan_interval(scan_interval)
+
+
+async def _async_apply_iwr_detection_defaults(
+    hass: HomeAssistant, entry: BroetjeConfigEntry
+) -> None:
+    """Populate new IWR setup defaults for existing entries without breaking them."""
+    if entry.data.get(CONF_DEVICE_TYPE) != DeviceType.IWR.value:
+        return
+
+    if CONF_IWR_FEATURES in entry.data and CONF_IWR_ZONE_DETAILS in entry.data:
+        return
+
+    client = AsyncModbusTcpClient(
+        host=entry.data[CONF_HOST],
+        port=entry.data[CONF_PORT],
+    )
+
+    try:
+        if not await client.connect():
+            _LOGGER.warning(
+                "Skipping IWR setup auto-detection defaults for %s: connection failed",
+                entry.entry_id,
+            )
+            return
+
+        detection = await detect_iwr_setup(
+            client,
+            entry.data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID),
+        )
+    except Exception:
+        _LOGGER.exception(
+            "Failed to auto-detect IWR setup defaults for existing entry %s",
+            entry.entry_id,
+        )
+        return
+    finally:
+        client.close()
+
+    new_data = {**entry.data}
+    new_data.setdefault(CONF_ZONES, detection[CONF_ZONES] or [1])
+    new_data.setdefault(
+        CONF_IWR_FEATURES,
+        {feature: True for feature in IWR_OPTIONAL_FEATURES},
+    )
+    new_data.setdefault(CONF_IWR_ZONE_DETAILS, detection["zone_details"])
+    hass.config_entries.async_update_entry(entry, data=new_data)
 
 
 def _copy_images_to_www(hass: HomeAssistant) -> None:

@@ -17,6 +17,9 @@ EXCEPTION_CODE3_BACKOFF_SECONDS: Final = 900
 # Configuration keys
 CONF_UNIT_ID: Final = "unit_id"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
+CONF_ZONES: Final = "zones"
+CONF_IWR_FEATURES: Final = "iwr_features"
+CONF_IWR_ZONE_DETAILS: Final = "iwr_zone_details"
 
 # Manufacturer info
 MANUFACTURER: Final = "Brötje"
@@ -31,6 +34,17 @@ SUBDEV_SERVICE: Final = "service"
 SUBDEV_SOLAR: Final = "solar"
 SUBDEV_BUFFER_TANK: Final = "buffer_tank"
 SUBDEV_HYBRID: Final = "hybrid"
+
+FEATURE_HYBRID: Final = "hybrid"
+FEATURE_CASCADE: Final = "cascade"
+FEATURE_COOLING: Final = "cooling"
+FEATURE_BUFFER_TANK: Final = "buffer_tank"
+IWR_OPTIONAL_FEATURES: Final[tuple[str, ...]] = (
+    FEATURE_HYBRID,
+    FEATURE_CASCADE,
+    FEATURE_COOLING,
+    FEATURE_BUFFER_TANK,
+)
 
 SUB_DEVICE_LABELS: Final[dict[str, str]] = {
     SUBDEV_BOILER: "Boiler",

@@ -20,14 +20,19 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .const import (
     ALWAYS_PRESENT_SUBDEVICES,
+    CONF_IWR_FEATURES,
     CONF_SCAN_INTERVAL,
     CONF_UNIT_ID,
+    CONF_IWR_ZONE_DETAILS,
+    CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_UNIT_ID,
     DOMAIN,
     EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD,
     EXCEPTION_CODE3_BACKOFF_SECONDS,
     EXCEPTION_CODE3_BACKOFF_THRESHOLD,
+    FEATURE_BUFFER_TANK,
+    FEATURE_HYBRID,
     MANUFACTURER,
     REG_HOLDING,
     REG_INPUT,
@@ -38,6 +43,7 @@ from .const import (
     SUBDEV_SOLAR,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_config
+from .iwr_setup import detect_iwr_features
 
 _LOGGER = logging.getLogger(__name__)
 _APPLIANCE_TIME_EPOCH = date(1984, 1, 1)
@@ -111,8 +117,19 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Load device-specific configuration
         device_type_str = entry.data.get(CONF_DEVICE_TYPE, DeviceType.ISR.value)
         self._device_type = DeviceType(device_type_str)
-        zones = entry.data.get("zones", [1])
-        device_config = get_device_config(self._device_type, zones=zones)
+        zones = entry.data.get(CONF_ZONES, [1])
+        self.selected_features: dict[str, bool] = dict(
+            entry.data.get(CONF_IWR_FEATURES, {})
+        )
+        self.zone_details: dict[str, Any] = dict(
+            entry.data.get(CONF_IWR_ZONE_DETAILS, {})
+        )
+        device_config = get_device_config(
+            self._device_type,
+            zones=zones,
+            features=self.selected_features,
+            zone_details=self.zone_details,
+        )
         self.register_map: dict[str, Any] = device_config["register_map"]
         self.sensors: dict[str, Any] = device_config["sensors"]
         self.binary_sensors: dict[str, Any] = device_config["binary_sensors"]
@@ -191,12 +208,6 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # This will be populated once we have the register addresses from the PDF
         pass
 
-    # Sentinel values that indicate a register/subsystem is not present.
-    # 0xFF   (255)   — UINT8 / ENUM8 "no data" sentinel
-    # 0xFFFF (65535) — UINT16 "no data" sentinel (also returned by some devices
-    #                  for registers that exist in the spec but are not wired up)
-    _DETECTION_SENTINELS: frozenset[int] = frozenset({0xFF, 0xFFFF})
-
     async def _detect_sub_devices(self) -> None:
         """Detect which optional sub-devices are present on this installation.
 
@@ -211,23 +222,23 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Always-present sub-devices for IWR
         self.active_sub_devices = set(ALWAYS_PRESENT_SUBDEVICES)
 
-        # Buffer Tank: reg 197 (UINT8) — value 1 means active; 0 means not active
-        result = await self._read_registers(197, 1, REG_HOLDING)
-        if result is not None and result[0] == 1:
-            self.active_sub_devices.add(SUBDEV_BUFFER_TANK)
-            _LOGGER.debug("Sub-device detected: Buffer Tank (reg 197 = %d)", result[0])
+        features = await detect_iwr_features(self._client, self._unit_id)
 
-        # Solar: reg 8114 (ENUM8 solar boiler status) — present if not a sentinel value
+        # Solar remains autodetected only; it is not exposed as a user-togglable group.
         result = await self._read_registers(8114, 1, REG_HOLDING)
-        if result is not None and result[0] not in self._DETECTION_SENTINELS:
+        if result is not None and result[0] not in {0x00FF, 0xFFFF}:
             self.active_sub_devices.add(SUBDEV_SOLAR)
             _LOGGER.debug("Sub-device detected: Solar (reg 8114 = 0x%X)", result[0])
 
-        # Hybrid: reg 9204 (UINT8 appliance status) — present if not a sentinel value
-        result = await self._read_registers(9204, 1, REG_HOLDING)
-        if result is not None and result[0] not in self._DETECTION_SENTINELS:
+        if features.get(FEATURE_BUFFER_TANK, False) and self.selected_features.get(
+            FEATURE_BUFFER_TANK, True
+        ):
+            self.active_sub_devices.add(SUBDEV_BUFFER_TANK)
+
+        if features.get(FEATURE_HYBRID, False) and self.selected_features.get(
+            FEATURE_HYBRID, True
+        ):
             self.active_sub_devices.add(SUBDEV_HYBRID)
-            _LOGGER.debug("Sub-device detected: Hybrid (reg 9204 = 0x%X)", result[0])
 
         _LOGGER.info("Active sub-devices: %s", sorted(self.active_sub_devices))
 

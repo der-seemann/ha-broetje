@@ -47,16 +47,24 @@
       },
       "iwr_zones_auto": {
         "title": "Erkannte Heizkreise",
-        "description": "Die folgenden Heizkreise wurden an Ihrem System erkannt. Aktive Kreise sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an.",
+        "description": "Die folgenden Heizkreise und Funktionsgruppen wurden an Ihrem System erkannt. Aktive Kreise und optionale Funktionen sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an, bevor die Entities angelegt werden.",
         "data": {
-          "zones": "Heizkreise"
+          "zones": "Heizkreise",
+          "hybrid": "Hybrid-Entities aktivieren",
+          "cascade": "Kaskaden-Entities aktivieren",
+          "cooling": "Kühl-Entities aktivieren",
+          "buffer_tank": "Pufferspeicher-Entities aktivieren"
         }
       },
       "iwr_zones_manual": {
         "title": "Manuelle Heizkreisauswahl",
-        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus.",
+        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus und passen Sie die optionalen Funktionsgruppen an.",
         "data": {
-          "zones": "Heizkreise"
+          "zones": "Heizkreise",
+          "hybrid": "Hybrid-Entities aktivieren",
+          "cascade": "Kaskaden-Entities aktivieren",
+          "cooling": "Kühl-Entities aktivieren",
+          "buffer_tank": "Pufferspeicher-Entities aktivieren"
         }
       }
     },
@@ -98,16 +106,24 @@
       },
       "zones_auto": {
         "title": "Erkannte Heizkreise",
-        "description": "Die folgenden Heizkreise wurden an Ihrem System erkannt. Aktive Kreise sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an.",
+        "description": "Die folgenden Heizkreise und Funktionsgruppen wurden an Ihrem System erkannt. Aktive Kreise und optionale Funktionen sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an.",
         "data": {
-          "zones": "Heizkreise"
+          "zones": "Heizkreise",
+          "hybrid": "Hybrid-Entities aktivieren",
+          "cascade": "Kaskaden-Entities aktivieren",
+          "cooling": "Kühl-Entities aktivieren",
+          "buffer_tank": "Pufferspeicher-Entities aktivieren"
         }
       },
       "zones_manual": {
         "title": "Manuelle Heizkreisauswahl",
-        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus. Aktuell konfigurierte Kreise sind vorausgewählt.",
+        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus. Aktuell konfigurierte Kreise sind vorausgewählt, optionale Funktionsgruppen lassen sich mit anpassen.",
         "data": {
-          "zones": "Heizkreise"
+          "zones": "Heizkreise",
+          "hybrid": "Hybrid-Entities aktivieren",
+          "cascade": "Kaskaden-Entities aktivieren",
+          "cooling": "Kühl-Entities aktivieren",
+          "buffer_tank": "Pufferspeicher-Entities aktivieren"
         }
       }
     }
