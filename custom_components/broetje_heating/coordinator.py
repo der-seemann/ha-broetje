@@ -1142,7 +1142,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     _SENTINEL_VALUES: dict[str, set[int]] = {
         "uint8": {0xFFFF},
         "enum8": {0xFFFF},
-        "int16": {-1},  # 0xFFFF signed
+        # GTW-08 returns both 0xFFFF and 0x8000 for signed "no data" registers.
+        "int16": {-1, -32768},
         "uint16": {0xFFFF},  # 65535
         "int32": {-1},  # 0xFFFFFFFF signed
         "uint32": {0xFFFFFFFF},  # 4294967295
