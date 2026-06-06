@@ -827,7 +827,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     ) -> None:
         """Update register health state after a successful protocol read."""
         sentinel_detected = self._is_sentinel_value(
-            registers, config.get("data_type", "int16")
+            registers, config.get("data_type", "int16"), config
         )
         self._exception10_fail_counts.pop(register_key, None)
         self._exception3_fail_counts.pop(register_key, None)
@@ -1178,7 +1178,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         data_type = config.get("data_type", "int16")
 
         if processed_value is None:
-            if self._is_sentinel_value(registers, data_type):
+            if self._is_sentinel_value(registers, data_type, config):
                 detail["status"] = "sentinel_no_data"
             else:
                 detail["status"] = "invalid_value"
@@ -1187,29 +1187,46 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         detail["status"] = "ok"
         return detail
 
-    def _is_sentinel_value(self, registers: list[int], data_type: str) -> bool:
+    def _get_sentinel_values(
+        self,
+        config: dict[str, Any],
+        data_type: str,
+    ) -> set[int]:
+        """Return sentinel values for a register, allowing per-register overrides."""
+        if custom_sentinels := config.get("sentinel_values"):
+            return set(custom_sentinels)
+        return set(self._SENTINEL_VALUES.get(data_type, ()))
+
+    def _is_sentinel_value(
+        self,
+        registers: list[int],
+        data_type: str,
+        config: dict[str, Any],
+    ) -> bool:
         """Return True if the raw register payload matches a known no-data sentinel."""
+        sentinels = self._get_sentinel_values(config, data_type)
+
         if data_type in {"uint8", "enum8"}:
-            return registers[0] in self._SENTINEL_VALUES.get(data_type, ())
+            return registers[0] in sentinels
 
         if data_type == "int16":
             value = registers[0]
             if value >= 32768:
                 value -= 65536
-            return value in self._SENTINEL_VALUES.get("int16", ())
+            return value in sentinels
 
         if data_type == "uint16":
-            return registers[0] in self._SENTINEL_VALUES.get("uint16", ())
+            return registers[0] in sentinels
 
         if data_type == "int32":
             value = (registers[0] << 16) | registers[1]
             if value >= 2147483648:
                 value -= 4294967296
-            return value in self._SENTINEL_VALUES.get("int32", ())
+            return value in sentinels
 
         if data_type == "uint32":
             value = (registers[0] << 16) | registers[1]
-            return value in self._SENTINEL_VALUES.get("uint32", ())
+            return value in sentinels
 
         return False
 
@@ -1231,7 +1248,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         if data_type in {"uint8", "enum8"}:
             raw_word = registers[0]
-            if raw_word in self._SENTINEL_VALUES.get(data_type, ()):
+            if raw_word in self._get_sentinel_values(config, data_type):
                 return None
             return (raw_word & 0x00FF) * scale
 
@@ -1240,13 +1257,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Convert to signed if necessary
             if value >= 32768:
                 value -= 65536
-            if value in self._SENTINEL_VALUES.get("int16", ()):
+            if value in self._get_sentinel_values(config, data_type):
                 return None
             return value * scale
 
         if data_type == "uint16":
             value = registers[0]
-            if value in self._SENTINEL_VALUES.get("uint16", ()):
+            if value in self._get_sentinel_values(config, data_type):
                 return None
             return value * scale
 
@@ -1254,13 +1271,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             value = (registers[0] << 16) | registers[1]
             if value >= 2147483648:
                 value -= 4294967296
-            if value in self._SENTINEL_VALUES.get("int32", ()):
+            if value in self._get_sentinel_values(config, data_type):
                 return None
             return value * scale
 
         if data_type == "uint32":
             value = (registers[0] << 16) | registers[1]
-            if value in self._SENTINEL_VALUES.get("uint32", ()):
+            if value in self._get_sentinel_values(config, data_type):
                 return None
             return value * scale
 

@@ -2012,6 +2012,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "sentinel_values": [0x00FF],
     },
     "hybrid_electricity_cost_low_tariff": {
         "address": 466,
@@ -2019,6 +2020,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "sentinel_values": [0x00FF],
     },
     "fossil_energy_cost": {
         "address": 467,
@@ -2026,6 +2028,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "sentinel_values": [0x00FF],
     },
     "electrical_co2_emission_heating_mode": {
         "address": 468,
@@ -2047,6 +2050,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 1,
+        "sentinel_values": [0x00FF],
     },
     "boiler_efficiency": {
         "address": 471,
@@ -2054,6 +2058,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "count": 1,
         "data_type": "uint16",
         "scale": 0.01,
+        "sentinel_values": [0x00FF],
     },
     "cop_threshold_primary_energy": {
         "address": 472,
@@ -2620,14 +2625,14 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "address": 7207,
         "type": REG_HOLDING,
         "count": 1,
-        "data_type": "uint16",
+        "data_type": "uint8",
         "scale": 1,
     },
     "cascade_temporary_permutation_order": {
         "address": 7208,
         "type": REG_HOLDING,
         "count": 1,
-        "data_type": "uint16",
+        "data_type": "uint8",
         "scale": 1,
     },
     "cascade_s_bus_producers_status": {
@@ -5836,6 +5841,7 @@ def _build_zone_registers(zones: list[int]) -> dict[str, Any]:
             "count": 1,
             "data_type": "uint16",
             "scale": 0.1,
+            **({"sentinel_values": [0x00FF]} if zn == 2 else {}),
         }
         # CP21X - Heating curve footpoint (UINT16, 0.1°C, Tab.40)
         registers[f"{prefix}_heating_curve_footpoint"] = {
