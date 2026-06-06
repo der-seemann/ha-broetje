@@ -53,6 +53,7 @@ class BroetjeSelect(BroetjeEntity, SelectEntity):
         )
 
         self._register_key = entity_config["register"]
+        self._apply_dynamic_enabled_default(self._register_key)
 
         zone_number = entity_config.get("zone_number")
         if translation_key := entity_config.get("translation_key"):

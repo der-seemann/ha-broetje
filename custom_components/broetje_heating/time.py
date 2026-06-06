@@ -50,6 +50,7 @@ class BroetjeTime(BroetjeEntity, TimeEntity):
         )
 
         self._register_key = entity_config["register"]
+        self._apply_dynamic_enabled_default(self._register_key)
         if translation_key := entity_config.get("translation_key"):
             self._attr_translation_key = translation_key
         elif name := entity_config.get("name"):

@@ -230,6 +230,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
     coordinator = BroetjeModbusCoordinator(hass, entry)
 
     await coordinator.async_config_entry_first_refresh()
+    disabled = coordinator.sync_permanently_disabled_registry_entities()
+    if disabled:
+        _LOGGER.info(
+            "Disabled %d registry entries for permanently auto-disabled registers",
+            disabled,
+        )
 
     entry.runtime_data = coordinator
 
@@ -301,6 +307,7 @@ def _cleanup_replaced_registry_entities(
         if registry_entry.domain in expected_domains:
             if (
                 entity_key in writable_keys
+                and not coordinator.is_entity_permanently_disabled(entity_key)
                 and str(registry_entry.disabled_by).lower().endswith("integration")
             ):
                 entity_registry.async_update_entity(

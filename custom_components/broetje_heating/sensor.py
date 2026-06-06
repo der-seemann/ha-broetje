@@ -94,6 +94,7 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
         )
 
         self._register_key = sensor_config["register"]
+        self._apply_dynamic_enabled_default(self._register_key)
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
         self._value_format = sensor_config.get("value_format")
         self._device_categories = sensor_config.get("device_categories", {})
@@ -164,6 +165,7 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             "invalid_value",
             "auto_disabled_sentinel_retry_pending",
             "auto_disabled_sentinel_permanent",
+            "auto_disabled_exception_code_10_permanent",
             "auto_disabled_exception_code_10",
             "auto_disabled_exception_code_3_backoff",
         }

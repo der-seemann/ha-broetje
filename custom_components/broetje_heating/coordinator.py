@@ -132,6 +132,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._register_poll_state: dict[str, dict[str, Any]] = {}
         self._last_poll_monotonic: dict[str, float] = {}
         self._register_entities = self._build_register_entities()
+        self._entity_registers = self._build_entity_registers()
 
         # Device info
         self.device_serial: str | None = None
@@ -559,6 +560,79 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return register_entities
 
+    def _build_entity_registers(self) -> dict[str, set[str]]:
+        """Map entity keys to the register keys they depend on."""
+        entity_registers: dict[str, set[str]] = {}
+        for register_key, entity_keys in self._register_entities.items():
+            for entity_key in entity_keys:
+                entity_registers.setdefault(entity_key, set()).add(register_key)
+        return entity_registers
+
+    def is_register_permanently_disabled(self, register_key: str) -> bool:
+        """Return true if a register is permanently auto-disabled."""
+        state = self._register_poll_state.get(register_key, {})
+        return state.get("mode") in {
+            "sentinel_permanent",
+            "exception10_permanent",
+        }
+
+    def is_entity_permanently_disabled(self, entity_key: str) -> bool:
+        """Return true if any register backing an entity is permanently disabled."""
+        register_keys = self._entity_registers.get(entity_key, set())
+        return any(
+            self.is_register_permanently_disabled(register_key)
+            for register_key in register_keys
+        )
+
+    def sync_permanently_disabled_registry_entities(self) -> int:
+        """Disable registry entries for permanently auto-disabled registers."""
+        disabled = 0
+        for register_key in self._register_entities:
+            if not self.is_register_permanently_disabled(register_key):
+                continue
+            disabled += self._disable_registry_entities_for_register(register_key)
+        return disabled
+
+    def _disable_registry_entities_for_register(self, register_key: str) -> int:
+        """Disable all registry entries backed by a permanently disabled register."""
+        entity_keys = self._register_entities.get(register_key, [])
+        if not entity_keys:
+            return 0
+
+        entity_registry = er.async_get(self.hass)
+        unique_root = self.config_entry.unique_id or self.config_entry.entry_id
+        disabled = 0
+
+        for registry_entry in er.async_entries_for_config_entry(
+            entity_registry, self.config_entry.entry_id
+        ):
+            if registry_entry.platform != DOMAIN:
+                continue
+            if not registry_entry.unique_id.startswith(f"{unique_root}_"):
+                continue
+
+            entity_key = registry_entry.unique_id[len(unique_root) + 1 :]
+            if entity_key not in entity_keys:
+                continue
+            if registry_entry.disabled_by == er.RegistryEntryDisabler.INTEGRATION:
+                continue
+            if registry_entry.disabled_by is not None:
+                continue
+
+            entity_registry.async_update_entity(
+                registry_entry.entity_id,
+                disabled_by=er.RegistryEntryDisabler.INTEGRATION,
+            )
+            disabled += 1
+            _LOGGER.warning(
+                "Disabled entity registry entry %s because register %s entered %s",
+                registry_entry.entity_id,
+                register_key,
+                self._register_poll_state.get(register_key, {}).get("mode"),
+            )
+
+        return disabled
+
     def _describe_register(self, register_key: str) -> tuple[int | None, str]:
         """Return register address and related entity keys for logging."""
         reg_config = self.register_map.get(register_key, {})
@@ -679,6 +753,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     ) -> None:
         """Disable a register after repeated 0xFFFF sentinel reads."""
         count = self._sentinel_fail_counts.get(register_key, 0)
+        previous_mode = self._register_poll_state.get(register_key, {}).get("mode")
         state = {
             "mode": "sentinel_permanent" if permanent else "sentinel_temp",
             "reason": "sentinel_0xFFFF",
@@ -701,14 +776,17 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             count=count,
             retry_after_seconds=None if permanent else SENTINEL_RETRY_INTERVAL_SECONDS,
         )
+        if permanent and previous_mode != "sentinel_permanent":
+            self._disable_registry_entities_for_register(register_key)
 
     def _mark_register_exception10_disabled(self, register_key: str) -> None:
         """Disable a register after repeated exception_code=10 responses."""
+        previous_mode = self._register_poll_state.get(register_key, {}).get("mode")
         count = self._exception10_fail_counts.get(register_key, 0)
         self._register_poll_state[register_key] = {
             "mode": "exception10_permanent",
             "reason": "exception_code_10",
-            "detail_status": "auto_disabled_exception_code_10",
+            "detail_status": "auto_disabled_exception_code_10_permanent",
             "exception_code": 10,
         }
         self._log_register_auto_disable(
@@ -717,6 +795,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             state="exception10_permanent",
             count=count,
         )
+        if previous_mode != "exception10_permanent":
+            self._disable_registry_entities_for_register(register_key)
 
     def _mark_register_exception3_backoff(self, register_key: str) -> None:
         """Temporarily reduce polling frequency for exception_code=3 registers."""

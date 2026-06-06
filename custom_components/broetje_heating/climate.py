@@ -67,6 +67,12 @@ class BroetjeClimate(BroetjeEntity, ClimateEntity):
         self._setpoint_register = climate_config["setpoint_register"]
         self._control_mode_register = climate_config["control_mode_register"]
         self._heating_mode_register = climate_config["heating_mode_register"]
+        self._apply_dynamic_enabled_default(
+            self._temperature_register,
+            self._setpoint_register,
+            self._control_mode_register,
+            self._heating_mode_register,
+        )
 
         self._attr_translation_key = climate_config.get("translation_key", entity_key)
 

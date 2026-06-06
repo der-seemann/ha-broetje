@@ -50,6 +50,14 @@ class BroetjeEntity(CoordinatorEntity[BroetjeModbusCoordinator]):
             self._attr_entity_category = EntityCategory.CONFIG
         self._attr_entity_registry_enabled_default = enabled
 
+    def _apply_dynamic_enabled_default(self, *register_keys: str) -> None:
+        """Disable new registry entries by default for permanently skipped registers."""
+        if any(
+            self.coordinator.is_register_permanently_disabled(register_key)
+            for register_key in register_keys
+        ):
+            self._attr_entity_registry_enabled_default = False
+
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information, routing zone entities to sub-devices."""

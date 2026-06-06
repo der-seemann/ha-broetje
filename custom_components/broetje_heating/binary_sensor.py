@@ -67,6 +67,7 @@ class BroetjeBinarySensor(BroetjeEntity, BinarySensorEntity):
         )
 
         self._register_key = sensor_config["register"]
+        self._apply_dynamic_enabled_default(self._register_key)
         self._attr_translation_key = sensor_config.get("translation_key", entity_key)
 
         # Support zone number placeholders in translation strings

@@ -65,6 +65,7 @@ class BroetjeNumber(BroetjeEntity, NumberEntity):
         )
 
         self._register_key = entity_config["register"]
+        self._apply_dynamic_enabled_default(self._register_key)
 
         zone_number = entity_config.get("zone_number")
         if translation_key := entity_config.get("translation_key"):
@@ -116,6 +117,7 @@ class BroetjeNumber(BroetjeEntity, NumberEntity):
             "sentinel_no_data",
             "auto_disabled_sentinel_retry_pending",
             "auto_disabled_sentinel_permanent",
+            "auto_disabled_exception_code_10_permanent",
             "auto_disabled_exception_code_10",
             "auto_disabled_exception_code_3_backoff",
         }
