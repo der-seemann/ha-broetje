@@ -93,6 +93,9 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 - **Konfigurierbare Zonen** (IWR): 1–12 Zonen bei der Einrichtung auswählbar oder über Integrationsoptionen neu konfigurierbar
 - **Anlagenabhängige Entity-Erzeugung**: Entities werden nur noch für aktivierte Gruppen und sinnvolle Zonenrollen angelegt. DHW-Zonen bekommen z. B. keine Raumregelungs-Entities, deaktivierte Gruppen erzeugen keine unnötigen Entities.
 - **Konfigurierbare Poll-Profile**: Separate Intervalle für `fast`, `normal` und `slow` über die Integrationsoptionen
+- **Externe Raumtemperatursensoren** (IWR): Heizkreise können ein oder mehrere Home-Assistant-Temperatursensoren auf die schreibbaren Register für `Raumtemperatur gemessen` spiegeln, inklusive Aggregation `average`, `min`, `max`
+- **Watchdog für externe Raumtemperatur**: Ein Zonen-Watchdog stoppt Writes bei veralteten/ungültigen Quellen, persistiert den Pause-/Aktiv-Zustand über Core-Restarts hinweg und nimmt bei gültigen Quellen automatisch wieder auf
+- **Quellenfilter im Flow**: Setup-/Options-Flow bieten Raum-Vorfilter, Text-Vorfilter und temperatur-sortierte Auswahllisten für größere Sensorbestände
 - **Deutsche und englische Übersetzungen**
 - **Sentinel-Wert-Filterung**: Ungültige Modbus-Werte (z. B. `0x8000` für `int16`, `0x00FF` für `uint8/enum8`, `0xFFFF`, `0xFFFFFFFF` sowie registerspezifische Overrides) werden als „Nicht verfügbar" angezeigt statt als unsinnige Zahlen
 - **Automatische Registry-Deaktivierung**: Register, die in `sentinel_permanent` laufen, werden automatisch in der Home-Assistant-Entity-Registry deaktiviert und bleiben dadurch wiederherstellbar
@@ -170,6 +173,19 @@ Nach der Einrichtung kann über das **Konfigurieren**-Symbol (Zahnrad) am Integr
 - **Poll-Profil normal**: Intervall für den normalen Registersatz (Standard: 120 Sekunden, Bereich: 10–3600)
 - **Poll-Profil langsam**: Intervall für langsam wechselnde Diagnosen und Zähler (Standard: 600 Sekunden, Bereich: 10–3600)
 - **Zonen und Funktionsgruppen** (nur IWR): Auto-Erkennung erneut ausführen oder aktive Zonen, Zonenrollen und optionale Gruppen manuell ändern. Änderungen lösen einen Reload der Integration aus und räumen veraltete Entities aus der Registry auf.
+- **Externe Raumtemperatursensoren** (nur IWR-Heizkreise): Pro Heizkreis können ein oder mehrere Home-Assistant-Temperatursensoren gewählt, `average` / `min` / `max` als Aggregation gesetzt und Schreibintervall sowie Sensor-Timeout konfiguriert werden. Der Flow bietet dafür Raum- und Text-Vorfilter und zeigt die eigentliche Liste temperatur-sortiert an.
+
+### Externe Raumtemperatursensoren (IWR)
+
+Die schreibbaren Register `Raumtemperatur gemessen` können für Heizkreise von Home-Assistant-Sensoren gespeist werden. Typische Quellen sind Wandthermostate, BLE-Raumsensoren oder aggregierte Raumwerte.
+
+- Mehrere Quell-Entities pro Zone werden unterstützt
+- Aggregationsmodi: `average`, `min`, `max`
+- Standard-Sensor-Timeout: 90 Minuten
+- Standard-Schreibintervall: 60 Sekunden
+- Sind alle Quellen veraltet oder ungültig, stoppt die Integration die Writes und die Anlage kann auf ihre eigene Innen-/Außentemperaturstrategie zurückfallen
+- Der Watchdog-Pause-/Aktiv-Zustand wird über Home-Assistant-Core-Restarts hinweg persistiert und beim Start neu bewertet
+- Der Auswahl-Flow bietet Raum-Vorfilter + Text-Vorfilter vor der eigentlichen Entity-Liste
 
 ## Entitäten
 
@@ -207,6 +223,12 @@ Nicht jeder Sensor ist in allen Heizsystemen verfügbar! Z.B. Gasverbrauch bei W
 - Home Assistant Logs auf Modbus-Kommunikationsfehler prüfen
 - Manche Sensoren zeigen „Nicht verfügbar", wenn das Gerät Sentinel-Werte meldet oder wenn die Integration ein anlagenabhängiges Register nach wiederholten Fehlern temporär oder dauerhaft automatisch deaktiviert
 - Dauerhaft nicht verfügbare anlagenabhängige Register können automatisch in der Home-Assistant-Entity-Registry deaktiviert werden; falls sich die Hydraulik später ändert, können sie dort wieder manuell aktiviert werden
+
+### Externe Raumtemperatur wird anders zurückgelesen als geschrieben
+
+- Register `2129` (`Raumtemperatur gemessen` im verifizierten IWR-Zone-3-Testaufbau) kann den geschriebenen Wert intern quantisieren
+- Beim Live-Test wurde roh `1960` (19,6 °C) geschrieben und roh `2000` (20,0 °C) zurückgelesen
+- Das wird als Anlagenverhalten behandelt, nicht als Integrationsfehler
 
 ## Entwicklung
 

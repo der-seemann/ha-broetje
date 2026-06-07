@@ -27,6 +27,17 @@ CONF_ZONES: Final = "zones"
 CONF_IWR_FEATURES: Final = "iwr_features"
 CONF_IWR_ZONE_DETAILS: Final = "iwr_zone_details"
 CONF_IWR_FEATURES_SOURCE: Final = "iwr_features_source"
+CONF_EXTERNAL_ROOM_SENSORS: Final = "external_room_sensors"
+CONF_EXTERNAL_ROOM_SENSOR_ENTITY_IDS: Final = "entity_ids"
+CONF_EXTERNAL_ROOM_SENSOR_AGGREGATION: Final = "aggregation"
+CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL: Final = "write_interval_seconds"
+CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT: Final = "timeout_seconds"
+
+EXTERNAL_ROOM_SENSOR_AGGREGATION_AVERAGE: Final = "average"
+EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN: Final = "min"
+EXTERNAL_ROOM_SENSOR_AGGREGATION_MAX: Final = "max"
+DEFAULT_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL: Final = 60
+DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT: Final = 90 * 60
 
 # Manufacturer info
 MANUFACTURER: Final = "Brötje"

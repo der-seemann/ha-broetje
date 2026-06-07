@@ -93,6 +93,9 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 - **Configurable zones** (IWR): 1–12 zones selectable during setup or reconfigurable via integration options
 - **Configuration-dependent entity creation**: Entities are only created for enabled feature groups and meaningful zone roles. For example, DHW zones do not get room-control entities and disabled feature groups do not create unused entities.
 - **Configurable poll profiles**: Separate `fast`, `normal`, and `slow` intervals adjustable via integration options
+- **External room sensor sync** (IWR): Heating zones can mirror one or more Home Assistant temperature sensors into the writable room-temperature measured registers with `average`, `min`, or `max` aggregation
+- **External room sensor watchdog**: A per-zone timeout watchdog stops writes when all sources are stale/invalid, persists the pause/active state across Core restarts, and resumes automatically when valid sources return
+- **External room sensor source filter**: Setup/options flow supports room prefilter, text prefilter, and temperature-sorted source lists for large sensor inventories
 - **German and English translations**
 - **Sentinel value filtering**: Invalid Modbus readings (for example `0x8000` for `int16`, `0x00FF` for `uint8/enum8`, `0xFFFF`, `0xFFFFFFFF`, and register-specific sentinel overrides) are shown as unavailable instead of bogus numbers
 - **Automatic registry disable**: Registers that become `sentinel_permanent` are automatically disabled in the Home Assistant entity registry so they stay recoverable without being recreated by default
@@ -170,6 +173,19 @@ After setup, click the **Configure** (gear icon) button on the integration entry
 - **Normal poll profile**: Interval for the standard register set (default: 120 seconds, range: 10–3600)
 - **Slow poll profile**: Interval for slowly changing diagnostics and counters (default: 600 seconds, range: 10–3600)
 - **Zones and feature groups** (IWR only): Re-run autodetection or manually change active zones, zone roles, and optional feature groups. Changes trigger an integration reload and prune stale entities from the registry.
+- **External room sensors** (IWR heating zones only): Select one or more Home Assistant temperature sensors per heating zone, choose `average` / `min` / `max`, and configure write interval plus source timeout. The flow includes room and text prefilters and keeps the actual selector list sorted by current temperature when opened.
+
+### External room sensors (IWR)
+
+The writable `room temperature measured` registers can be driven from Home Assistant sensors for heating zones. Typical use cases are wall thermostats, BLE room sensors, or aggregated room values.
+
+- Multiple source entities per zone are supported
+- Aggregation modes: `average`, `min`, `max`
+- Default source timeout: 90 minutes
+- Default write interval: 60 seconds
+- If all sources are stale/invalid, writes stop and the appliance can fall back to its own internal/outdoor-temperature strategy
+- The watchdog pause/active state is persisted and re-evaluated on Home Assistant Core restart
+- The selector flow supports room prefilter + text prefilter before showing the final entity list
 
 ## Entities
 
@@ -224,6 +240,12 @@ entities:
 - Check Home Assistant logs for Modbus communication errors
 - Some sensors show unavailable when the appliance reports sentinel values or when the coordinator temporarily/permanently auto-disables a plant-dependent register after repeated failures
 - Permanently unavailable plant-dependent registers can be auto-disabled in the Home Assistant entity registry; re-enable them manually if your hydraulic layout changes later
+
+### External room sensor writeback differs from the written value
+
+- Register `2129` (`room temperature measured` on the tested IWR zone-3 setup) can quantize the injected value internally
+- During live verification, a raw write of `1960` (19.6 °C) was read back as raw `2000` (20.0 °C)
+- This is treated as appliance behavior, not as an integration write bug
 
 ## Development
 

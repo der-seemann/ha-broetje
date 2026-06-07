@@ -16,6 +16,9 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 
 from .const import (
+    CONF_EXTERNAL_ROOM_SENSORS,
+    CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT,
+    CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
     CONF_IWR_FEATURES,
     CONF_IWR_FEATURES_SOURCE,
     CONF_IWR_ZONE_DETAILS,
@@ -25,6 +28,8 @@ from .const import (
     CONF_SCAN_INTERVAL_SLOW,
     CONF_UNIT_ID,
     CONF_ZONES,
+    DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT,
+    DEFAULT_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL_FAST,
     DEFAULT_SCAN_INTERVAL_SLOW,
@@ -36,6 +41,7 @@ from .const import (
 )
 from .coordinator import BroetjeModbusCoordinator
 from .devices import CONF_DEVICE_TYPE, DeviceType
+from .external_room_sensor import ExternalRoomSensorSync
 from .iwr_setup import detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
@@ -175,6 +181,26 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         )
         _LOGGER.info("Migration to version 3.4 successful: setup-flow feature flags enabled")
 
+    if config_entry.version == 3 and config_entry.minor_version < 5:
+        hass.config_entries.async_update_entry(
+            config_entry,
+            version=3,
+            minor_version=5,
+        )
+        _LOGGER.info(
+            "Migration to version 3.5 successful: external room sensor flow enabled"
+        )
+
+    if config_entry.version == 3 and config_entry.minor_version < 6:
+        hass.config_entries.async_update_entry(
+            config_entry,
+            version=3,
+            minor_version=6,
+        )
+        _LOGGER.info(
+            "Migration to version 3.6 successful: periodic external room sensor sync enabled"
+        )
+
     return True
 
 
@@ -269,11 +295,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> b
         )
 
     entry.runtime_data = coordinator
+    coordinator.external_room_sensor_sync = ExternalRoomSensorSync(
+        hass, entry, coordinator
+    )
 
     _cleanup_replaced_registry_entities(hass, entry, coordinator)
     _cleanup_inactive_subdevice_registry_entities(hass, entry, coordinator)
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    await coordinator.external_room_sensor_sync.async_setup()
 
     # Clean up orphaned zone sub-devices when zone_count has been reduced
     _cleanup_orphan_zone_devices(hass, entry)
@@ -457,6 +487,8 @@ async def _async_update_options(hass: HomeAssistant, entry: BroetjeConfigEntry) 
     )
     slow = entry.options.get(CONF_SCAN_INTERVAL_SLOW, DEFAULT_SCAN_INTERVAL_SLOW)
     coordinator.update_scan_intervals(fast, normal, slow)
+    if hasattr(coordinator, "external_room_sensor_sync"):
+        await coordinator.external_room_sensor_sync.async_setup()
 
 
 async def _async_apply_iwr_detection_defaults(
@@ -505,6 +537,25 @@ async def _async_apply_iwr_detection_defaults(
     new_data[CONF_IWR_FEATURES] = detection["features"]
     new_data[CONF_IWR_ZONE_DETAILS] = detection["zone_details"]
     new_data[CONF_IWR_FEATURES_SOURCE] = IWR_FEATURES_SOURCE_AUTO
+    external_room_sensors = new_data.setdefault(CONF_EXTERNAL_ROOM_SENSORS, {})
+    if isinstance(external_room_sensors, dict):
+        for zone, zone_config in list(external_room_sensors.items()):
+            if isinstance(zone_config, str):
+                external_room_sensors[zone] = {
+                    "entity_ids": [zone_config],
+                    "aggregation": "average",
+                    CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL: DEFAULT_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+                    CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT: DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT,
+                }
+            elif isinstance(zone_config, dict):
+                zone_config.setdefault(
+                    CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+                    DEFAULT_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+                )
+                zone_config.setdefault(
+                    CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT,
+                    DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT,
+                )
     hass.config_entries.async_update_entry(entry, data=new_data)
 
 

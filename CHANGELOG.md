@@ -9,6 +9,13 @@
 - Fix: Replaced/orphaned entities and stale sub-devices are cleaned up on reload.
 - Fix: Poll-profile handling for registers `256-259` was corrected so the remote-control writes are polled on the intended cadence.
 
+## v0.15.0-beta.2
+- Feat: External room sensor support for IWR heating zones now supports multiple Home Assistant temperature sources per zone with `average`, `min`, and `max` aggregation.
+- Feat: Config and options flow now include a dedicated external-room-sensor selector with room prefilter, text prefilter, and temperature-sorted source lists for heating zones only.
+- Fix: External room sensor watchdog now persists its pause/active status in Home Assistant storage and re-evaluates source validity on startup, so pause behavior survives Core restarts.
+- Fix/Behavior: When all configured sources are stale or invalid, writes stop and the appliance can fall back to its own outdoor-temperature/internal control strategy; sync resumes automatically once valid sources return.
+- Docs: `README.md`, `README.de.md`, and `CHANGELOG.md` updated for external room sensors, watchdog persistence, filtering, and the known read-back quantization behavior of register `2129`.
+
 ## v0.15.0-beta.1
 - Feat: IWR setup flow now auto-detects zones, zone roles, and optional feature groups (`hybrid`, `cascade`, `cooling`, `buffer_tank`) with manual correction during setup and reconfiguration.
 - Feat: Entity creation for IWR is now installation-dependent; disabled feature groups and unsuitable zone roles no longer create unnecessary entities.

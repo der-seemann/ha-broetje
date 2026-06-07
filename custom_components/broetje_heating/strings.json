@@ -58,10 +58,73 @@
         "data": {
           "zones": "Zones"
         }
+      },
+      "iwr_external_room_sensors": {
+        "title": "External Room Temperature Sensors",
+        "description": "Apply an optional room and text prefilter before selecting one or more Home Assistant temperature sensors.",
+        "data": {
+          "external_room_sensor_area_filter": "Room filter",
+          "external_room_sensor_text_filter": "Text filter"
+        }
+      },
+      "iwr_external_room_sensors_select": {
+        "title": "External Room Temperature Sensors",
+        "description": "Select one or more Home Assistant temperature sensors from the filtered list. The list is sorted by current temperature when opened and stays stable during selection.",
+        "data": {
+          "zone_1_external_room_sensor": "Zone 1 source entity",
+          "zone_1_external_room_sensor_aggregation": "Zone 1 aggregation",
+          "zone_1_external_room_sensor_write_interval": "Zone 1 write interval (seconds)",
+          "zone_1_external_room_sensor_timeout": "Zone 1 sensor timeout (seconds)",
+          "zone_2_external_room_sensor": "Zone 2 source entity",
+          "zone_2_external_room_sensor_aggregation": "Zone 2 aggregation",
+          "zone_2_external_room_sensor_write_interval": "Zone 2 write interval (seconds)",
+          "zone_2_external_room_sensor_timeout": "Zone 2 sensor timeout (seconds)",
+          "zone_3_external_room_sensor": "Zone 3 source entity",
+          "zone_3_external_room_sensor_aggregation": "Zone 3 aggregation",
+          "zone_3_external_room_sensor_write_interval": "Zone 3 write interval (seconds)",
+          "zone_3_external_room_sensor_timeout": "Zone 3 sensor timeout (seconds)",
+          "zone_4_external_room_sensor": "Zone 4 source entity",
+          "zone_4_external_room_sensor_aggregation": "Zone 4 aggregation",
+          "zone_4_external_room_sensor_write_interval": "Zone 4 write interval (seconds)",
+          "zone_4_external_room_sensor_timeout": "Zone 4 sensor timeout (seconds)",
+          "zone_5_external_room_sensor": "Zone 5 source entity",
+          "zone_5_external_room_sensor_aggregation": "Zone 5 aggregation",
+          "zone_5_external_room_sensor_write_interval": "Zone 5 write interval (seconds)",
+          "zone_5_external_room_sensor_timeout": "Zone 5 sensor timeout (seconds)",
+          "zone_6_external_room_sensor": "Zone 6 source entity",
+          "zone_6_external_room_sensor_aggregation": "Zone 6 aggregation",
+          "zone_6_external_room_sensor_write_interval": "Zone 6 write interval (seconds)",
+          "zone_6_external_room_sensor_timeout": "Zone 6 sensor timeout (seconds)",
+          "zone_7_external_room_sensor": "Zone 7 source entity",
+          "zone_7_external_room_sensor_aggregation": "Zone 7 aggregation",
+          "zone_7_external_room_sensor_write_interval": "Zone 7 write interval (seconds)",
+          "zone_7_external_room_sensor_timeout": "Zone 7 sensor timeout (seconds)",
+          "zone_8_external_room_sensor": "Zone 8 source entity",
+          "zone_8_external_room_sensor_aggregation": "Zone 8 aggregation",
+          "zone_8_external_room_sensor_write_interval": "Zone 8 write interval (seconds)",
+          "zone_8_external_room_sensor_timeout": "Zone 8 sensor timeout (seconds)",
+          "zone_9_external_room_sensor": "Zone 9 source entity",
+          "zone_9_external_room_sensor_aggregation": "Zone 9 aggregation",
+          "zone_9_external_room_sensor_write_interval": "Zone 9 write interval (seconds)",
+          "zone_9_external_room_sensor_timeout": "Zone 9 sensor timeout (seconds)",
+          "zone_10_external_room_sensor": "Zone 10 source entity",
+          "zone_10_external_room_sensor_aggregation": "Zone 10 aggregation",
+          "zone_10_external_room_sensor_write_interval": "Zone 10 write interval (seconds)",
+          "zone_10_external_room_sensor_timeout": "Zone 10 sensor timeout (seconds)",
+          "zone_11_external_room_sensor": "Zone 11 source entity",
+          "zone_11_external_room_sensor_aggregation": "Zone 11 aggregation",
+          "zone_11_external_room_sensor_write_interval": "Zone 11 write interval (seconds)",
+          "zone_11_external_room_sensor_timeout": "Zone 11 sensor timeout (seconds)",
+          "zone_12_external_room_sensor": "Zone 12 source entity",
+          "zone_12_external_room_sensor_aggregation": "Zone 12 aggregation",
+          "zone_12_external_room_sensor_write_interval": "Zone 12 write interval (seconds)",
+          "zone_12_external_room_sensor_timeout": "Zone 12 sensor timeout (seconds)"
+        }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to the Modbus device. Please check the host, port, and unit ID.",
+      "no_matching_temperature_sensors": "No temperature sensors match the selected room/text filter.",
       "unknown": "An unexpected error occurred."
     },
     "abort": {
@@ -75,7 +138,8 @@
         "description": "Select which settings to configure.",
         "menu_options": {
           "general": "General settings",
-          "zone_config": "Zone configuration"
+          "zone_config": "Zone configuration",
+          "external_room_sensors": "External room sensors"
         }
       },
       "general": {
@@ -108,6 +172,68 @@
         "description": "Select the zones configured on your system. Currently configured zones are pre-selected.",
         "data": {
           "zones": "Zones"
+        }
+      },
+      "external_room_sensors": {
+        "title": "External Room Temperature Sensors",
+        "description": "Apply an optional room and text prefilter before selecting one or more Home Assistant temperature sensors.",
+        "data": {
+          "external_room_sensor_area_filter": "Room filter",
+          "external_room_sensor_text_filter": "Text filter"
+        }
+      },
+      "external_room_sensors_select": {
+        "title": "External Room Temperature Sensors",
+        "description": "Select one or more Home Assistant temperature sensors from the filtered list. The list is sorted by current temperature when opened and stays stable during selection. Saving this form reloads the integration.",
+        "data": {
+          "zone_1_external_room_sensor": "Zone 1 source entity",
+          "zone_1_external_room_sensor_aggregation": "Zone 1 aggregation",
+          "zone_1_external_room_sensor_write_interval": "Zone 1 write interval (seconds)",
+          "zone_1_external_room_sensor_timeout": "Zone 1 sensor timeout (seconds)",
+          "zone_2_external_room_sensor": "Zone 2 source entity",
+          "zone_2_external_room_sensor_aggregation": "Zone 2 aggregation",
+          "zone_2_external_room_sensor_write_interval": "Zone 2 write interval (seconds)",
+          "zone_2_external_room_sensor_timeout": "Zone 2 sensor timeout (seconds)",
+          "zone_3_external_room_sensor": "Zone 3 source entity",
+          "zone_3_external_room_sensor_aggregation": "Zone 3 aggregation",
+          "zone_3_external_room_sensor_write_interval": "Zone 3 write interval (seconds)",
+          "zone_3_external_room_sensor_timeout": "Zone 3 sensor timeout (seconds)",
+          "zone_4_external_room_sensor": "Zone 4 source entity",
+          "zone_4_external_room_sensor_aggregation": "Zone 4 aggregation",
+          "zone_4_external_room_sensor_write_interval": "Zone 4 write interval (seconds)",
+          "zone_4_external_room_sensor_timeout": "Zone 4 sensor timeout (seconds)",
+          "zone_5_external_room_sensor": "Zone 5 source entity",
+          "zone_5_external_room_sensor_aggregation": "Zone 5 aggregation",
+          "zone_5_external_room_sensor_write_interval": "Zone 5 write interval (seconds)",
+          "zone_5_external_room_sensor_timeout": "Zone 5 sensor timeout (seconds)",
+          "zone_6_external_room_sensor": "Zone 6 source entity",
+          "zone_6_external_room_sensor_aggregation": "Zone 6 aggregation",
+          "zone_6_external_room_sensor_write_interval": "Zone 6 write interval (seconds)",
+          "zone_6_external_room_sensor_timeout": "Zone 6 sensor timeout (seconds)",
+          "zone_7_external_room_sensor": "Zone 7 source entity",
+          "zone_7_external_room_sensor_aggregation": "Zone 7 aggregation",
+          "zone_7_external_room_sensor_write_interval": "Zone 7 write interval (seconds)",
+          "zone_7_external_room_sensor_timeout": "Zone 7 sensor timeout (seconds)",
+          "zone_8_external_room_sensor": "Zone 8 source entity",
+          "zone_8_external_room_sensor_aggregation": "Zone 8 aggregation",
+          "zone_8_external_room_sensor_write_interval": "Zone 8 write interval (seconds)",
+          "zone_8_external_room_sensor_timeout": "Zone 8 sensor timeout (seconds)",
+          "zone_9_external_room_sensor": "Zone 9 source entity",
+          "zone_9_external_room_sensor_aggregation": "Zone 9 aggregation",
+          "zone_9_external_room_sensor_write_interval": "Zone 9 write interval (seconds)",
+          "zone_9_external_room_sensor_timeout": "Zone 9 sensor timeout (seconds)",
+          "zone_10_external_room_sensor": "Zone 10 source entity",
+          "zone_10_external_room_sensor_aggregation": "Zone 10 aggregation",
+          "zone_10_external_room_sensor_write_interval": "Zone 10 write interval (seconds)",
+          "zone_10_external_room_sensor_timeout": "Zone 10 sensor timeout (seconds)",
+          "zone_11_external_room_sensor": "Zone 11 source entity",
+          "zone_11_external_room_sensor_aggregation": "Zone 11 aggregation",
+          "zone_11_external_room_sensor_write_interval": "Zone 11 write interval (seconds)",
+          "zone_11_external_room_sensor_timeout": "Zone 11 sensor timeout (seconds)",
+          "zone_12_external_room_sensor": "Zone 12 source entity",
+          "zone_12_external_room_sensor_aggregation": "Zone 12 aggregation",
+          "zone_12_external_room_sensor_write_interval": "Zone 12 write interval (seconds)",
+          "zone_12_external_room_sensor_timeout": "Zone 12 sensor timeout (seconds)"
         }
       }
     }
