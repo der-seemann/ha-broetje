@@ -8,6 +8,9 @@ DOMAIN: Final = "broetje_heating"
 DEFAULT_PORT: Final = 502
 DEFAULT_UNIT_ID: Final = 1
 DEFAULT_SCAN_INTERVAL: Final = 120
+DEFAULT_SCAN_INTERVAL_FAST: Final = 30
+DEFAULT_SCAN_INTERVAL_NORMAL: Final = 120
+DEFAULT_SCAN_INTERVAL_SLOW: Final = 600
 SENTINEL_AUTO_DISABLE_THRESHOLD: Final = 3
 SENTINEL_RETRY_INTERVAL_SECONDS: Final = 3600
 EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD: Final = 3
@@ -17,9 +20,13 @@ EXCEPTION_CODE3_BACKOFF_SECONDS: Final = 900
 # Configuration keys
 CONF_UNIT_ID: Final = "unit_id"
 CONF_SCAN_INTERVAL: Final = "scan_interval"
+CONF_SCAN_INTERVAL_FAST: Final = "scan_interval_fast"
+CONF_SCAN_INTERVAL_NORMAL: Final = "scan_interval_normal"
+CONF_SCAN_INTERVAL_SLOW: Final = "scan_interval_slow"
 CONF_ZONES: Final = "zones"
 CONF_IWR_FEATURES: Final = "iwr_features"
 CONF_IWR_ZONE_DETAILS: Final = "iwr_zone_details"
+CONF_IWR_FEATURES_SOURCE: Final = "iwr_features_source"
 
 # Manufacturer info
 MANUFACTURER: Final = "Brötje"
@@ -45,6 +52,8 @@ IWR_OPTIONAL_FEATURES: Final[tuple[str, ...]] = (
     FEATURE_COOLING,
     FEATURE_BUFFER_TANK,
 )
+IWR_FEATURES_SOURCE_AUTO: Final = "auto"
+IWR_FEATURES_SOURCE_MANUAL: Final = "manual"
 
 SUB_DEVICE_LABELS: Final[dict[str, str]] = {
     SUBDEV_BOILER: "Boiler",

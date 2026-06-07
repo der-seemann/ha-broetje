@@ -38,33 +38,47 @@
         }
       },
       "iwr_zone_method": {
-        "title": "Zone Configuration",
-        "description": "Choose how to configure the heating zones for your IWR system.",
+        "title": "Zone and Feature Setup",
+        "description": "Choose how zones and optional IWR feature groups should be detected or selected.",
         "menu_options": {
-          "iwr_zones_auto": "Autodetect zones",
-          "iwr_zones_manual": "Manual selection"
+          "iwr_zones_auto": "Autodetect zones and features",
+          "iwr_zones_manual": "Manual zone selection"
         }
       },
       "iwr_zones_auto": {
-        "title": "Autodetected Zones",
-        "description": "The following zones and feature groups were detected on your system. Active zones and optional features are pre-selected. Adjust the selection as needed before the entities are created.",
+        "title": "Detected Zones and Features",
+        "description": "Zones are detected from zone type and function registers. Optional groups are enabled only when the related registers look valid. Adjust the preselection if your installation differs.",
         "data": {
           "zones": "Zones",
-          "hybrid": "Enable hybrid entities",
-          "cascade": "Enable cascade entities",
-          "cooling": "Enable cooling entities",
-          "buffer_tank": "Enable buffer tank entities"
+          "hybrid": "Hybrid function",
+          "cascade": "Cascade operation",
+          "cooling": "Cooling operation",
+          "buffer_tank": "Buffer tank"
+        },
+        "data_description": {
+          "zones": "Select only the zones that physically exist on this installation.",
+          "hybrid": "Creates entities for hybrid cost / backup boiler related registers.",
+          "cascade": "Creates entities for multi-appliance cascade operation and cascade status registers.",
+          "cooling": "Creates cooling-related appliance and zone entities.",
+          "buffer_tank": "Creates entities for buffer tank state, temperatures, and pump status."
         }
       },
       "iwr_zones_manual": {
-        "title": "Manual Zone Selection",
-        "description": "Select the zones configured on your system and adjust the optional feature groups.",
+        "title": "Manual Zone and Feature Selection",
+        "description": "Use this when autodetection is incomplete or your installation should intentionally expose fewer entities than the register map would allow.",
         "data": {
           "zones": "Zones",
-          "hybrid": "Enable hybrid entities",
-          "cascade": "Enable cascade entities",
-          "cooling": "Enable cooling entities",
-          "buffer_tank": "Enable buffer tank entities"
+          "hybrid": "Hybrid function",
+          "cascade": "Cascade operation",
+          "cooling": "Cooling operation",
+          "buffer_tank": "Buffer tank"
+        },
+        "data_description": {
+          "zones": "Only selected zones will be created. Unselected zones are removed from the integration registry on reload.",
+          "hybrid": "Enable only if the installation really uses hybrid logic or backup boiler optimization.",
+          "cascade": "Enable only if multiple appliances participate in a cascade.",
+          "cooling": "Enable only if the installation is configured for active or free cooling.",
+          "buffer_tank": "Enable only if a hydraulic buffer tank is present."
         }
       }
     },
@@ -82,48 +96,66 @@
         "title": "Brötje Heating Options",
         "description": "Select which settings to configure.",
         "menu_options": {
-          "general": "General settings",
-          "zone_config": "Zone configuration"
+          "general": "Polling profiles",
+          "zone_config": "Zones and feature groups"
         }
       },
       "general": {
-        "title": "General Settings",
-        "description": "Adjust polling and integration settings.",
+        "title": "Polling Profiles",
+        "description": "Configure separate polling intervals for fast-changing, normal, and slow registers.",
         "data": {
-          "scan_interval": "Scan interval (seconds)"
+          "scan_interval_fast": "Fast profile (seconds)",
+          "scan_interval_normal": "Normal profile (seconds)",
+          "scan_interval_slow": "Slow profile (seconds)"
         },
         "data_description": {
-          "scan_interval": "How often to poll the Modbus device for updated values (10-3600 seconds)."
+          "scan_interval_fast": "Used for fast-changing status and control values. Default: 30 seconds.",
+          "scan_interval_normal": "Used for the standard register set. Default: 120 seconds.",
+          "scan_interval_slow": "Used for slow-changing diagnostics and counters. Default: 600 seconds."
         }
       },
       "zone_config": {
-        "title": "Zone Configuration",
-        "description": "Choose how to reconfigure the heating zones.",
+        "title": "Zones and Feature Groups",
+        "description": "Redetect or manually adjust zones, zone roles, and optional IWR feature groups.",
         "menu_options": {
-          "zones_auto": "Autodetect zones",
-          "zones_manual": "Manual selection"
+          "zones_auto": "Redetect zones and features",
+          "zones_manual": "Manual zone selection"
         }
       },
       "zones_auto": {
-        "title": "Autodetected Zones",
-        "description": "The following zones and feature groups were detected on your system. Active zones and optional features are pre-selected. Adjust the selection as needed.",
+        "title": "Detected Zones and Features",
+        "description": "The current installation was probed again. Review the detected zones and optional feature groups before applying the new entity layout.",
         "data": {
           "zones": "Zones",
-          "hybrid": "Enable hybrid entities",
-          "cascade": "Enable cascade entities",
-          "cooling": "Enable cooling entities",
-          "buffer_tank": "Enable buffer tank entities"
+          "hybrid": "Hybrid function",
+          "cascade": "Cascade operation",
+          "cooling": "Cooling operation",
+          "buffer_tank": "Buffer tank"
+        },
+        "data_description": {
+          "zones": "Selected zones remain active after reload; deselected zones are removed.",
+          "hybrid": "Creates or removes hybrid-related entities.",
+          "cascade": "Creates or removes cascade-related entities.",
+          "cooling": "Creates or removes cooling-related entities.",
+          "buffer_tank": "Creates or removes buffer tank related entities."
         }
       },
       "zones_manual": {
-        "title": "Manual Zone Selection",
-        "description": "Select the zones configured on your system. Currently configured zones are pre-selected and optional feature groups can be adjusted.",
+        "title": "Manual Zone and Feature Selection",
+        "description": "Use this to correct autodetection or intentionally limit the exposed entity groups.",
         "data": {
           "zones": "Zones",
-          "hybrid": "Enable hybrid entities",
-          "cascade": "Enable cascade entities",
-          "cooling": "Enable cooling entities",
-          "buffer_tank": "Enable buffer tank entities"
+          "hybrid": "Hybrid function",
+          "cascade": "Cascade operation",
+          "cooling": "Cooling operation",
+          "buffer_tank": "Buffer tank"
+        },
+        "data_description": {
+          "zones": "Only selected zones are kept active after reload.",
+          "hybrid": "Enable only if the installation really uses hybrid registers.",
+          "cascade": "Enable only for real cascade installations.",
+          "cooling": "Enable only if cooling should be exposed in Home Assistant.",
+          "buffer_tank": "Enable only if a physical buffer tank is connected."
         }
       }
     }

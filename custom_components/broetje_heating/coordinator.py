@@ -22,10 +22,16 @@ from .const import (
     ALWAYS_PRESENT_SUBDEVICES,
     CONF_IWR_FEATURES,
     CONF_SCAN_INTERVAL,
+    CONF_SCAN_INTERVAL_FAST,
+    CONF_SCAN_INTERVAL_NORMAL,
+    CONF_SCAN_INTERVAL_SLOW,
     CONF_UNIT_ID,
     CONF_IWR_ZONE_DETAILS,
     CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL_FAST,
+    DEFAULT_SCAN_INTERVAL_NORMAL,
+    DEFAULT_SCAN_INTERVAL_SLOW,
     DEFAULT_UNIT_ID,
     DOMAIN,
     EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD,
@@ -63,9 +69,9 @@ POLL_PROFILE_NORMAL = "normal"
 POLL_PROFILE_SLOW = "slow"
 POLL_PROFILE_OFF = "off"
 POLL_PROFILES: dict[str, int | None] = {
-    POLL_PROFILE_FAST: 30,
-    POLL_PROFILE_NORMAL: DEFAULT_SCAN_INTERVAL,
-    POLL_PROFILE_SLOW: 600,
+    POLL_PROFILE_FAST: DEFAULT_SCAN_INTERVAL_FAST,
+    POLL_PROFILE_NORMAL: DEFAULT_SCAN_INTERVAL_NORMAL,
+    POLL_PROFILE_SLOW: DEFAULT_SCAN_INTERVAL_SLOW,
     POLL_PROFILE_OFF: None,
 }
 FAST_POLL_REGISTER_ADDRESSES: frozenset[int] = frozenset(
@@ -98,9 +104,17 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
-        scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         self._poll_profiles = dict(POLL_PROFILES)
-        self._poll_profiles[POLL_PROFILE_NORMAL] = scan_interval
+        self._poll_profiles[POLL_PROFILE_FAST] = entry.options.get(
+            CONF_SCAN_INTERVAL_FAST, DEFAULT_SCAN_INTERVAL_FAST
+        )
+        self._poll_profiles[POLL_PROFILE_NORMAL] = entry.options.get(
+            CONF_SCAN_INTERVAL_NORMAL,
+            entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        )
+        self._poll_profiles[POLL_PROFILE_SLOW] = entry.options.get(
+            CONF_SCAN_INTERVAL_SLOW, DEFAULT_SCAN_INTERVAL_SLOW
+        )
         super().__init__(
             hass,
             _LOGGER,
@@ -160,11 +174,18 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Sub-devices active for this installation; populated during _async_setup
         self.active_sub_devices: set[str] = set()
 
-    def update_scan_interval(self, scan_interval: int) -> None:
-        """Update the polling interval (called when options change)."""
-        self._poll_profiles[POLL_PROFILE_NORMAL] = scan_interval
+    def update_scan_intervals(self, fast: int, normal: int, slow: int) -> None:
+        """Update polling intervals from options."""
+        self._poll_profiles[POLL_PROFILE_FAST] = fast
+        self._poll_profiles[POLL_PROFILE_NORMAL] = normal
+        self._poll_profiles[POLL_PROFILE_SLOW] = slow
         self.update_interval = timedelta(seconds=self._coordinator_tick_seconds())
-        _LOGGER.info("Scan interval updated to %d seconds", scan_interval)
+        _LOGGER.info(
+            "Scan intervals updated: fast=%ds normal=%ds slow=%ds",
+            fast,
+            normal,
+            slow,
+        )
 
     def _coordinator_tick_seconds(self) -> int:
         """Return the fastest enabled profile interval for coordinator wakeups."""

@@ -17,14 +17,21 @@ from homeassistant.helpers import entity_registry as er
 
 from .const import (
     CONF_IWR_FEATURES,
+    CONF_IWR_FEATURES_SOURCE,
     CONF_IWR_ZONE_DETAILS,
     CONF_SCAN_INTERVAL,
+    CONF_SCAN_INTERVAL_FAST,
+    CONF_SCAN_INTERVAL_NORMAL,
+    CONF_SCAN_INTERVAL_SLOW,
     CONF_UNIT_ID,
     CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL_FAST,
+    DEFAULT_SCAN_INTERVAL_SLOW,
     DEFAULT_UNIT_ID,
     DOMAIN,
-    IWR_OPTIONAL_FEATURES,
+    IWR_FEATURES_SOURCE_AUTO,
+    IWR_FEATURES_SOURCE_MANUAL,
     SUB_DEVICE_LABELS,
 )
 from .coordinator import BroetjeModbusCoordinator
@@ -288,7 +295,6 @@ def _cleanup_replaced_registry_entities(
     unique_root = entry.unique_id or entry.entry_id
 
     current_domain_by_key: dict[str, set[str]] = {}
-    known_entity_keys: set[str] = set()
     for domain, entity_map in (
         (Platform.SENSOR, coordinator.sensors),
         (Platform.BINARY_SENSOR, coordinator.binary_sensors),
@@ -298,7 +304,6 @@ def _cleanup_replaced_registry_entities(
         (Platform.CLIMATE, coordinator.climates),
     ):
         for entity_key, config in entity_map.items():
-            known_entity_keys.add(entity_key)
             sub_device = config.get("sub_device")
             if (
                 sub_device is not None
@@ -322,11 +327,9 @@ def _cleanup_replaced_registry_entities(
 
         entity_key = registry_entry.unique_id[len(prefix) :]
         expected_domains = current_domain_by_key.get(entity_key)
-        if entity_key in known_entity_keys and expected_domains is None:
+        if expected_domains is None:
             entity_registry.async_remove(registry_entry.entity_id)
             removed += 1
-            continue
-        if expected_domains is None:
             continue
         if registry_entry.domain in expected_domains:
             if (
@@ -447,8 +450,13 @@ def _cleanup_orphan_sub_devices(
 async def _async_update_options(hass: HomeAssistant, entry: BroetjeConfigEntry) -> None:
     """Handle options update."""
     coordinator: BroetjeModbusCoordinator = entry.runtime_data
-    scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
-    coordinator.update_scan_interval(scan_interval)
+    fast = entry.options.get(CONF_SCAN_INTERVAL_FAST, DEFAULT_SCAN_INTERVAL_FAST)
+    normal = entry.options.get(
+        CONF_SCAN_INTERVAL_NORMAL,
+        entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+    )
+    slow = entry.options.get(CONF_SCAN_INTERVAL_SLOW, DEFAULT_SCAN_INTERVAL_SLOW)
+    coordinator.update_scan_intervals(fast, normal, slow)
 
 
 async def _async_apply_iwr_detection_defaults(
@@ -458,7 +466,12 @@ async def _async_apply_iwr_detection_defaults(
     if entry.data.get(CONF_DEVICE_TYPE) != DeviceType.IWR.value:
         return
 
-    if CONF_IWR_FEATURES in entry.data and CONF_IWR_ZONE_DETAILS in entry.data:
+    feature_source = entry.data.get(CONF_IWR_FEATURES_SOURCE)
+    if (
+        CONF_IWR_FEATURES in entry.data
+        and CONF_IWR_ZONE_DETAILS in entry.data
+        and feature_source == IWR_FEATURES_SOURCE_MANUAL
+    ):
         return
 
     client = AsyncModbusTcpClient(
@@ -489,11 +502,9 @@ async def _async_apply_iwr_detection_defaults(
 
     new_data = {**entry.data}
     new_data.setdefault(CONF_ZONES, detection[CONF_ZONES] or [1])
-    new_data.setdefault(
-        CONF_IWR_FEATURES,
-        {feature: True for feature in IWR_OPTIONAL_FEATURES},
-    )
-    new_data.setdefault(CONF_IWR_ZONE_DETAILS, detection["zone_details"])
+    new_data[CONF_IWR_FEATURES] = detection["features"]
+    new_data[CONF_IWR_ZONE_DETAILS] = detection["zone_details"]
+    new_data[CONF_IWR_FEATURES_SOURCE] = IWR_FEATURES_SOURCE_AUTO
     hass.config_entries.async_update_entry(entry, data=new_data)
 
 

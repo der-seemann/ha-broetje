@@ -38,33 +38,47 @@
         }
       },
       "iwr_zone_method": {
-        "title": "Heizkreiskonfiguration",
-        "description": "Wählen Sie, wie die Heizkreise für Ihr IWR-System konfiguriert werden sollen.",
+        "title": "Zonen- und Funktionssetup",
+        "description": "Wählen Sie, wie Zonen und optionale IWR-Funktionsgruppen erkannt oder manuell festgelegt werden sollen.",
         "menu_options": {
-          "iwr_zones_auto": "Heizkreise automatisch erkennen",
-          "iwr_zones_manual": "Manuelle Auswahl"
+          "iwr_zones_auto": "Zonen und Funktionen automatisch erkennen",
+          "iwr_zones_manual": "Zonen manuell auswählen"
         }
       },
       "iwr_zones_auto": {
-        "title": "Erkannte Heizkreise",
-        "description": "Die folgenden Heizkreise und Funktionsgruppen wurden an Ihrem System erkannt. Aktive Kreise und optionale Funktionen sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an, bevor die Entities angelegt werden.",
+        "title": "Erkannte Zonen und Funktionen",
+        "description": "Die Zonen werden aus Zonentyp und Zonenfunktion erkannt. Optionale Gruppen werden nur vorausgewählt, wenn die zugehörigen Register plausibel belegt sind. Passen Sie die Auswahl bei Bedarf an.",
         "data": {
           "zones": "Heizkreise",
-          "hybrid": "Hybrid-Entities aktivieren",
-          "cascade": "Kaskaden-Entities aktivieren",
-          "cooling": "Kühl-Entities aktivieren",
-          "buffer_tank": "Pufferspeicher-Entities aktivieren"
+          "hybrid": "Hybridfunktion",
+          "cascade": "Kaskadenbetrieb",
+          "cooling": "Kühlbetrieb",
+          "buffer_tank": "Pufferspeicher"
+        },
+        "data_description": {
+          "zones": "Wählen Sie nur die Zonen aus, die auf dieser Anlage physisch vorhanden sind.",
+          "hybrid": "Erzeugt Entities für Hybridkosten, Hybridmodus und verwandte Hybrid-/Backup-Logik.",
+          "cascade": "Erzeugt Entities für Mehrgeräte-Kaskadenbetrieb und Kaskadenstatus.",
+          "cooling": "Erzeugt kühlbezogene Anlagen- und Zonen-Entities.",
+          "buffer_tank": "Erzeugt Entities für Pufferspeicherstatus, Temperaturen und Pumpenzustand."
         }
       },
       "iwr_zones_manual": {
-        "title": "Manuelle Heizkreisauswahl",
-        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus und passen Sie die optionalen Funktionsgruppen an.",
+        "title": "Manuelle Zonen- und Funktionsauswahl",
+        "description": "Nutzen Sie diese Ansicht, wenn die Auto-Erkennung unvollständig ist oder absichtlich weniger Entities als laut Registertabelle freigeschaltet werden sollen.",
         "data": {
           "zones": "Heizkreise",
-          "hybrid": "Hybrid-Entities aktivieren",
-          "cascade": "Kaskaden-Entities aktivieren",
-          "cooling": "Kühl-Entities aktivieren",
-          "buffer_tank": "Pufferspeicher-Entities aktivieren"
+          "hybrid": "Hybridfunktion",
+          "cascade": "Kaskadenbetrieb",
+          "cooling": "Kühlbetrieb",
+          "buffer_tank": "Pufferspeicher"
+        },
+        "data_description": {
+          "zones": "Nur ausgewählte Zonen werden angelegt. Nicht ausgewählte Zonen werden beim Reload aus der Integration entfernt.",
+          "hybrid": "Nur aktivieren, wenn die Anlage tatsächlich Hybridlogik oder Backup-Kesseloptimierung nutzt.",
+          "cascade": "Nur aktivieren, wenn mehrere Erzeuger in einer Kaskade eingebunden sind.",
+          "cooling": "Nur aktivieren, wenn die Anlage für aktiven oder freien Kühlbetrieb konfiguriert ist.",
+          "buffer_tank": "Nur aktivieren, wenn ein echter hydraulischer Pufferspeicher vorhanden ist."
         }
       }
     },
@@ -82,48 +96,66 @@
         "title": "Brötje Heizung Optionen",
         "description": "Wählen Sie, welche Einstellungen Sie konfigurieren möchten.",
         "menu_options": {
-          "general": "Allgemeine Einstellungen",
-          "zone_config": "Heizkreiskonfiguration"
+          "general": "Poll-Profile",
+          "zone_config": "Zonen und Funktionsgruppen"
         }
       },
       "general": {
-        "title": "Allgemeine Einstellungen",
-        "description": "Abfrage- und Integrationseinstellungen anpassen.",
+        "title": "Poll-Profile",
+        "description": "Konfigurieren Sie getrennte Abfrageintervalle für schnelle, normale und langsame Register.",
         "data": {
-          "scan_interval": "Abfrageintervall (Sekunden)"
+          "scan_interval_fast": "Profil schnell (Sekunden)",
+          "scan_interval_normal": "Profil normal (Sekunden)",
+          "scan_interval_slow": "Profil langsam (Sekunden)"
         },
         "data_description": {
-          "scan_interval": "Wie oft das Modbus-Gerät nach aktualisierten Werten abgefragt wird (10-3600 Sekunden)."
+          "scan_interval_fast": "Für schnell wechselnde Status- und Steuerwerte. Standard: 30 Sekunden.",
+          "scan_interval_normal": "Für den normalen Registersatz. Standard: 120 Sekunden.",
+          "scan_interval_slow": "Für langsam wechselnde Diagnosen und Zähler. Standard: 600 Sekunden."
         }
       },
       "zone_config": {
-        "title": "Heizkreiskonfiguration",
-        "description": "Wählen Sie, wie die Heizkreise neu konfiguriert werden sollen.",
+        "title": "Zonen und Funktionsgruppen",
+        "description": "Zonen, Zonenrollen und optionale IWR-Funktionsgruppen erneut erkennen oder manuell anpassen.",
         "menu_options": {
-          "zones_auto": "Heizkreise automatisch erkennen",
-          "zones_manual": "Manuelle Auswahl"
+          "zones_auto": "Zonen und Funktionen neu erkennen",
+          "zones_manual": "Zonen manuell auswählen"
         }
       },
       "zones_auto": {
-        "title": "Erkannte Heizkreise",
-        "description": "Die folgenden Heizkreise und Funktionsgruppen wurden an Ihrem System erkannt. Aktive Kreise und optionale Funktionen sind vorausgewählt. Passen Sie die Auswahl bei Bedarf an.",
+        "title": "Erkannte Zonen und Funktionen",
+        "description": "Die Anlage wurde erneut abgefragt. Prüfen Sie die erkannten Zonen und optionalen Funktionsgruppen, bevor das Entity-Layout aktualisiert wird.",
         "data": {
           "zones": "Heizkreise",
-          "hybrid": "Hybrid-Entities aktivieren",
-          "cascade": "Kaskaden-Entities aktivieren",
-          "cooling": "Kühl-Entities aktivieren",
-          "buffer_tank": "Pufferspeicher-Entities aktivieren"
+          "hybrid": "Hybridfunktion",
+          "cascade": "Kaskadenbetrieb",
+          "cooling": "Kühlbetrieb",
+          "buffer_tank": "Pufferspeicher"
+        },
+        "data_description": {
+          "zones": "Ausgewählte Zonen bleiben nach dem Reload aktiv; abgewählte Zonen werden entfernt.",
+          "hybrid": "Erzeugt oder entfernt hybridbezogene Entities.",
+          "cascade": "Erzeugt oder entfernt kaskadenbezogene Entities.",
+          "cooling": "Erzeugt oder entfernt kühlbezogene Entities.",
+          "buffer_tank": "Erzeugt oder entfernt pufferspeicherbezogene Entities."
         }
       },
       "zones_manual": {
-        "title": "Manuelle Heizkreisauswahl",
-        "description": "Wählen Sie die an Ihrem System konfigurierten Heizkreise aus. Aktuell konfigurierte Kreise sind vorausgewählt, optionale Funktionsgruppen lassen sich mit anpassen.",
+        "title": "Manuelle Zonen- und Funktionsauswahl",
+        "description": "Nutzen Sie diese Ansicht, um die Auto-Erkennung zu korrigieren oder die sichtbaren Entity-Gruppen bewusst einzuschränken.",
         "data": {
           "zones": "Heizkreise",
-          "hybrid": "Hybrid-Entities aktivieren",
-          "cascade": "Kaskaden-Entities aktivieren",
-          "cooling": "Kühl-Entities aktivieren",
-          "buffer_tank": "Pufferspeicher-Entities aktivieren"
+          "hybrid": "Hybridfunktion",
+          "cascade": "Kaskadenbetrieb",
+          "cooling": "Kühlbetrieb",
+          "buffer_tank": "Pufferspeicher"
+        },
+        "data_description": {
+          "zones": "Nur ausgewählte Zonen bleiben nach dem Reload aktiv.",
+          "hybrid": "Nur aktivieren, wenn die Anlage wirklich Hybridregister nutzt.",
+          "cascade": "Nur aktivieren, wenn eine echte Erzeugerkaskade vorhanden ist.",
+          "cooling": "Nur aktivieren, wenn Kühlbetrieb in Home Assistant sichtbar sein soll.",
+          "buffer_tank": "Nur aktivieren, wenn ein physischer Pufferspeicher angeschlossen ist."
         }
       }
     }

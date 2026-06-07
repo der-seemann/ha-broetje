@@ -23,18 +23,25 @@ from homeassistant.helpers.selector import (
 
 from .const import (
     CONF_IWR_FEATURES,
+    CONF_IWR_FEATURES_SOURCE,
     CONF_IWR_ZONE_DETAILS,
     CONF_SCAN_INTERVAL,
+    CONF_SCAN_INTERVAL_FAST,
+    CONF_SCAN_INTERVAL_NORMAL,
+    CONF_SCAN_INTERVAL_SLOW,
     CONF_UNIT_ID,
     CONF_ZONES,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL_FAST,
+    DEFAULT_SCAN_INTERVAL_SLOW,
     DEFAULT_UNIT_ID,
     DOMAIN,
     FEATURE_BUFFER_TANK,
     FEATURE_CASCADE,
     FEATURE_COOLING,
     FEATURE_HYBRID,
+    IWR_FEATURES_SOURCE_MANUAL,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType
 from .iwr_setup import detect_iwr_setup
@@ -132,19 +139,38 @@ class BroetjeOptionsFlow(OptionsFlow):
     async def async_step_general(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Manage scan interval options."""
+        """Manage polling profile interval options."""
         if user_input is not None:
             return self.async_create_entry(data=user_input)
 
-        current_interval = self.config_entry.options.get(
-            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        fast_interval = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL_FAST, DEFAULT_SCAN_INTERVAL_FAST
+        )
+        normal_interval = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL_NORMAL,
+            self.config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+        )
+        slow_interval = self.config_entry.options.get(
+            CONF_SCAN_INTERVAL_SLOW, DEFAULT_SCAN_INTERVAL_SLOW
         )
 
         return self.async_show_form(
             step_id="general",
             data_schema=vol.Schema(
                 {
-                    vol.Required(CONF_SCAN_INTERVAL, default=current_interval): vol.All(
+                    vol.Required(
+                        CONF_SCAN_INTERVAL_FAST, default=fast_interval
+                    ): vol.All(
+                        int, vol.Range(min=10, max=3600)
+                    ),
+                    vol.Required(
+                        CONF_SCAN_INTERVAL_NORMAL, default=normal_interval
+                    ): vol.All(
+                        int, vol.Range(min=10, max=3600)
+                    ),
+                    vol.Required(
+                        CONF_SCAN_INTERVAL_SLOW, default=slow_interval
+                    ): vol.All(
                         int, vol.Range(min=10, max=3600)
                     ),
                 }
@@ -241,6 +267,7 @@ class BroetjeOptionsFlow(OptionsFlow):
             **self.config_entry.data,
             CONF_ZONES: zones,
             CONF_IWR_FEATURES: features,
+            CONF_IWR_FEATURES_SOURCE: IWR_FEATURES_SOURCE_MANUAL,
             CONF_IWR_ZONE_DETAILS: zone_details,
         }
         self.hass.config_entries.async_update_entry(self.config_entry, data=new_data)
@@ -348,6 +375,9 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
                 user_input
             )
+            self._connection_data[CONF_IWR_FEATURES_SOURCE] = (
+                IWR_FEATURES_SOURCE_MANUAL
+            )
             if self._detected_setup is not None:
                 self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[
                     "zone_details"
@@ -393,6 +423,9 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             self._connection_data[CONF_ZONES] = _parse_zone_selection(user_input)
             self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
                 user_input
+            )
+            self._connection_data[CONF_IWR_FEATURES_SOURCE] = (
+                IWR_FEATURES_SOURCE_MANUAL
             )
             if self._detected_setup is not None:
                 self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[

@@ -7585,6 +7585,8 @@ def _feature_for_register(entity_key: str, register_config: dict[str, Any]) -> s
     address = int(register_config.get("address", -1))
     sub_device = register_config.get("sub_device")
 
+    if "hybrid" in entity_key:
+        return FEATURE_HYBRID
     if entity_key.startswith("cascade_"):
         return FEATURE_CASCADE
     if sub_device == SUBDEV_BUFFER_TANK or 7600 <= address <= 7699:
