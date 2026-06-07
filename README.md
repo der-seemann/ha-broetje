@@ -22,6 +22,7 @@ The current codebase also includes:
 
 - automatic register backoff/disable handling for sentinel values and recurring Modbus exceptions
 - three poll profiles (`fast` / `normal` / `slow`)
+- IWR setup auto-detection for zones and optional feature groups with manual correction
 - write support with immediate readback and in-memory state refresh
 - orphan entity and orphan sub-device cleanup on reload
 
@@ -80,18 +81,22 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 - **Parallel operation**: Both modules can run side by side for different appliances
 - **Writable IWR controls**: Write-enabled IWR entities are exposed as `number`, `select`, `time`, and `climate` entities, with immediate readback and state refresh after writes
 - **Auto-disable logic**: Registers that repeatedly return sentinel values or recurring Modbus exceptions are automatically throttled or disabled instead of spamming invalid states
+- **Automatic feature detection (IWR)**: Setup probes zones, zone roles, hybrid, cascade, cooling, and buffer tank capabilities and uses the result as the default entity layout
+- **Manual correction**: The detected IWR zones and feature groups can be corrected during setup or later in the options flow
 - **Poll strategy**: `fast`, `normal`, and `slow` poll profiles reduce bus load while still keeping relevant runtime values responsive
 - **Orphan cleanup**: Replaced entities, removed sub-devices, and stale zone devices are cleaned up on reload
 - **IWR**: entity count depends on configured zones and detected sub-devices; the current BLW 12.1 reference setup exposes the counts listed above
 - **ISR**: 117 entities (100 sensors + 17 binary sensors) across 6 categories
-- **Zone detection** (IWR): Automatically detects active zones by reading zone type and function registers from the device; active zones are pre-selected, inactive ones shown but unchecked. Manual selection also available.
+- **Zone and feature detection** (IWR): Automatically detects active zones by reading zone type and function registers from the device. Zone roles are classified as heating / DHW / inactive, and optional groups such as hybrid, cascade, cooling, and buffer tank are pre-selected from live register probes.
 - **Climate subsystem** (IWR): Zone thermostat entities are exposed via Home Assistant `climate` entities (Thermostat card compatible) with current temperature, target setpoint, and HVAC mode/action mapping.
 - **Writable zone controls** (IWR): Includes control mode, room setpoint, external room temperature injection, DHW setpoints/hysteresis, low-noise schedule, remote control registers `256-259`, and the current per-zone writable parameter families documented in [ENTITIES.md](ENTITIES.md)
 - **Sub-devices**: Entities are grouped under functional sub-devices (for example boiler/service/solar/buffer/hybrid). Only detected sub-devices are kept; stale/orphaned sub-devices are removed automatically on reload.
 - **Configurable zones** (IWR): 1–12 zones selectable during setup or reconfigurable via integration options
-- **Configurable scan interval**: Adjustable polling interval via integration options (default: 120 seconds)
+- **Configuration-dependent entity creation**: Entities are only created for enabled feature groups and meaningful zone roles. For example, DHW zones do not get room-control entities and disabled feature groups do not create unused entities.
+- **Configurable poll profiles**: Separate `fast`, `normal`, and `slow` intervals adjustable via integration options
 - **German and English translations**
-- **Sentinel value filtering**: Invalid Modbus readings (for example `0xFFFF`, `0xFFFFFFFF`) are shown as unavailable instead of bogus numbers
+- **Sentinel value filtering**: Invalid Modbus readings (for example `0x8000` for `int16`, `0x00FF` for `uint8/enum8`, `0xFFFF`, `0xFFFFFFFF`, and register-specific sentinel overrides) are shown as unavailable instead of bogus numbers
+- **Automatic registry disable**: Registers that become `sentinel_permanent` are automatically disabled in the Home Assistant entity registry so they stay recoverable without being recreated by default
 
 ### ISR Coverage
 
@@ -152,9 +157,9 @@ This README documents the fork state at `der-seemann/ha-broetje`. If you install
    - **Host**: IP address of your Modbus TCP gateway
    - **Port**: Modbus TCP port (default: 502)
    - **Unit ID**: Modbus slave ID (default: 1)
-6. **IWR only**: Choose how to configure zones:
-   - **Autodetect**: Reads zone type and function registers from the device; active zones are pre-selected, inactive ones shown but unchecked. Review and confirm the selection.
-   - **Manual**: Select any combination of zones 1–12.
+6. **IWR only**: Choose how to configure zones and feature groups:
+   - **Autodetect**: Reads zone type and zone function registers, classifies each zone as heating / DHW / inactive, and probes optional feature groups (`Hybrid`, `Cascade`, `Cooling`, `Buffer tank`) from live registers. Review the preselection and correct it if needed.
+   - **Manual**: Select any combination of zones 1–12 and explicitly decide which optional feature groups should create entities.
 
 To add a second module (e.g., both ISR and IWR), simply add the integration again and select the other module type.
 
@@ -162,9 +167,10 @@ To add a second module (e.g., both ISR and IWR), simply add the integration agai
 
 After setup, click the **Configure** (gear icon) button on the integration entry to adjust:
 
-- **Scan interval**: How often the integration polls the Modbus device (default: 120 seconds, range: 10–3600). Changes take effect immediately without restart.
-- **Poll profiles**: The coordinator internally assigns registers to `fast`, `normal`, or `slow` profiles. The configured scan interval defines the `normal` profile, while fast-changing runtime values and slow-changing service/config registers use dedicated profiles.
-- **Zone configuration** (IWR only): Re-run autodetection or manually change which zones are active. Changes trigger an integration reload.
+- **Fast poll profile**: Interval for fast-changing runtime values (default: 30 seconds, range: 10–3600)
+- **Normal poll profile**: Interval for the standard register set (default: 120 seconds, range: 10–3600)
+- **Slow poll profile**: Interval for slowly changing diagnostics and counters (default: 600 seconds, range: 10–3600)
+- **Zones and feature groups** (IWR only): Re-run autodetection or manually change active zones, zone-dependent layout, and optional feature groups. Changes trigger an integration reload and prune stale entities from the registry.
 
 ## Entities
 
@@ -218,6 +224,7 @@ entities:
 - The register addresses may need adjustment for your specific model
 - Check Home Assistant logs for Modbus communication errors
 - Some sensors show unavailable when the appliance reports sentinel values or when the coordinator temporarily/permanently auto-disables a plant-dependent register after repeated failures
+- Permanently unavailable plant-dependent registers can be auto-disabled in the Home Assistant entity registry; re-enable them manually if your hydraulic layout changes later
 
 ## Development
 

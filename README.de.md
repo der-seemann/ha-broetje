@@ -22,6 +22,7 @@ Der aktuelle Code-Stand enthält außerdem:
 
 - automatische Backoff-/Auto-Disable-Logik für Sentinel-Werte und wiederkehrende Modbus-Exceptions
 - drei Poll-Profile (`fast` / `normal` / `slow`)
+- IWR-Setup mit Auto-Erkennung für Zonen und optionale Funktionsgruppen samt manueller Korrektur
 - Schreibsupport mit sofortigem Readback und In-Memory-State-Refresh
 - Bereinigung verwaister Entitäten und Sub-Devices beim Reload
 
@@ -80,18 +81,22 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 - **Parallelbetrieb**: Beide Module können gleichzeitig für verschiedene Geräte laufen
 - **Schreibfähige IWR-Steuerung**: Schreibsupport für ausgewählte IWR-Holding-Register über `number`, `select`, `time` und `climate`, mit sofortigem Readback und State-Refresh nach erfolgreichem Write
 - **Auto-Disable-Logik**: Register mit Sentinel-Werten oder wiederkehrenden Modbus-Exceptions werden automatisch gedrosselt oder deaktiviert, statt dauerhaft fehlerhafte Zustände zu produzieren
+- **Automatische Feature-Erkennung (IWR)**: Das Setup erkennt Zonen, Zonenrollen sowie Hybridfunktion, Kaskadenbetrieb, Kühlbetrieb und Pufferspeicher und nutzt das Ergebnis als Default für das Entity-Layout
+- **Manuelle Korrektur**: Erkannte IWR-Zonen und Funktionsgruppen können bei der Einrichtung und später im Options-Flow gezielt korrigiert werden
 - **Poll-Strategie**: `fast`, `normal` und `slow` reduzieren Buslast und halten gleichzeitig laufzeitrelevante Werte reaktionsfähig
 - **Orphan-Cleanup**: Ersetzte Entitäten, entfernte Sub-Devices und veraltete Zonengeräte werden beim Reload automatisch aufgeräumt
 - **IWR**: Die Entitätszahl hängt von Zonen und erkannten Sub-Devices ab; die aktuelle BLW-12.1-Referenzinstallation entspricht den oben genannten Werten
 - **ISR**: 117 Entitäten (100 Sensoren + 17 Binärsensoren) in 6 Kategorien
-- **Zonenerkennung** (IWR): Erkennt aktive Zonen automatisch durch Auslesen der Zonentyp- und Zonenfunktionsregister vom Gerät; aktive Zonen werden vorausgewählt, inaktive angezeigt aber nicht ausgewählt. Manuelle Auswahl ebenfalls möglich.
+- **Zonen- und Feature-Erkennung** (IWR): Erkennt aktive Zonen automatisch über Zonentyp- und Zonenfunktionsregister. Zonenrollen werden als Heizkreis / Warmwasser (DHW) / Inaktiv klassifiziert, optionale Gruppen wie Hybrid, Kaskade, Kühlung und Pufferspeicher werden über Live-Registerprobes vorausgewählt.
 - **Climate-Subsystem** (IWR): Pro Zone werden Home-Assistant-`climate` Entitäten bereitgestellt (Thermostat-Karte kompatibel) mit Isttemperatur, Solltemperatur und HVAC-Modus/Aktion.
 - **Schreibbare Zonensteuerung** (IWR): Umfasst Steuerungsmodus, Raumsollwert, externe Raumtemperaturvorgabe, TWW-Sollwerte/Hysteresen, Leisefunktions-Zeitfenster, Fernsteuer-Register `256-259` und die aktuell dokumentierten schreibbaren Zonenfamilien in [ENTITIES.md](ENTITIES.md)
 - **Sub-Devices**: Entitäten werden unter funktionalen Untergeräten gruppiert (z. B. Kessel/Service/Solar/Pufferspeicher/Hybrid). Nur erkannte Untergeräte werden geführt; verwaiste Untergeräte werden beim Reload automatisch entfernt.
 - **Konfigurierbare Zonen** (IWR): 1–12 Zonen bei der Einrichtung auswählbar oder über Integrationsoptionen neu konfigurierbar
-- **Konfigurierbares Abfrageintervall**: Über Integrationsoptionen einstellbar (Standard: 120 Sekunden)
+- **Anlagenabhängige Entity-Erzeugung**: Entities werden nur noch für aktivierte Gruppen und sinnvolle Zonenrollen angelegt. DHW-Zonen bekommen z. B. keine Raumregelungs-Entities, deaktivierte Gruppen erzeugen keine unnötigen Entities.
+- **Konfigurierbare Poll-Profile**: Separate Intervalle für `fast`, `normal` und `slow` über die Integrationsoptionen
 - **Deutsche und englische Übersetzungen**
-- **Sentinel-Wert-Filterung**: Ungültige Modbus-Werte (0xFFFF, 0xFFFFFFFF) werden als „Nicht verfügbar" angezeigt statt als unsinnige Zahlen
+- **Sentinel-Wert-Filterung**: Ungültige Modbus-Werte (z. B. `0x8000` für `int16`, `0x00FF` für `uint8/enum8`, `0xFFFF`, `0xFFFFFFFF` sowie registerspezifische Overrides) werden als „Nicht verfügbar" angezeigt statt als unsinnige Zahlen
+- **Automatische Registry-Deaktivierung**: Register, die in `sentinel_permanent` laufen, werden automatisch in der Home-Assistant-Entity-Registry deaktiviert und bleiben dadurch wiederherstellbar
 
 ### ISR Abdeckung
 
@@ -152,9 +157,9 @@ Diese README dokumentiert ausdrücklich den Fork-Stand in `der-seemann/ha-broetj
    - **Host**: IP-Adresse des Modbus TCP Gateways
    - **Port**: Modbus TCP Port (Standard: 502)
    - **Unit ID**: Modbus Slave ID (Standard: 1)
-6. **Nur IWR**: Zoneneinrichtungsmethode wählen:
-   - **Automatisch erkennen**: Liest Zonentyp- und Zonenfunktionsregister vom Gerät; aktive Zonen werden vorausgewählt, inaktive angezeigt aber nicht ausgewählt. Auswahl prüfen und bestätigen.
-   - **Manuell**: Beliebige Kombination der Zonen 1–12 auswählen.
+6. **Nur IWR**: Zonen- und Funktionssetup wählen:
+   - **Automatisch erkennen**: Liest Zonentyp- und Zonenfunktionsregister, klassifiziert jede Zone als Heizkreis / Warmwasser (DHW) / Inaktiv und prüft optionale Gruppen (`Hybridfunktion`, `Kaskadenbetrieb`, `Kühlbetrieb`, `Pufferspeicher`) über Live-Register. Vorauswahl prüfen und bei Bedarf korrigieren.
+   - **Manuell**: Beliebige Kombination der Zonen 1–12 auswählen und explizit festlegen, welche optionalen Funktionsgruppen Entities erzeugen sollen.
 
 Um ein zweites Modul hinzuzufügen (z.B. ISR und IWR), die Integration einfach erneut hinzufügen und den anderen Modultyp auswählen.
 
@@ -162,9 +167,10 @@ Um ein zweites Modul hinzuzufügen (z.B. ISR und IWR), die Integration einfach e
 
 Nach der Einrichtung kann über das **Konfigurieren**-Symbol (Zahnrad) am Integrationseintrag Folgendes angepasst werden:
 
-- **Abfrageintervall**: Wie oft die Integration das Modbus-Gerät abfragt (Standard: 120 Sekunden, Bereich: 10–3600). Änderungen werden sofort ohne Neustart wirksam.
-- **Poll-Profile**: Intern werden Register den Profilen `fast`, `normal` und `slow` zugeordnet. Das konfigurierte Scan-Intervall definiert `normal`; schnelle Laufzeitwerte und langsame Service-/Konfigurationsregister nutzen eigene Kadenz.
-- **Zonenkonfiguration** (nur IWR): Automatische Erkennung erneut ausführen oder aktive Zonen manuell ändern. Änderungen lösen einen Neustart der Integration aus.
+- **Poll-Profil schnell**: Intervall für schnell wechselnde Laufzeitwerte (Standard: 30 Sekunden, Bereich: 10–3600)
+- **Poll-Profil normal**: Intervall für den normalen Registersatz (Standard: 120 Sekunden, Bereich: 10–3600)
+- **Poll-Profil langsam**: Intervall für langsam wechselnde Diagnosen und Zähler (Standard: 600 Sekunden, Bereich: 10–3600)
+- **Zonen und Funktionsgruppen** (nur IWR): Auto-Erkennung erneut ausführen oder aktive Zonen, zonenabhängiges Layout und optionale Gruppen manuell ändern. Änderungen lösen einen Reload der Integration aus und räumen veraltete Entities aus der Registry auf.
 
 ## Entitäten
 
@@ -201,6 +207,7 @@ Nicht jeder Sensor ist in allen Heizsystemen verfügbar! Z.B. Gasverbrauch bei W
 - Die Registeradressen müssen möglicherweise für das spezifische Modell angepasst werden
 - Home Assistant Logs auf Modbus-Kommunikationsfehler prüfen
 - Manche Sensoren zeigen „Nicht verfügbar", wenn das Gerät Sentinel-Werte meldet oder wenn die Integration ein anlagenabhängiges Register nach wiederholten Fehlern temporär oder dauerhaft automatisch deaktiviert
+- Dauerhaft nicht verfügbare anlagenabhängige Register können automatisch in der Home-Assistant-Entity-Registry deaktiviert werden; falls sich die Hydraulik später ändert, können sie dort wieder manuell aktiviert werden
 
 ## Entwicklung
 

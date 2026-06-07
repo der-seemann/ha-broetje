@@ -9,6 +9,14 @@
 - Fix: Replaced/orphaned entities and stale sub-devices are cleaned up on reload.
 - Fix: Poll-profile handling for registers `256-259` was corrected so the remote-control writes are polled on the intended cadence.
 
+## v0.15.0-beta.1
+- Feat: IWR setup flow now auto-detects zones, zone roles, and optional feature groups (`hybrid`, `cascade`, `cooling`, `buffer_tank`) with manual correction during setup and reconfiguration.
+- Feat: Entity creation for IWR is now installation-dependent; disabled feature groups and unsuitable zone roles no longer create unnecessary entities.
+- Feat: Options flow now exposes three separate poll intervals for `fast`, `normal`, and `slow` profiles instead of a single global scan interval.
+- Fix: Sentinel matrix expanded for `0x8000` (`int16`), `0x00FF` (`uint8` / `enum8`), and register-specific sentinel overrides; invalid values now stop leaking through as bogus states.
+- Fix: Registers that become `sentinel_permanent` are automatically disabled in the Home Assistant entity registry.
+- Docs: `README.md`, `README.de.md`, and `CHANGELOG.md` updated for feature detection, poll profiles, configuration-dependent entity creation, and sentinel handling.
+
 ## v0.14.0-beta.0
 - Feat: Kaskaden-Register `7105-7146` und `7151-7227` als neue IWR/GTW-08-Entities ergänzt, inklusive Erzeuger-8/9/10-Statusblöcke und Kaskadenleistungs-Sollwerten.
 - Fix: Neue Kaskaden-Entities standardmäßig aktiviert statt `disabled_by=integration`.
