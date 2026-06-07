@@ -3,11 +3,11 @@
 🇩🇪 [Deutsche Version](README.de.md)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/der-seemann/ha-broetje)](https://github.com/der-seemann/ha-broetje/releases)
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fder-seemann%2Fha-broetje%2Fmain%2Fcustom_components%2Fbroetje_heating%2Fmanifest.json&query=%24.version&label=version)](https://github.com/der-seemann/ha-broetje/blob/main/custom_components/broetje_heating/manifest.json)
 
 <img src="custom_components/broetje_heating/images/logo.png" alt="Brötje Logo" width="200">
 
-Home Assistant integration for Brötje heating systems via Modbus TCP. This fork tracks the current implementation status of the **IWR/GTW-08** gateway and the **ISR Plus** module and does not intentionally mirror outdated upstream README sections.
+Home Assistant integration for Brötje heating systems via Modbus TCP. This is an extended fork based on [`henrywiechert/ha-broetje`](https://github.com/henrywiechert/ha-broetje) and tracks the current implementation status of the **IWR/GTW-08** gateway and the **ISR Plus** module without intentionally mirroring outdated upstream README sections.
 
 Current BLW 12.1 reference setup:
 
@@ -87,7 +87,6 @@ All Brötje heatpumps and gasboilers with one of the listed Modbus interfaces.
 - **Orphan cleanup**: Replaced entities, removed sub-devices, and stale zone devices are cleaned up on reload
 - **IWR**: entity count depends on configured zones and detected sub-devices; the current BLW 12.1 reference setup exposes the counts listed above
 - **ISR**: 117 entities (100 sensors + 17 binary sensors) across 6 categories
-- **Zone and feature detection** (IWR): Automatically detects active zones by reading zone type and function registers from the device. Zone roles are classified as heating / DHW / inactive, and optional groups such as hybrid, cascade, cooling, and buffer tank are pre-selected from live register probes.
 - **Climate subsystem** (IWR): Zone thermostat entities are exposed via Home Assistant `climate` entities (Thermostat card compatible) with current temperature, target setpoint, and HVAC mode/action mapping.
 - **Writable zone controls** (IWR): Includes control mode, room setpoint, external room temperature injection, DHW setpoints/hysteresis, low-noise schedule, remote control registers `256-259`, and the current per-zone writable parameter families documented in [ENTITIES.md](ENTITIES.md)
 - **Sub-devices**: Entities are grouped under functional sub-devices (for example boiler/service/solar/buffer/hybrid). Only detected sub-devices are kept; stale/orphaned sub-devices are removed automatically on reload.
@@ -158,7 +157,7 @@ This README documents the fork state at `der-seemann/ha-broetje`. If you install
    - **Port**: Modbus TCP port (default: 502)
    - **Unit ID**: Modbus slave ID (default: 1)
 6. **IWR only**: Choose how to configure zones and feature groups:
-   - **Autodetect**: Reads zone type and zone function registers, classifies each zone as heating / DHW / inactive, and probes optional feature groups (`Hybrid`, `Cascade`, `Cooling`, `Buffer tank`) from live registers. Review the preselection and correct it if needed.
+   - **Autodetect**: Reads zone type and zone function registers, classifies each zone as heating / DHW / inactive, and probes optional feature groups (`Hybrid function`, `Cascade operation`, `Cooling`, `Buffer tank`) from live registers. Review the preselection and correct it if needed.
    - **Manual**: Select any combination of zones 1–12 and explicitly decide which optional feature groups should create entities.
 
 To add a second module (e.g., both ISR and IWR), simply add the integration again and select the other module type.
@@ -170,7 +169,7 @@ After setup, click the **Configure** (gear icon) button on the integration entry
 - **Fast poll profile**: Interval for fast-changing runtime values (default: 30 seconds, range: 10–3600)
 - **Normal poll profile**: Interval for the standard register set (default: 120 seconds, range: 10–3600)
 - **Slow poll profile**: Interval for slowly changing diagnostics and counters (default: 600 seconds, range: 10–3600)
-- **Zones and feature groups** (IWR only): Re-run autodetection or manually change active zones, zone-dependent layout, and optional feature groups. Changes trigger an integration reload and prune stale entities from the registry.
+- **Zones and feature groups** (IWR only): Re-run autodetection or manually change active zones, zone roles, and optional feature groups. Changes trigger an integration reload and prune stale entities from the registry.
 
 ## Entities
 
@@ -254,14 +253,14 @@ Contributions are welcome! Please:
 ## Roadmap
 
 - [~] Write support for selected R/W registers (ongoing expansion)
-- [ ] Feature detection and smarter installation-specific pruning: [Issue #2](https://github.com/der-seemann/ha-broetje/issues/2)
 - [ ] Anti-short-cycling / generator protection logic: [Issue #3](https://github.com/der-seemann/ha-broetje/issues/3)
 - [ ] Additional heating circuits for ISR (HC2, HC3)
 - [X] Brötje logo in official HA brand repo
 
 ## Acknowledgements
 
-- [@der-seemann](https://github.com/der-seemann) — lot of ideas and feature suggestions
+- [Henry Wiechert](https://github.com/henrywiechert) for the original `ha-broetje` groundwork this fork directly builds on. Without that work, this extended version would not exist.
+- The Home Assistant community and all contributors who made Home Assistant what it is.
 
 ## License
 

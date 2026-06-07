@@ -3,11 +3,11 @@
 🇬🇧 [English Version](README.md)
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
-[![GitHub Release](https://img.shields.io/github/v/release/der-seemann/ha-broetje)](https://github.com/der-seemann/ha-broetje/releases)
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fder-seemann%2Fha-broetje%2Fmain%2Fcustom_components%2Fbroetje_heating%2Fmanifest.json&query=%24.version&label=version)](https://github.com/der-seemann/ha-broetje/blob/main/custom_components/broetje_heating/manifest.json)
 
 <img src="custom_components/broetje_heating/images/logo.png" alt="Brötje Logo" width="200">
 
-Home Assistant Integration für Brötje Heizsysteme über Modbus TCP. Dieser Fork bildet den aktuellen Implementierungsstand für das **IWR/GTW-08** Gateway und das **ISR Plus** Modul ab und spiegelt bewusst nicht blind veraltete Upstream-README-Abschnitte.
+Home Assistant Integration für Brötje Heizsysteme über Modbus TCP. Dieser Fork ist eine erweiterte Version auf Basis von [`henrywiechert/ha-broetje`](https://github.com/henrywiechert/ha-broetje), bildet den aktuellen Implementierungsstand für das **IWR/GTW-08** Gateway und das **ISR Plus** Modul ab und spiegelt bewusst nicht blind veraltete Upstream-README-Abschnitte.
 
 Aktuelle BLW-12.1-Referenzinstallation:
 
@@ -87,7 +87,6 @@ Alle Brötje Wärmepumpen oder Gasthermen mit einem der beiden oben genannten Mo
 - **Orphan-Cleanup**: Ersetzte Entitäten, entfernte Sub-Devices und veraltete Zonengeräte werden beim Reload automatisch aufgeräumt
 - **IWR**: Die Entitätszahl hängt von Zonen und erkannten Sub-Devices ab; die aktuelle BLW-12.1-Referenzinstallation entspricht den oben genannten Werten
 - **ISR**: 117 Entitäten (100 Sensoren + 17 Binärsensoren) in 6 Kategorien
-- **Zonen- und Feature-Erkennung** (IWR): Erkennt aktive Zonen automatisch über Zonentyp- und Zonenfunktionsregister. Zonenrollen werden als Heizkreis / Warmwasser (DHW) / Inaktiv klassifiziert, optionale Gruppen wie Hybrid, Kaskade, Kühlung und Pufferspeicher werden über Live-Registerprobes vorausgewählt.
 - **Climate-Subsystem** (IWR): Pro Zone werden Home-Assistant-`climate` Entitäten bereitgestellt (Thermostat-Karte kompatibel) mit Isttemperatur, Solltemperatur und HVAC-Modus/Aktion.
 - **Schreibbare Zonensteuerung** (IWR): Umfasst Steuerungsmodus, Raumsollwert, externe Raumtemperaturvorgabe, TWW-Sollwerte/Hysteresen, Leisefunktions-Zeitfenster, Fernsteuer-Register `256-259` und die aktuell dokumentierten schreibbaren Zonenfamilien in [ENTITIES.md](ENTITIES.md)
 - **Sub-Devices**: Entitäten werden unter funktionalen Untergeräten gruppiert (z. B. Kessel/Service/Solar/Pufferspeicher/Hybrid). Nur erkannte Untergeräte werden geführt; verwaiste Untergeräte werden beim Reload automatisch entfernt.
@@ -158,7 +157,7 @@ Diese README dokumentiert ausdrücklich den Fork-Stand in `der-seemann/ha-broetj
    - **Port**: Modbus TCP Port (Standard: 502)
    - **Unit ID**: Modbus Slave ID (Standard: 1)
 6. **Nur IWR**: Zonen- und Funktionssetup wählen:
-   - **Automatisch erkennen**: Liest Zonentyp- und Zonenfunktionsregister, klassifiziert jede Zone als Heizkreis / Warmwasser (DHW) / Inaktiv und prüft optionale Gruppen (`Hybridfunktion`, `Kaskadenbetrieb`, `Kühlbetrieb`, `Pufferspeicher`) über Live-Register. Vorauswahl prüfen und bei Bedarf korrigieren.
+   - **Automatisch erkennen**: Liest Zonentyp- und Zonenfunktionsregister, klassifiziert jede Zone als Heizkreis / Warmwasser (DHW) / Inaktiv und prüft optionale Gruppen (`Hybridfunktion`, `Kaskadenbetrieb`, `Kühlbetrieb`, `Pufferspeicher`) über Live-Register. Die Auto-Erkennung dient als Vorauswahl und kann vor dem Anlegen der Entitäten manuell korrigiert werden.
    - **Manuell**: Beliebige Kombination der Zonen 1–12 auswählen und explizit festlegen, welche optionalen Funktionsgruppen Entities erzeugen sollen.
 
 Um ein zweites Modul hinzuzufügen (z.B. ISR und IWR), die Integration einfach erneut hinzufügen und den anderen Modultyp auswählen.
@@ -170,7 +169,7 @@ Nach der Einrichtung kann über das **Konfigurieren**-Symbol (Zahnrad) am Integr
 - **Poll-Profil schnell**: Intervall für schnell wechselnde Laufzeitwerte (Standard: 30 Sekunden, Bereich: 10–3600)
 - **Poll-Profil normal**: Intervall für den normalen Registersatz (Standard: 120 Sekunden, Bereich: 10–3600)
 - **Poll-Profil langsam**: Intervall für langsam wechselnde Diagnosen und Zähler (Standard: 600 Sekunden, Bereich: 10–3600)
-- **Zonen und Funktionsgruppen** (nur IWR): Auto-Erkennung erneut ausführen oder aktive Zonen, zonenabhängiges Layout und optionale Gruppen manuell ändern. Änderungen lösen einen Reload der Integration aus und räumen veraltete Entities aus der Registry auf.
+- **Zonen und Funktionsgruppen** (nur IWR): Auto-Erkennung erneut ausführen oder aktive Zonen, Zonenrollen und optionale Gruppen manuell ändern. Änderungen lösen einen Reload der Integration aus und räumen veraltete Entities aus der Registry auf.
 
 ## Entitäten
 
@@ -237,14 +236,14 @@ pre-commit install
 ## Roadmap
 
 - [~] Schreibunterstützung für ausgewählte R/W Register (laufende Erweiterung)
-- [ ] Feature-Erkennung und intelligentere anlagenabhängige Bereinigung: [Issue #2](https://github.com/der-seemann/ha-broetje/issues/2)
 - [ ] Anti-Short-Cycling / Verdichterschutz-Logik: [Issue #3](https://github.com/der-seemann/ha-broetje/issues/3)
 - [ ] Zusätzliche Heizkreise für ISR (HK2, HK3)
 - [X] Brötje Logo im offiziellen HA brand repo
 
 ## Danksagungen
 
-- [@der-seemann](https://github.com/der-seemann) — Viele ideen und Feature-Vorschläge
+- [Henry Wiechert](https://github.com/henrywiechert) für die gesamte Grundlagenarbeit des ursprünglichen `ha-broetje`, auf der dieser Fork direkt aufbaut. Ohne diese Vorarbeit gäbe es diese erweiterte Version nicht.
+- Der Home Assistant Community und allen Contributor:innen, die Home Assistant zu dem gemacht haben, was es heute ist.
 
 ## Lizenz
 
