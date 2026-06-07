@@ -14,10 +14,10 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.const import CONF_HOST, CONF_PORT
-from homeassistant.helpers import area_registry as ar
-from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.selector import (
+    EntityFilterSelectorConfig,
+    EntitySelector,
+    EntitySelectorConfig,
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
@@ -61,7 +61,6 @@ from .iwr_setup import ZONE_ROLE_HEATING
 from .iwr_setup import detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
-_ALL_AREAS_FILTER = "__all_areas__"
 
 STEP_CONNECTION_DATA_SCHEMA = vol.Schema(
     {
@@ -145,16 +144,6 @@ def _external_room_sensor_timeout_field(zone: int) -> str:
     return f"zone_{zone}_external_room_sensor_timeout"
 
 
-def _external_room_sensor_area_filter_field() -> str:
-    """Return the config-flow field name for the room prefilter."""
-    return "external_room_sensor_area_filter"
-
-
-def _external_room_sensor_text_filter_field() -> str:
-    """Return the config-flow field name for the text prefilter."""
-    return "external_room_sensor_text_filter"
-
-
 def _heating_zones_from_details(
     zones: list[int], zone_details: dict[str, Any] | None
 ) -> list[int]:
@@ -166,132 +155,6 @@ def _heating_zones_from_details(
         if zone_details.get(str(zone), {}).get("role", ZONE_ROLE_HEATING)
         == ZONE_ROLE_HEATING
     ]
-
-
-def _entity_area_name(hass, entity_id: str) -> str | None:
-    """Resolve an entity to its Home Assistant area name when available."""
-    entity_registry = er.async_get(hass)
-    entity_entry = entity_registry.async_get(entity_id)
-    if entity_entry is None:
-        return None
-
-    area_registry = ar.async_get(hass)
-    if entity_entry.area_id:
-        area_entry = area_registry.async_get_area(entity_entry.area_id)
-        if area_entry is not None:
-            return area_entry.name
-
-    if entity_entry.device_id:
-        device_registry = dr.async_get(hass)
-        device_entry = device_registry.async_get(entity_entry.device_id)
-        if device_entry is not None and device_entry.area_id:
-            area_entry = area_registry.async_get_area(device_entry.area_id)
-            if area_entry is not None:
-                return area_entry.name
-
-    return None
-
-
-def _temperature_sensor_records(hass) -> list[dict[str, Any]]:
-    """Return sorted temperature sensor records for selector building."""
-    records: list[dict[str, Any]] = []
-    for state in hass.states.async_all("sensor"):
-        if state.attributes.get("device_class") != "temperature":
-            continue
-        try:
-            value = float(state.state)
-        except (TypeError, ValueError):
-            continue
-        friendly_name = state.attributes.get("friendly_name", state.entity_id)
-        area_name = _entity_area_name(hass, state.entity_id)
-        area_label = f"{area_name} - " if area_name else ""
-        label = (
-            f"{area_label}{friendly_name} ({state.entity_id}, {value:.2f} °C)"
-        )
-        records.append(
-            {
-                "value": value,
-                "entity_id": state.entity_id,
-                "friendly_name": friendly_name,
-                "area_name": area_name,
-                "option": SelectOptionDict(value=state.entity_id, label=label),
-            }
-        )
-    records.sort(key=lambda item: (item["value"], item["entity_id"]))
-    return records
-
-
-def _area_filter_options(hass) -> list[SelectOptionDict]:
-    """Build area prefilter options for temperature sensors."""
-    area_names = sorted(
-        {
-            record["area_name"]
-            for record in _temperature_sensor_records(hass)
-            if record["area_name"]
-        }
-    )
-    options = [SelectOptionDict(value=_ALL_AREAS_FILTER, label="Alle Räume")]
-    options.extend(
-        SelectOptionDict(value=area_name, label=area_name) for area_name in area_names
-    )
-    return options
-
-
-def _filter_temperature_sensor_records(
-    hass,
-    area_filter: str,
-    text_filter: str,
-) -> list[dict[str, Any]]:
-    """Return temperature sensor records filtered by area and free-text search."""
-    text_filter = text_filter.strip().casefold()
-    filtered: list[dict[str, Any]] = []
-
-    for record in _temperature_sensor_records(hass):
-        area_name = record["area_name"] or ""
-        if area_filter != _ALL_AREAS_FILTER and area_name != area_filter:
-            continue
-
-        if text_filter:
-            haystack = " ".join(
-                (
-                    record["entity_id"],
-                    record["friendly_name"],
-                    area_name,
-                )
-            ).casefold()
-            if text_filter not in haystack:
-                continue
-
-        filtered.append(record)
-
-    return filtered
-
-
-def _build_external_room_sensor_filter_schema(
-    hass,
-    *,
-    area_filter: str,
-    text_filter: str,
-) -> vol.Schema:
-    """Build the prefilter form shown before the sensor selector."""
-    return vol.Schema(
-        {
-            vol.Required(
-                _external_room_sensor_area_filter_field(),
-                default=area_filter,
-            ): SelectSelector(
-                SelectSelectorConfig(
-                    options=_area_filter_options(hass),
-                    multiple=False,
-                    mode=SelectSelectorMode.LIST,
-                )
-            ),
-            vol.Optional(
-                _external_room_sensor_text_filter_field(),
-                default=text_filter,
-            ): str,
-        }
-    )
 
 
 def _aggregation_options() -> list[SelectOptionDict]:
@@ -307,21 +170,11 @@ def _aggregation_options() -> list[SelectOptionDict]:
 
 
 def _build_external_room_sensor_schema(
-    hass,
     zones: list[int],
     configured: dict[str, Any] | None,
-    *,
-    area_filter: str,
-    text_filter: str,
 ) -> vol.Schema:
     """Build a schema for optional external room-temperature source entities."""
     configured = configured or {}
-    filtered_records = _filter_temperature_sensor_records(
-        hass,
-        area_filter=area_filter,
-        text_filter=text_filter,
-    )
-    temperature_options = [record["option"] for record in filtered_records]
     aggregation_options = _aggregation_options()
     schema: dict[Any, Any] = {}
 
@@ -342,11 +195,13 @@ def _build_external_room_sensor_schema(
                 _external_room_sensor_field(zone),
                 default=zone_config.get(CONF_EXTERNAL_ROOM_SENSOR_ENTITY_IDS, []),
             )
-        ] = SelectSelector(
-            SelectSelectorConfig(
-                options=temperature_options,
+        ] = EntitySelector(
+            EntitySelectorConfig(
                 multiple=True,
-                mode=SelectSelectorMode.LIST,
+                filter=EntityFilterSelectorConfig(
+                    domain="sensor",
+                    device_class="temperature",
+                ),
             )
         )
         schema[
@@ -364,6 +219,8 @@ def _build_external_room_sensor_schema(
                 mode=SelectSelectorMode.LIST,
             )
         )
+        # Home Assistant renders the aggregation field as a native dropdown
+        # directly below the entity selector in the same form.
         schema[
             vol.Optional(
                 _external_room_sensor_write_interval_field(zone),
@@ -450,8 +307,6 @@ class BroetjeOptionsFlow(OptionsFlow):
         self._preselected: list[str] = []
         self._detected_setup: dict[str, Any] | None = None
         self._selected_zones: list[int] = []
-        self._external_room_sensor_area_filter: str = _ALL_AREAS_FILTER
-        self._external_room_sensor_text_filter: str = ""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -610,7 +465,7 @@ class BroetjeOptionsFlow(OptionsFlow):
     async def async_step_external_room_sensors(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Collect prefilters before showing the room-sensor selector."""
+        """Configure optional Home Assistant source entities for room-temperature sync."""
         zone_details = self.config_entry.data.get(CONF_IWR_ZONE_DETAILS, {})
         zones = _heating_zones_from_details(
             sorted(self.config_entry.data.get(CONF_ZONES, [])),
@@ -632,40 +487,6 @@ class BroetjeOptionsFlow(OptionsFlow):
             return self.async_create_entry(data=new_options)
 
         if user_input is not None:
-            self._external_room_sensor_area_filter = user_input.get(
-                _external_room_sensor_area_filter_field(),
-                _ALL_AREAS_FILTER,
-            )
-            self._external_room_sensor_text_filter = user_input.get(
-                _external_room_sensor_text_filter_field(),
-                "",
-            ).strip()
-            return await self.async_step_external_room_sensors_select()
-
-        return self.async_show_form(
-            step_id="external_room_sensors",
-            data_schema=_build_external_room_sensor_filter_schema(
-                self.hass,
-                area_filter=self._external_room_sensor_area_filter,
-                text_filter=self._external_room_sensor_text_filter,
-            ),
-        )
-
-    async def async_step_external_room_sensors_select(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Configure optional Home Assistant source entities for room-temperature sync."""
-        zone_details = self.config_entry.data.get(CONF_IWR_ZONE_DETAILS, {})
-        zones = _heating_zones_from_details(
-            sorted(self.config_entry.data.get(CONF_ZONES, [])),
-            zone_details,
-        )
-        configured = self.config_entry.options.get(
-            CONF_EXTERNAL_ROOM_SENSORS,
-            self.config_entry.data.get(CONF_EXTERNAL_ROOM_SENSORS, {}),
-        )
-
-        if user_input is not None:
             new_options = {
                 **self.config_entry.options,
                 CONF_EXTERNAL_ROOM_SENSORS: _parse_external_room_sensor_selection(
@@ -680,30 +501,9 @@ class BroetjeOptionsFlow(OptionsFlow):
             )
             return self.async_create_entry(data=new_options)
 
-        if not _filter_temperature_sensor_records(
-            self.hass,
-            area_filter=self._external_room_sensor_area_filter,
-            text_filter=self._external_room_sensor_text_filter,
-        ):
-            return self.async_show_form(
-                step_id="external_room_sensors",
-                data_schema=_build_external_room_sensor_filter_schema(
-                    self.hass,
-                    area_filter=self._external_room_sensor_area_filter,
-                    text_filter=self._external_room_sensor_text_filter,
-                ),
-                errors={"base": "no_matching_temperature_sensors"},
-            )
-
         return self.async_show_form(
-            step_id="external_room_sensors_select",
-            data_schema=_build_external_room_sensor_schema(
-                self.hass,
-                zones,
-                configured,
-                area_filter=self._external_room_sensor_area_filter,
-                text_filter=self._external_room_sensor_text_filter,
-            ),
+            step_id="external_room_sensors",
+            data_schema=_build_external_room_sensor_schema(zones, configured),
         )
 
 
@@ -733,8 +533,6 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         self._preselected: list[str] = []
         self._detected_setup: dict[str, Any] | None = None
         self._selected_zones: list[int] = []
-        self._external_room_sensor_area_filter: str = _ALL_AREAS_FILTER
-        self._external_room_sensor_text_filter: str = ""
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -901,7 +699,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_iwr_external_room_sensors(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Collect prefilters before showing the room-sensor selector."""
+        """Configure optional Home Assistant sensor sources during initial setup."""
         zones = self._selected_zones or self._connection_data.get(CONF_ZONES, [])
         zone_details = self._connection_data.get(CONF_IWR_ZONE_DETAILS, {})
         heating_zones = _heating_zones_from_details(zones, zone_details)
@@ -912,63 +710,15 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             return await self._async_create_entry(self._connection_data)
 
         if user_input is not None:
-            self._external_room_sensor_area_filter = user_input.get(
-                _external_room_sensor_area_filter_field(),
-                _ALL_AREAS_FILTER,
-            )
-            self._external_room_sensor_text_filter = user_input.get(
-                _external_room_sensor_text_filter_field(),
-                "",
-            ).strip()
-            return await self.async_step_iwr_external_room_sensors_select()
-
-        return self.async_show_form(
-            step_id="iwr_external_room_sensors",
-            data_schema=_build_external_room_sensor_filter_schema(
-                self.hass,
-                area_filter=self._external_room_sensor_area_filter,
-                text_filter=self._external_room_sensor_text_filter,
-            ),
-        )
-
-    async def async_step_iwr_external_room_sensors_select(
-        self, user_input: dict[str, Any] | None = None
-    ) -> ConfigFlowResult:
-        """Configure optional Home Assistant sensor sources during initial setup."""
-        zones = self._selected_zones or self._connection_data.get(CONF_ZONES, [])
-        zone_details = self._connection_data.get(CONF_IWR_ZONE_DETAILS, {})
-        heating_zones = _heating_zones_from_details(zones, zone_details)
-        configured = self._connection_data.get(CONF_EXTERNAL_ROOM_SENSORS, {})
-
-        if user_input is not None:
             self._connection_data[CONF_EXTERNAL_ROOM_SENSORS] = (
                 _parse_external_room_sensor_selection(heating_zones, user_input)
             )
             return await self._async_create_entry(self._connection_data)
 
-        if not _filter_temperature_sensor_records(
-            self.hass,
-            area_filter=self._external_room_sensor_area_filter,
-            text_filter=self._external_room_sensor_text_filter,
-        ):
-            return self.async_show_form(
-                step_id="iwr_external_room_sensors",
-                data_schema=_build_external_room_sensor_filter_schema(
-                    self.hass,
-                    area_filter=self._external_room_sensor_area_filter,
-                    text_filter=self._external_room_sensor_text_filter,
-                ),
-                errors={"base": "no_matching_temperature_sensors"},
-            )
-
         return self.async_show_form(
-            step_id="iwr_external_room_sensors_select",
+            step_id="iwr_external_room_sensors",
             data_schema=_build_external_room_sensor_schema(
-                self.hass,
-                heating_zones,
-                configured,
-                area_filter=self._external_room_sensor_area_filter,
-                text_filter=self._external_room_sensor_text_filter,
+                heating_zones, configured
             ),
         )
 

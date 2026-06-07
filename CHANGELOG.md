@@ -9,6 +9,11 @@
 - Fix: Replaced/orphaned entities and stale sub-devices are cleaned up on reload.
 - Fix: Poll-profile handling for registers `256-259` was corrected so the remote-control writes are polled on the intended cadence.
 
+## v0.15.0-beta.3
+- Feat: The external room sensor flow now uses Home Assistant's native multi-entity selector for temperature sensors instead of the previous two-step room/text prefilter flow.
+- Fix: Aggregation is now exposed as its own field directly below the sensor selection in config flow and options flow.
+- Fix: The custom prefilter step and related selector plumbing were removed, so sensor selection, aggregation, write interval, and timeout now live on one page.
+
 ## v0.15.0-beta.2
 - Feat: External room sensor support for IWR heating zones now supports multiple Home Assistant temperature sources per zone with `average`, `min`, and `max` aggregation.
 - Feat: Config and options flow now include a dedicated external-room-sensor selector with room prefilter, text prefilter, and temperature-sorted source lists for heating zones only.
