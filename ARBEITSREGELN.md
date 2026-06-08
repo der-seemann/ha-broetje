@@ -7,6 +7,21 @@
 - Rückfragen per Telegram sammeln, NICHT warten — weiter mit nächstem Block
 - Einmal täglich Zusammenfassung per Telegram
 
+## Globale Laufzeitgrenzen Kiki
+- Der allgemeine Runtime-Watchdog ist `~/.openclaw/workspace/bin/kiki_watchdog.sh`, nicht `broetje_watchdog.sh`.
+- Schwellwerte zentral: Warnung ab `70%` für `daily_used_percent` (5h), `weekly_used_percent` und `context_percent`; Pause ab `90%`.
+- Pause-Marker: `~/.openclaw/workspace/state/kiki_runtime_pause.json`.
+- Wenn der Marker aktiv ist: keine nichtkritischen HA-/Brötje-/Growatt-Arbeiten starten.
+- `broetje_watchdog.sh` ist nur noch Wärmepumpen-/Progress-Watchdog und respektiert den globalen Pause-Marker.
+
+## Home-Assistant-Daily-Maintenance / ESPHome
+- Growatt `192.168.2.12:6053` ist solarertragsabhängig; `offline` nachts oder bei Bewölkung ist erwartbar und kein Fehler.
+- Separater Growatt-Mittagscheck täglich `12:30` Europe/Berlin: Port `6053` prüfen, bei `offline` nur Kurzmeldung `Growatt offline (kein Solarertrag erwartet oder bewölkt)`, kein Alarm, kein Ticket.
+- ESPHome-Gruppe A: nur Growatt, Updates nur im `12:30`-Lauf und nur wenn der Node dann online ist.
+- ESPHome-Gruppe B: alle übrigen ESPHome-Nodes, Updates nur im nächtlichen Daily-Maintenance-Lauf nach bestandenem HA-Core-Check.
+- Vor jedem ESPHome-Update zwingend: offizielles `esphome/esphome`-Release lesen, Breaking Changes gegen die betroffene Node-YAML prüfen; bei Risiko oder Breaking Changes sofort stoppen und Freigabe einholen.
+- ESPHome-Updatefehler nicht automatisch retryn; alten Stand dokumentieren und auf Davids Entscheidung warten.
+
 ## Block-Größe
 - Normal: 3–5 Register pro Commit
 - Bei Fehlern oder komplexen Typen (Bitfeld, UINT32): 1–2 Register pro Commit
