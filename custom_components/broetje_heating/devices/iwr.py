@@ -987,6 +987,13 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "data_type": "uint16",
         "scale": IWR_SCALE_COP,
     },
+    # HM009 - Heat Pump Defrost active (ENUM8 0=No/1=Yes, Tab. Boiler)
+    "hp_defrost": {
+        "address": 481,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "bool",
+    },
     "cop": {
         "address": 9230,
         "type": REG_HOLDING,
@@ -2190,6 +2197,14 @@ _IWR_STATIC_BINARY_SENSORS: Final = {
         "register": "output_cooling_active",
         "translation_key": "output_cooling_active",
         "device_class": "running",
+        "sub_device": SUBDEV_BOILER,
+    },
+    # --- Heat pump status (HM009) ---
+    "hp_defrost": {
+        "register": "hp_defrost",
+        "translation_key": "hp_defrost",
+        "device_class": "running",
+        "icon": "mdi:snowflake-melt",
         "sub_device": SUBDEV_BOILER,
     },
     # --- Service / Error binary sensors ---

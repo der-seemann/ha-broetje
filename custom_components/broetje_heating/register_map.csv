@@ -130,6 +130,7 @@
 "Appliance","451","2","uint32","Energy delivered backup","Gelieferte Energie Zusatzerzeuger","energy_delivered_backup","kWh","0-4294967295","","","GTW-08 spec","R","R"
 "Appliance","459","1","uint16","Pump speed","Pumpendrehzahl","pump_speed","%","0-65535","mdi:pump","0.1","GTW-08 spec","R","R"
 "Appliance","460","2","uint32","Actual power","Aktuelle Leistung","actual_power","kW","0-4294967295","","0.01","GTW-08 spec","R","R"
+"Appliance","481","1","bool","Heat pump defrost (0=No; 1=Yes)","Wärmepumpe Abtauung (0=Nein; 1=Ja)","hp_defrost","","0-1","mdi:snowflake-melt","","GTW-08 spec","R","R"
 "Appliance - Control","500","1","uint16","Central heating enabled (0=Off; 1=On)","Heizung erlaubt (0=Aus; 1=Ein)","ch_enabled","","0-65535","mdi:radiator","","German parameter list","R/W","R"
 "Appliance - Control","501","1","uint16","DHW enabled (0=Off; 1=On)","Warmwasserbereitung erlaubt (0=Aus; 1=Ein)","dhw_enabled","","0-65535","mdi:water-boiler","","German parameter list","R/W","R"
 "Appliance - Control","502","1","uint16","Cooling enabled (0=Off; 1=Active cooling; 2=Free cooling)","Kühlung erlaubt (0=Aus; 1=Aktive Kühlung; 2=Freie Kühlung)","cooling_enabled","","0-65535","mdi:snowflake","","German parameter list","R/W","R"

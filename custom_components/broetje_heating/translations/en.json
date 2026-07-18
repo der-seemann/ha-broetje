@@ -1719,6 +1719,9 @@
       "output_cooling_active": {
         "name": "Cooling active"
       },
+      "hp_defrost": {
+        "name": "Heat pump defrost"
+      },
       "service_required": {
         "name": "Service required"
       },

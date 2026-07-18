@@ -1719,6 +1719,9 @@
       "output_cooling_active": {
         "name": "Kühlung aktiv"
       },
+      "hp_defrost": {
+        "name": "Wärmepumpe Abtauung"
+      },
       "service_required": {
         "name": "Wartung erforderlich"
       },
