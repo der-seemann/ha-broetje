@@ -407,3 +407,7 @@ Für jedes in Phase 1 gefundene fehlende Register einzeln:
 - Kein weiterer aktiver Entwicklungs- oder Verifikationsblock offen.
 - Der veraltete Watchdog-Progress-Stand `2026-05-24_progress.md` wurde aus dem Repo entfernt, damit daraus keine weiteren Folgearbeiten abgeleitet werden.
 - Einziger bewusst verschobener Rest fuer Herbst 2026: manuelle RW-Tests an Register `256-259` unter realer Anlagenbeobachtung.
+
+## Nachtrag 2026-06-13
+- Register `7210` (`cascade_s_bus_producers_generic_error_code`) im Code auf `uint8` korrigiert, passend zur Registerliste in `register_map.csv`.
+- Lokale Verifikation: `python3 -m compileall custom_components/broetje_heating/devices/iwr.py` OK; `ruff` ist in dieser Repo-Umgebung nicht im PATH installiert.

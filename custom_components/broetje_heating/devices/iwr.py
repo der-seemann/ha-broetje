@@ -2650,7 +2650,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "address": 7210,
         "type": REG_HOLDING,
         "count": 1,
-        "data_type": "uint16",
+        "data_type": "uint8",
         "scale": 1,
     },
     "cascade_em068_error_priority_brand_matrix": {

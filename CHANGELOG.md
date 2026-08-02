@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.15.0
+- Feat: The external room sensor flow now uses Home Assistant's native multi-entity selector for temperature sensors instead of the previous two-step room/text prefilter flow.
+- Fix: Aggregation is now exposed as its own field directly below the sensor selection in config flow and options flow.
+- Fix: The custom prefilter step and related selector plumbing were removed, so sensor selection, aggregation, write interval, and timeout now live on one page.
+- Fix: The Modbus coordinator no longer disconnects before every update batch, which avoids transaction-ID resets and the related log flooding.
+
 ## Current fork status
 - Docs: `README.md` and `ENTITIES.md` synchronized to the current fork state, including the BLW 12.1 reference installation, current entity counts, HACS installation via `der-seemann/ha-broetje`, writable entity groups, and installation-dependent auto-disable notes.
 - Fix/Behavior: Auto-disable logic for sentinel values and recurring Modbus exceptions is part of the active fork and documented as a first-class integration feature.
