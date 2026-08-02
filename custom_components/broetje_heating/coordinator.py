@@ -270,66 +270,75 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         register_type: str,
     ) -> list[int] | None:
         """Read registers from the Modbus device."""
-        self._last_read_error_detail = None
         async with self._lock:
-            try:
-                await self._connect()
+            return await self._read_registers_locked(address, count, register_type)
 
-                if register_type == REG_INPUT:
-                    result = await self._client.read_input_registers(
-                        address=address, count=count, device_id=self._unit_id
-                    )
-                elif register_type == REG_HOLDING:
-                    result = await self._client.read_holding_registers(
-                        address=address, count=count, device_id=self._unit_id
-                    )
-                else:
-                    _LOGGER.error("Unknown register type: %s", register_type)
-                    self._last_read_error_detail = {
-                        "status": "read_error",
-                        "error_kind": "unknown_register_type",
-                        "register_type": register_type,
-                    }
-                    return None
+    async def _read_registers_locked(
+        self,
+        address: int,
+        count: int,
+        register_type: str,
+    ) -> list[int] | None:
+        """Read registers assuming the Modbus lock is already held."""
+        self._last_read_error_detail = None
+        try:
+            await self._connect()
 
-                if result.isError():
-                    error_detail: dict[str, Any] = {
-                        "status": "read_error",
-                        "error_kind": "modbus_exception_response",
-                        "register_address": address,
-                        "register_count": count,
-                        "register_type": register_type,
-                        "response": str(result),
-                    }
-                    if hasattr(result, "function_code"):
-                        error_detail["function_code"] = result.function_code
-                    if hasattr(result, "exception_code"):
-                        error_detail["exception_code"] = result.exception_code
-                        error_detail["exception_name"] = _MODBUS_EXCEPTION_NAMES.get(
-                            result.exception_code, "unknown_exception"
-                        )
-                    self._last_read_error_detail = error_detail
-                    _LOGGER.warning(
-                        "Modbus error reading address %s: %s",
-                        address,
-                        result,
-                    )
-                    return None
-
-                return list(result.registers)
-
-            except ModbusException as err:
+            if register_type == REG_INPUT:
+                result = await self._client.read_input_registers(
+                    address=address, count=count, device_id=self._unit_id
+                )
+            elif register_type == REG_HOLDING:
+                result = await self._client.read_holding_registers(
+                    address=address, count=count, device_id=self._unit_id
+                )
+            else:
+                _LOGGER.error("Unknown register type: %s", register_type)
                 self._last_read_error_detail = {
                     "status": "read_error",
-                    "error_kind": "modbus_exception",
+                    "error_kind": "unknown_register_type",
+                    "register_type": register_type,
+                }
+                return None
+
+            if result.isError():
+                error_detail: dict[str, Any] = {
+                    "status": "read_error",
+                    "error_kind": "modbus_exception_response",
                     "register_address": address,
                     "register_count": count,
                     "register_type": register_type,
-                    "message": str(err),
+                    "response": str(result),
                 }
-                _LOGGER.error("Modbus exception: %s", err)
-                await self._disconnect()
+                if hasattr(result, "function_code"):
+                    error_detail["function_code"] = result.function_code
+                if hasattr(result, "exception_code"):
+                    error_detail["exception_code"] = result.exception_code
+                    error_detail["exception_name"] = _MODBUS_EXCEPTION_NAMES.get(
+                        result.exception_code, "unknown_exception"
+                    )
+                self._last_read_error_detail = error_detail
+                _LOGGER.warning(
+                    "Modbus error reading address %s: %s",
+                    address,
+                    result,
+                )
                 return None
+
+            return list(result.registers)
+
+        except ModbusException as err:
+            self._last_read_error_detail = {
+                "status": "read_error",
+                "error_kind": "modbus_exception",
+                "register_address": address,
+                "register_count": count,
+                "register_type": register_type,
+                "message": str(err),
+            }
+            _LOGGER.error("Modbus exception: %s", err)
+            await self._disconnect()
+            return None
 
     def _get_needed_registers(self) -> set[str]:
         """Get the set of register keys needed by enabled entities.
@@ -1205,6 +1214,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         data_type = config.get("data_type", "int16")
 
+        if not registers:
+            detail["status"] = "invalid_value"
+            return detail
+
         if processed_value is None:
             if self._is_sentinel_value(registers, data_type, config):
                 detail["status"] = "sentinel_no_data"
@@ -1232,6 +1245,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         config: dict[str, Any],
     ) -> bool:
         """Return True if the raw register payload matches a known no-data sentinel."""
+        if not registers:
+            return False
+
         sentinels = self._get_sentinel_values(config, data_type)
 
         if data_type in {"uint8", "enum8"}:
@@ -1264,6 +1280,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         config: dict[str, Any],
     ) -> Any:
         """Process raw register values based on configuration."""
+        if not registers:
+            _LOGGER.warning(
+                "Empty register payload for address=%s type=%s; treating as invalid",
+                config.get("address"),
+                config.get("data_type", "int16"),
+            )
+            return None
+
         data_type = config.get("data_type", "int16")
         scale = config.get("scale", 1.0)
         bit = config.get("bit")
@@ -1411,6 +1435,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             register_words,
         )
 
+        readback: list[int] | None = None
         async with self._lock:
             try:
                 await self._connect()
@@ -1439,6 +1464,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     register_words,
                 )
 
+                readback = await self._read_registers_locked(
+                    address, config.get("count", 1), REG_HOLDING
+                )
+
             except ModbusException as err:
                 _LOGGER.info(
                     "RW write exception register=%s addr=%d error=%s",
@@ -1452,9 +1481,6 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 ) from err
 
         # Read-back verification
-        readback = await self._read_registers(
-            address, config.get("count", 1), REG_HOLDING
-        )
         if readback is not None:
             readback_words = readback[: len(register_words)]
             _LOGGER.info(
