@@ -410,6 +410,14 @@ class ExternalRoomSensorSync:
             self._zone_last_write_monotonic[zone] = time.monotonic()
 
             try:
+                if getattr(self.coordinator, "_shutdown_requested", False):
+                    _LOGGER.debug(
+                        "Skipping external room sensor write for zone %s -> %s during coordinator shutdown",
+                        zone,
+                        register_key,
+                    )
+                    return
+
                 # Register 2129 (`zone3_room_temp_measured` on the verified BLW 12.1
                 # reference installation) can quantize injected room temperatures
                 # internally. During live verification, raw `1960` (19.6 °C) was

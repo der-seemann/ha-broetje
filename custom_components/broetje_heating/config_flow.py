@@ -380,7 +380,7 @@ class BroetjeOptionsFlow(OptionsFlow):
             return await self._async_save_iwr_setup(user_input)
 
         coordinator = self.config_entry.runtime_data
-        self._detected_setup = await detect_iwr_setup(coordinator._read_registers)
+        self._detected_setup = await coordinator.async_detect_iwr_setup()
         zone_info = self._detected_setup["zone_info"]
 
         self._zone_options = [
@@ -406,7 +406,7 @@ class BroetjeOptionsFlow(OptionsFlow):
 
         coordinator = self.config_entry.runtime_data
         try:
-            self._detected_setup = await detect_iwr_setup(coordinator._read_registers)
+            self._detected_setup = await coordinator.async_detect_iwr_setup()
         except Exception:
             _LOGGER.exception("Manual IWR setup detection failed")
             self._detected_setup = {

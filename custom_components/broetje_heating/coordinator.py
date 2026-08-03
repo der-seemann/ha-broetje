@@ -51,7 +51,7 @@ from .const import (
     SUBDEV_SOLAR,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_config
-from .iwr_setup import detect_iwr_features
+from .iwr_setup import detect_iwr_features, detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
 _APPLIANCE_TIME_EPOCH = date(1984, 1, 1)
@@ -288,6 +288,11 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self.active_sub_devices.add(SUBDEV_HYBRID)
 
         _LOGGER.info("Active sub-devices: %s", sorted(self.active_sub_devices))
+
+    async def async_detect_iwr_setup(self) -> dict[str, Any]:
+        """Detect IWR zone layout and optional features under the coordinator lock."""
+        async with self._lock:
+            return await detect_iwr_setup(self._read_registers_locked)
 
     async def _read_registers(
         self,
@@ -1583,6 +1588,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 )
                 self._mark_modbus_request_finished()
 
+                if self._shutdown_requested:
+                    _LOGGER.debug(
+                        "Skipping readback for %s on coordinator instance %s during shutdown",
+                        register_key,
+                        self._instance_id,
+                    )
+                    return
+
                 readback = await self._read_registers_locked(
                     address, config.get("count", 1), REG_HOLDING
                 )
@@ -1641,6 +1654,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 address,
                 register_words,
             )
+
+        if self._shutdown_requested:
+            _LOGGER.debug(
+                "Skipping post-write refresh for %s on coordinator instance %s during shutdown",
+                register_key,
+                self._instance_id,
+            )
+            return
 
         await self.async_request_refresh()
 
