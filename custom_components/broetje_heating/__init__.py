@@ -42,7 +42,7 @@ from .const import (
 from .coordinator import BroetjeModbusCoordinator
 from .devices import CONF_DEVICE_TYPE, DeviceType
 from .external_room_sensor import ExternalRoomSensorSync
-from .iwr_setup import detect_iwr_setup
+from .iwr_setup import SerializedModbusDiscoveryReader, detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -520,8 +520,10 @@ async def _async_apply_iwr_detection_defaults(
             return
 
         detection = await detect_iwr_setup(
-            client,
-            entry.data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID),
+            SerializedModbusDiscoveryReader(
+                client,
+                entry.data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID),
+            )
         )
     except Exception:
         _LOGGER.exception(

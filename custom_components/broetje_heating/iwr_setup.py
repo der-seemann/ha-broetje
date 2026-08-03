@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from collections.abc import Awaitable, Callable
 from typing import Any, Final
 
 from .const import (
@@ -10,6 +12,8 @@ from .const import (
     FEATURE_CASCADE,
     FEATURE_COOLING,
     FEATURE_HYBRID,
+    REG_HOLDING,
+    REG_INPUT,
 )
 from .devices.iwr import ZONE_ADDR_OFFSET, ZONE_FUNCTION_BASE_ADDR, ZONE_TYPE_BASE_ADDR
 
@@ -55,22 +59,37 @@ ZONE_FUNCTION_DHW: Final[frozenset[int]] = frozenset({6, 7, 10, 11, 12, 254})
 _RAW_SENTINELS_16: Final[frozenset[int]] = frozenset({0x00FF, 0xFFFF, 0x8000})
 _RAW_SENTINELS_32: Final[frozenset[int]] = frozenset({0xFFFFFFFF, 0x80000000})
 
+ReadRegistersFn = Callable[[int, int, str], Awaitable[list[int] | None]]
 
-async def _read_holding_registers(
-    client: Any,
+async def _read_registers(
+    reader: Any,
     unit_id: int,
     address: int,
     count: int = 1,
+    register_type: str = REG_HOLDING,
 ) -> list[int] | None:
-    """Read one or more holding registers, returning None on any read failure."""
+    """Read one or more registers, returning None on any read failure."""
     try:
-        result = await client.read_holding_registers(
-            address=address,
-            count=count,
-            device_id=unit_id,
-        )
+        if register_type == REG_INPUT:
+            result = await reader.read_input_registers(
+                address=address,
+                count=count,
+                device_id=unit_id,
+            )
+        elif register_type == REG_HOLDING:
+            result = await reader.read_holding_registers(
+                address=address,
+                count=count,
+                device_id=unit_id,
+            )
+        else:
+            _LOGGER.error(
+                "IWR setup detection got unknown register type: %s",
+                register_type,
+            )
+            return None
     except Exception:
-        _LOGGER.exception("IWR setup detection failed reading holding register %s", address)
+        _LOGGER.exception("IWR setup detection failed reading register %s", address)
         return None
 
     if result.isError():
@@ -82,6 +101,30 @@ async def _read_holding_registers(
         return None
 
     return list(result.registers)
+
+
+class SerializedModbusDiscoveryReader:
+    """Serialize discovery reads against one Modbus client."""
+
+    def __init__(self, reader: Any, unit_id: int) -> None:
+        self._reader = reader
+        self._unit_id = unit_id
+        self._lock = asyncio.Lock()
+
+    async def __call__(
+        self,
+        address: int,
+        count: int = 1,
+        register_type: str = REG_HOLDING,
+    ) -> list[int] | None:
+        async with self._lock:
+            return await _read_registers(
+                self._reader,
+                self._unit_id,
+                address,
+                count,
+                register_type,
+            )
 
 
 def _combine_u32(registers: list[int]) -> int | None:
@@ -122,7 +165,7 @@ def classify_zone_role(zone_type: int, zone_function: int) -> str:
     return ZONE_ROLE_HEATING
 
 
-async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
+async def detect_zones(read_registers: ReadRegistersFn) -> list[dict[str, Any]]:
     """Read zone type/function registers for all 12 zones."""
     results: list[dict[str, Any]] = []
     for index in range(12):
@@ -133,11 +176,11 @@ async def detect_zones(client: Any, unit_id: int) -> list[dict[str, Any]]:
         zone_type = 0
         zone_function = 0
 
-        type_registers = await _read_holding_registers(client, unit_id, type_addr)
+        type_registers = await read_registers(type_addr, 1, REG_HOLDING)
         if type_registers:
             zone_type = type_registers[0]
 
-        function_registers = await _read_holding_registers(client, unit_id, func_addr)
+        function_registers = await read_registers(func_addr, 1, REG_HOLDING)
         if function_registers:
             zone_function = function_registers[0]
 
@@ -180,7 +223,7 @@ def _zone_details_from_zone_info(zone_info: list[dict[str, Any]]) -> dict[str, d
     }
 
 
-async def detect_iwr_features(client: Any, unit_id: int) -> dict[str, bool]:
+async def detect_iwr_features(read_registers: ReadRegistersFn) -> dict[str, bool]:
     """Detect optional IWR feature groups from representative registers."""
     features = {
         FEATURE_HYBRID: False,
@@ -191,28 +234,28 @@ async def detect_iwr_features(client: Any, unit_id: int) -> dict[str, bool]:
 
     # Hybrid-related registers and status bits.
     for address in (465, 466, 467, 470, 471, 9204):
-        registers = await _read_holding_registers(client, unit_id, address)
+        registers = await read_registers(address, 1, REG_HOLDING)
         if _has_meaningful_value(registers):
             features[FEATURE_HYBRID] = True
             break
 
     # Cascade-specific discovery/status registers.
     for address in (7143, 7145, 7146, 7154, 7207, 7208):
-        registers = await _read_holding_registers(client, unit_id, address)
+        registers = await read_registers(address, 1, REG_HOLDING)
         if _has_meaningful_value(registers):
             features[FEATURE_CASCADE] = True
             break
 
-    cooling_registers = await _read_holding_registers(client, unit_id, 502)
+    cooling_registers = await read_registers(502, 1, REG_HOLDING)
     if cooling_registers and cooling_registers[0] in {1, 2}:
         features[FEATURE_COOLING] = True
 
-    buffer_enable = await _read_holding_registers(client, unit_id, 197)
+    buffer_enable = await read_registers(197, 1, REG_HOLDING)
     if buffer_enable and buffer_enable[0] == 1:
         features[FEATURE_BUFFER_TANK] = True
     else:
         for address in (7600, 7601, 7602, 7603):
-            registers = await _read_holding_registers(client, unit_id, address)
+            registers = await read_registers(address, 1, REG_HOLDING)
             if _has_meaningful_value(registers):
                 features[FEATURE_BUFFER_TANK] = True
                 break
@@ -220,12 +263,12 @@ async def detect_iwr_features(client: Any, unit_id: int) -> dict[str, bool]:
     return features
 
 
-async def detect_iwr_setup(client: Any, unit_id: int) -> dict[str, Any]:
+async def detect_iwr_setup(read_registers: ReadRegistersFn) -> dict[str, Any]:
     """Detect zone layout and optional feature groups for an IWR installation."""
-    zone_info = await detect_zones(client, unit_id)
+    zone_info = await detect_zones(read_registers)
     zone_details = _zone_details_from_zone_info(zone_info)
     active_zones = [item["zone"] for item in zone_info if item["active"]]
-    features = await detect_iwr_features(client, unit_id)
+    features = await detect_iwr_features(read_registers)
 
     return {
         "zone_info": zone_info,

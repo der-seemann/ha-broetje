@@ -22,6 +22,12 @@
 - Vor jedem ESPHome-Update zwingend: offizielles `esphome/esphome`-Release lesen, Breaking Changes gegen die betroffene Node-YAML prüfen; bei Risiko oder Breaking Changes sofort stoppen und Freigabe einholen.
 - ESPHome-Updatefehler nicht automatisch retryn; alten Stand dokumentieren und auf Davids Entscheidung warten.
 
+## Versions- und Deploy-Regel für `ha-broetje`
+- Jede funktionale Änderung an `ha-broetje` bekommt vor Deploy einen eigenen Versions-Bump.
+- Beta-Stand nur waehrend Verifikation, stabil erst nach bestaetigtem Live-Test.
+- Kein Deploy ohne `deploy.sh`, kein Versionsbump ohne anschließenden `deploy.sh`-0-diff-Check.
+- Der aktive Debug-Stand muss immer eindeutig ueber `manifest.json` erkennbar sein.
+
 ## Block-Größe
 - Normal: 3–5 Register pro Commit
 - Bei Fehlern oder komplexen Typen (Bitfeld, UINT32): 1–2 Register pro Commit

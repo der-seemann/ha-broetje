@@ -101,9 +101,12 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Coordinator for fetching data from Brötje Heatpump via Modbus."""
 
     config_entry: ConfigEntry
+    _instance_counter = 0
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         """Initialize the coordinator."""
+        type(self)._instance_counter += 1
+        self._instance_id = type(self)._instance_counter
         self._poll_profiles = dict(POLL_PROFILES)
         self._poll_profiles[POLL_PROFILE_FAST] = entry.options.get(
             CONF_SCAN_INTERVAL_FAST, DEFAULT_SCAN_INTERVAL_FAST
@@ -126,7 +129,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._port = entry.data[CONF_PORT]
         self._unit_id = entry.data.get(CONF_UNIT_ID, DEFAULT_UNIT_ID)
         self._client: AsyncModbusTcpClient | None = None
+        self._shutdown_requested = False
         self._lock = asyncio.Lock()
+        _LOGGER.debug(
+            "Created coordinator instance %s for %s:%s",
+            self._instance_id,
+            self._host,
+            self._port,
+        )
 
         # Load device-specific configuration
         device_type_str = entry.data.get(CONF_DEVICE_TYPE, DeviceType.ISR.value)
@@ -203,6 +213,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def _connect(self) -> None:
         """Establish connection to the Modbus device."""
+        if self._shutdown_requested:
+            raise UpdateFailed(
+                f"Coordinator instance {self._instance_id} is shutting down"
+            )
         if self._client is not None and self._client.connected:
             return
 
@@ -214,14 +228,22 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if not await self._client.connect():
             raise UpdateFailed(f"Failed to connect to {self._host}:{self._port}")
 
-        _LOGGER.debug("Connected to Modbus device at %s:%s", self._host, self._port)
+        _LOGGER.debug(
+            "Coordinator instance %s connected to Modbus device at %s:%s",
+            self._instance_id,
+            self._host,
+            self._port,
+        )
 
     async def _disconnect(self) -> None:
         """Disconnect from the Modbus device."""
         if self._client is not None:
             self._client.close()
             self._client = None
-            _LOGGER.debug("Disconnected from Modbus device")
+            _LOGGER.debug(
+                "Coordinator instance %s disconnected from Modbus device",
+                self._instance_id,
+            )
 
     async def _read_device_info(self) -> None:
         """Read device identification information."""
@@ -243,7 +265,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Always-present sub-devices for IWR
         self.active_sub_devices = set(ALWAYS_PRESENT_SUBDEVICES)
 
-        features = await detect_iwr_features(self._client, self._unit_id)
+        features = await detect_iwr_features(self._read_registers)
 
         # Solar remains autodetected only; it is not exposed as a user-togglable group.
         result = await self._read_registers(8114, 1, REG_HOLDING)
@@ -339,6 +361,42 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             _LOGGER.error("Modbus exception: %s", err)
             await self._disconnect()
             return None
+
+    async def read_holding_registers(
+        self,
+        *,
+        address: int,
+        count: int = 1,
+        device_id: int | None = None,
+    ) -> Any:
+        """Read holding registers through the coordinator lock."""
+        if device_id is not None and device_id != self._unit_id:
+            _LOGGER.warning(
+                "Ignoring read_holding_registers device_id=%s; using coordinator unit_id=%s",
+                device_id,
+                self._unit_id,
+            )
+
+        async with self._lock:
+            return await self._read_registers_locked(address, count, REG_HOLDING)
+
+    async def read_input_registers(
+        self,
+        *,
+        address: int,
+        count: int = 1,
+        device_id: int | None = None,
+    ) -> Any:
+        """Read input registers through the coordinator lock."""
+        if device_id is not None and device_id != self._unit_id:
+            _LOGGER.warning(
+                "Ignoring read_input_registers device_id=%s; using coordinator unit_id=%s",
+                device_id,
+                self._unit_id,
+            )
+
+        async with self._lock:
+            return await self._read_registers_locked(address, count, REG_INPUT)
 
     def _get_needed_registers(self) -> set[str]:
         """Get the set of register keys needed by enabled entities.
@@ -1394,6 +1452,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """
         if register_key not in self.register_map:
             raise HomeAssistantError(f"Unknown register: {register_key}")
+        if self._shutdown_requested:
+            _LOGGER.debug(
+                "Skipping write for %s on coordinator instance %s during shutdown",
+                register_key,
+                self._instance_id,
+            )
+            return
 
         config = self.register_map[register_key]
 
@@ -1524,5 +1589,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_shutdown(self) -> None:
         """Shutdown the coordinator."""
+        self._shutdown_requested = True
+        _LOGGER.debug("Shutting down coordinator instance %s", self._instance_id)
+        external_room_sensor_sync = getattr(self, "external_room_sensor_sync", None)
+        if external_room_sensor_sync is not None:
+            await external_room_sensor_sync.async_unload()
         await self._disconnect()
         await super().async_shutdown()

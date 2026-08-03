@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Callable
 from datetime import timedelta
@@ -44,6 +45,7 @@ class ExternalRoomSensorSync:
         self.entry = entry
         self.coordinator = coordinator
         self._unsubscribers: list[Callable[[], None]] = []
+        self._startup_tasks: set[asyncio.Task[Any]] = set()
         self._zone_status: dict[int, str] = {}
         self._store = Store(
             hass,
@@ -80,7 +82,7 @@ class ExternalRoomSensorSync:
                     timedelta(seconds=config[CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL]),
                 )
             )
-            self.hass.async_create_task(
+            task = self.hass.async_create_task(
                 self._async_push_aggregate(
                     zone=zone,
                     register_key=register_key,
@@ -89,9 +91,13 @@ class ExternalRoomSensorSync:
                     force_status_log=True,
                 )
             )
+            self._startup_tasks.add(task)
+            task.add_done_callback(self._startup_tasks.discard)
 
     def async_unload(self) -> None:
         """Detach all state listeners."""
+        while self._startup_tasks:
+            self._startup_tasks.pop().cancel()
         while self._unsubscribers:
             self._unsubscribers.pop()()
 

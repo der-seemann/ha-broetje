@@ -57,7 +57,7 @@ from .const import (
     IWR_FEATURES_SOURCE_MANUAL,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType
-from .iwr_setup import ZONE_ROLE_HEATING
+from .iwr_setup import SerializedModbusDiscoveryReader, ZONE_ROLE_HEATING
 from .iwr_setup import detect_iwr_setup
 
 _LOGGER = logging.getLogger(__name__)
@@ -380,10 +380,7 @@ class BroetjeOptionsFlow(OptionsFlow):
             return await self._async_save_iwr_setup(user_input)
 
         coordinator = self.config_entry.runtime_data
-        await coordinator._connect()
-        self._detected_setup = await detect_iwr_setup(
-            coordinator._client, coordinator._unit_id
-        )
+        self._detected_setup = await detect_iwr_setup(coordinator._read_registers)
         zone_info = self._detected_setup["zone_info"]
 
         self._zone_options = [
@@ -409,10 +406,7 @@ class BroetjeOptionsFlow(OptionsFlow):
 
         coordinator = self.config_entry.runtime_data
         try:
-            await coordinator._connect()
-            self._detected_setup = await detect_iwr_setup(
-                coordinator._client, coordinator._unit_id
-            )
+            self._detected_setup = await detect_iwr_setup(coordinator._read_registers)
         except Exception:
             _LOGGER.exception("Manual IWR setup detection failed")
             self._detected_setup = {
@@ -626,9 +620,10 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             connected = await client.connect()
             if not connected:
                 _LOGGER.error("Zone detection: failed to connect to Modbus device")
-            self._detected_setup = await detect_iwr_setup(
+            reader = SerializedModbusDiscoveryReader(
                 client, self._connection_data[CONF_UNIT_ID]
             )
+            self._detected_setup = await detect_iwr_setup(reader)
         finally:
             client.close()
 
@@ -675,9 +670,10 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             connected = await client.connect()
             if connected:
-                self._detected_setup = await detect_iwr_setup(
+                reader = SerializedModbusDiscoveryReader(
                     client, self._connection_data[CONF_UNIT_ID]
                 )
+                self._detected_setup = await detect_iwr_setup(reader)
         finally:
             client.close()
 
