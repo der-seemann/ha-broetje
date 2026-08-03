@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections.abc import Callable
 from datetime import timedelta
 from statistics import fmean
@@ -29,6 +30,7 @@ from .const import (
     EXTERNAL_ROOM_SENSOR_AGGREGATION_AVERAGE,
     EXTERNAL_ROOM_SENSOR_AGGREGATION_MAX,
     EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN,
+    MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -46,6 +48,8 @@ class ExternalRoomSensorSync:
         self.coordinator = coordinator
         self._unsubscribers: list[Callable[[], None]] = []
         self._startup_tasks: set[asyncio.Task[Any]] = set()
+        self._zone_write_locks: dict[int, asyncio.Lock] = {}
+        self._zone_last_write_monotonic: dict[int, float] = {}
         self._zone_status: dict[int, str] = {}
         self._store = Store(
             hass,
@@ -100,6 +104,14 @@ class ExternalRoomSensorSync:
             self._startup_tasks.pop().cancel()
         while self._unsubscribers:
             self._unsubscribers.pop()()
+
+    def _get_zone_write_lock(self, zone: int) -> asyncio.Lock:
+        """Return a per-zone lock that serializes external room sensor writes."""
+        lock = self._zone_write_locks.get(zone)
+        if lock is None:
+            lock = asyncio.Lock()
+            self._zone_write_locks[zone] = lock
+        return lock
 
     def _configured_sources(self) -> dict[int, dict[str, Any]]:
         """Return normalized zone configuration."""
@@ -375,32 +387,54 @@ class ExternalRoomSensorSync:
         value, _ = self._aggregate(samples, aggregation)
         value = round(value, 1)
 
-        try:
-            # Register 2129 (`zone3_room_temp_measured` on the verified BLW 12.1
-            # reference installation) can quantize injected room temperatures
-            # internally. During live verification, raw `1960` (19.6 °C) was
-            # read back as raw `2000` (20.0 °C). Treat this as appliance
-            # behavior, not as an integration-side write defect.
-            await self.coordinator.async_write_register(register_key, value)
-        except Exception:
-            self._set_zone_status(
-                zone,
-                "write_error",
-                (
-                    "External room sensor sync write failed for zone %s -> %s. "
-                    "Writes paused until the next successful cycle."
+        async with self._get_zone_write_lock(zone):
+            last_write = self._zone_last_write_monotonic.get(zone)
+            if last_write is not None:
+                elapsed = time.monotonic() - last_write
+                if elapsed < MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS:
+                    _LOGGER.debug(
+                        (
+                            "Skipping external room sensor write for zone %s -> %s "
+                            "because the previous write was only %.2fs ago "
+                            "(minimum %.2fs)"
+                        ),
+                        zone,
+                        register_key,
+                        elapsed,
+                        MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS,
+                    )
+                    return
+
+            # Remember the attempt immediately so concurrent state-change bursts
+            # cannot queue multiple writes for the same zone within the window.
+            self._zone_last_write_monotonic[zone] = time.monotonic()
+
+            try:
+                # Register 2129 (`zone3_room_temp_measured` on the verified BLW 12.1
+                # reference installation) can quantize injected room temperatures
+                # internally. During live verification, raw `1960` (19.6 °C) was
+                # read back as raw `2000` (20.0 °C). Treat this as appliance
+                # behavior, not as an integration-side write defect.
+                await self.coordinator.async_write_register(register_key, value)
+            except Exception:
+                self._set_zone_status(
+                    zone,
+                    "write_error",
+                    (
+                        "External room sensor sync write failed for zone %s -> %s. "
+                        "Writes paused until the next successful cycle."
+                    )
+                    % (zone, register_key),
+                    "warning",
+                    force_log=force_status_log,
                 )
-                % (zone, register_key),
-                "warning",
-                force_log=force_status_log,
-            )
-            _LOGGER.exception(
-                "Failed to sync external room sensors %s to %s (zone %s)",
-                entity_ids,
-                register_key,
-                zone,
-            )
-            return
+                _LOGGER.exception(
+                    "Failed to sync external room sensors %s to %s (zone %s)",
+                    entity_ids,
+                    register_key,
+                    zone,
+                )
+                return
 
         self._set_zone_status(
             zone,

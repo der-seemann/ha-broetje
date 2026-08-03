@@ -1650,6 +1650,6 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         _LOGGER.debug("Shutting down coordinator instance %s", self._instance_id)
         external_room_sensor_sync = getattr(self, "external_room_sensor_sync", None)
         if external_room_sensor_sync is not None:
-            await external_room_sensor_sync.async_unload()
+            external_room_sensor_sync.async_unload()
         await self._disconnect()
         await super().async_shutdown()
