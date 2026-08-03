@@ -1147,7 +1147,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
 
         try:
-            async with asyncio.timeout(30):
+            # Test parameter: allow slow Modbus cycles enough room to finish
+            # before Home Assistant aborts the whole refresh task.
+            async with asyncio.timeout(60):
                 for batch in batches:
                     start_addr = batch["start_address"]
                     count = batch["end_address"] - start_addr + 1
@@ -1282,6 +1284,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                                 )
 
         except TimeoutError as err:
+            await self._disconnect()
             raise UpdateFailed("Timeout communicating with device") from err
         except ModbusException as err:
             raise UpdateFailed(f"Modbus error: {err}") from err
