@@ -55,6 +55,8 @@ from .const import (
     FEATURE_COOLING,
     FEATURE_HYBRID,
     IWR_FEATURES_SOURCE_MANUAL,
+    MODBUS_REQUEST_RETRIES,
+    MODBUS_REQUEST_TIMEOUT_SECONDS,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType
 from .iwr_setup import SerializedModbusDiscoveryReader, ZONE_ROLE_HEATING
@@ -615,6 +617,8 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         client = AsyncModbusTcpClient(
             host=self._connection_data[CONF_HOST],
             port=self._connection_data[CONF_PORT],
+            timeout=MODBUS_REQUEST_TIMEOUT_SECONDS,
+            retries=MODBUS_REQUEST_RETRIES,
         )
         try:
             connected = await client.connect()
@@ -666,6 +670,8 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         client = AsyncModbusTcpClient(
             host=self._connection_data[CONF_HOST],
             port=self._connection_data[CONF_PORT],
+            timeout=MODBUS_REQUEST_TIMEOUT_SECONDS,
+            retries=MODBUS_REQUEST_RETRIES,
         )
         try:
             connected = await client.connect()
@@ -739,7 +745,12 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
         """Test if we can connect to the Modbus device."""
         from pymodbus.client import AsyncModbusTcpClient
 
-        client = AsyncModbusTcpClient(host=host, port=port)
+        client = AsyncModbusTcpClient(
+            host=host,
+            port=port,
+            timeout=MODBUS_REQUEST_TIMEOUT_SECONDS,
+            retries=MODBUS_REQUEST_RETRIES,
+        )
 
         try:
             _LOGGER.debug("Attempting to connect to %s:%s", host, port)

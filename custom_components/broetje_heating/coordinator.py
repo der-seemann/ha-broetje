@@ -44,6 +44,8 @@ from .const import (
     REG_INPUT,
     MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS,
     MODBUS_REQUEST_MIN_PAUSE_SECONDS,
+    MODBUS_REQUEST_RETRIES,
+    MODBUS_REQUEST_TIMEOUT_SECONDS,
     SENTINEL_AUTO_DISABLE_THRESHOLD,
     SENTINEL_RETRY_INTERVAL_SECONDS,
     SUBDEV_BUFFER_TANK,
@@ -227,6 +229,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._client = AsyncModbusTcpClient(
             host=self._host,
             port=self._port,
+            timeout=MODBUS_REQUEST_TIMEOUT_SECONDS,
+            retries=MODBUS_REQUEST_RETRIES,
         )
 
         if not await self._client.connect():

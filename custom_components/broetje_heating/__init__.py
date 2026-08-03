@@ -37,6 +37,8 @@ from .const import (
     DOMAIN,
     IWR_FEATURES_SOURCE_AUTO,
     IWR_FEATURES_SOURCE_MANUAL,
+    MODBUS_REQUEST_RETRIES,
+    MODBUS_REQUEST_TIMEOUT_SECONDS,
     SUB_DEVICE_LABELS,
 )
 from .coordinator import BroetjeModbusCoordinator
@@ -509,6 +511,8 @@ async def _async_apply_iwr_detection_defaults(
     client = AsyncModbusTcpClient(
         host=entry.data[CONF_HOST],
         port=entry.data[CONF_PORT],
+        timeout=MODBUS_REQUEST_TIMEOUT_SECONDS,
+        retries=MODBUS_REQUEST_RETRIES,
     )
 
     try:

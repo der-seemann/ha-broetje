@@ -13,6 +13,10 @@ DEFAULT_SCAN_INTERVAL_NORMAL: Final = 120
 DEFAULT_SCAN_INTERVAL_SLOW: Final = 600
 # Test parameter: small inter-request pause to reduce RS485 burst pressure.
 MODBUS_REQUEST_MIN_PAUSE_SECONDS: Final = 0.1
+# Test parameter: wait longer for late Modbus replies before giving up.
+MODBUS_REQUEST_TIMEOUT_SECONDS: Final = 8.0
+# Test parameter: keep retry count modest so the total wait stays bounded.
+MODBUS_REQUEST_RETRIES: Final = 2
 # Test parameter: never write the same register more often than this.
 MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS: Final = 5.0
 SENTINEL_AUTO_DISABLE_THRESHOLD: Final = 3
