@@ -42,6 +42,8 @@ from .const import (
     MANUFACTURER,
     REG_HOLDING,
     REG_INPUT,
+    MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS,
+    MODBUS_REQUEST_MIN_PAUSE_SECONDS,
     SENTINEL_AUTO_DISABLE_THRESHOLD,
     SENTINEL_RETRY_INTERVAL_SECONDS,
     SUBDEV_BUFFER_TANK,
@@ -131,6 +133,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._client: AsyncModbusTcpClient | None = None
         self._shutdown_requested = False
         self._lock = asyncio.Lock()
+        self._last_modbus_request_finished_monotonic: float | None = None
+        self._last_register_write_monotonic: dict[str, float] = {}
         _LOGGER.debug(
             "Created coordinator instance %s for %s:%s",
             self._instance_id,
@@ -304,6 +308,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Read registers assuming the Modbus lock is already held."""
         self._last_read_error_detail = None
         try:
+            await self._await_modbus_request_spacing()
             await self._connect()
 
             if register_type == REG_INPUT:
@@ -361,6 +366,8 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             _LOGGER.error("Modbus exception: %s", err)
             await self._disconnect()
             return None
+        finally:
+            self._mark_modbus_request_finished()
 
     async def read_holding_registers(
         self,
@@ -397,6 +404,46 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         async with self._lock:
             return await self._read_registers_locked(address, count, REG_INPUT)
+
+    async def _await_modbus_request_spacing(self) -> None:
+        """Enforce a tiny pause between consecutive Modbus requests."""
+        last_finished = self._last_modbus_request_finished_monotonic
+        if last_finished is None or MODBUS_REQUEST_MIN_PAUSE_SECONDS <= 0:
+            return
+
+        elapsed = time.monotonic() - last_finished
+        if elapsed >= MODBUS_REQUEST_MIN_PAUSE_SECONDS:
+            return
+
+        delay = MODBUS_REQUEST_MIN_PAUSE_SECONDS - elapsed
+        _LOGGER.debug(
+            "Coordinator instance %s waiting %.3fs before next Modbus request",
+            self._instance_id,
+            delay,
+        )
+        await asyncio.sleep(delay)
+
+    def _mark_modbus_request_finished(self) -> None:
+        """Record the end of the most recent Modbus request."""
+        self._last_modbus_request_finished_monotonic = time.monotonic()
+
+    def _register_write_throttled(self, register_key: str) -> bool:
+        """Return true if the register write should be skipped for pacing."""
+        last_write = self._last_register_write_monotonic.get(register_key)
+        if last_write is None or MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS <= 0:
+            return False
+
+        elapsed = time.monotonic() - last_write
+        if elapsed >= MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS:
+            return False
+
+        _LOGGER.debug(
+            "Skipping write for %s on coordinator instance %s: throttled for %.2fs more",
+            register_key,
+            self._instance_id,
+            MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS - elapsed,
+        )
+        return True
 
     def _get_needed_registers(self) -> set[str]:
         """Get the set of register keys needed by enabled entities.
@@ -1491,6 +1538,11 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         register_words = self._encode_register_value(raw_value, data_type)
         address = config["address"]
 
+        async with self._lock:
+            if self._register_write_throttled(register_key):
+                return
+            self._last_register_write_monotonic[register_key] = time.monotonic()
+
         _LOGGER.info(
             "RW write start register=%s addr=%d value=%s raw=%d words=%s",
             register_key,
@@ -1503,6 +1555,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         readback: list[int] | None = None
         async with self._lock:
             try:
+                await self._await_modbus_request_spacing()
                 await self._connect()
 
                 result = await self._client.write_registers(
@@ -1528,6 +1581,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     address,
                     register_words,
                 )
+                self._mark_modbus_request_finished()
 
                 readback = await self._read_registers_locked(
                     address, config.get("count", 1), REG_HOLDING
@@ -1544,6 +1598,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 raise HomeAssistantError(
                     f"Modbus exception writing {register_key}: {err}"
                 ) from err
+
+            finally:
+                self._mark_modbus_request_finished()
 
         # Read-back verification
         if readback is not None:
