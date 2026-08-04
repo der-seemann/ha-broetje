@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.15.1
+- Fix: Setup- und Discovery-Reads werden jetzt gemeinsam serialisiert, damit config_flow.py nicht mehr am Coordinator-Lock vorbei liest.
+- Fix: async_shutdown() ist gegen einen `None`-Cleanup-Pfad abgesichert, damit Unload nicht mehr mit `TypeError: 'NoneType' object can't be awaited` crasht.
+- Fix: Modbus-Timeout und Retry-Verhalten wurden erhöht, um späte RTU-Antworten und transaction-id-Mismatches zu vermeiden.
+
 ## v0.15.0
 - Feat: The external room sensor flow now uses Home Assistant's native multi-entity selector for temperature sensors instead of the previous two-step room/text prefilter flow.
 - Fix: Aggregation is now exposed as its own field directly below the sensor selection in config flow and options flow.
