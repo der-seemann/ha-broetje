@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import logging
 import re
-import shutil
 from pathlib import Path
 
+from homeassistant.components.http import StaticPathConfig
 from pymodbus.client import AsyncModbusTcpClient
 
 from homeassistant.config_entries import ConfigEntry
@@ -281,8 +281,17 @@ def _migrate_rw_entity_ids(
 
 async def async_setup_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> bool:
     """Set up Brötje Heatpump from a config entry."""
-    # Copy images to www folder for dashboard use
-    await hass.async_add_executor_job(_copy_images_to_www, hass)
+    source_dir = Path(__file__).parent / "images"
+    if source_dir.exists():
+        await hass.http.async_register_static_paths(
+            [
+                StaticPathConfig(
+                    "/local/broetje_heatpump",
+                    str(source_dir),
+                    cache_headers=True,
+                )
+            ]
+        )
 
     await _async_apply_iwr_detection_defaults(hass, entry)
 
@@ -563,29 +572,6 @@ async def _async_apply_iwr_detection_defaults(
                     DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT,
                 )
     hass.config_entries.async_update_entry(entry, data=new_data)
-
-
-def _copy_images_to_www(hass: HomeAssistant) -> None:
-    """Copy integration images to www folder for dashboard use."""
-    source_dir = Path(__file__).parent / "images"
-    www_dir = Path(hass.config.path("www")) / "broetje_heatpump"
-
-    if not source_dir.exists():
-        _LOGGER.debug("No images directory found in integration")
-        return
-
-    try:
-        www_dir.mkdir(parents=True, exist_ok=True)
-
-        for image_file in source_dir.glob("*.png"):
-            dest_file = www_dir / image_file.name
-            if not dest_file.exists():
-                shutil.copy2(image_file, dest_file)
-                _LOGGER.debug("Copied %s to %s", image_file.name, dest_file)
-
-        _LOGGER.info("Images available at /local/broetje_heatpump/ for dashboard use")
-    except OSError as err:
-        _LOGGER.warning("Failed to copy images to www folder: %s", err)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: BroetjeConfigEntry) -> bool:
