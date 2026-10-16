@@ -138,7 +138,7 @@
 "Appliance - Measurements","413","1","uint16","Relative power","Relative Leistung","relative_power","%","0-65535","mdi:gauge","","GTW-08 spec","R","R"
 "Appliance - Measurements","414","1","uint16","Power setpoint","Leistungssollwert","power_setpoint","%","0-65535","mdi:gauge","0.1","German parameter list","R","R"
 "Appliance - Measurements","415","1","uint16","Ionization current","Ionisationsstrom","ionization_current","µA","0-65535","mdi:flash","0.1","GTW-08 spec","R","R"
-"Appliance - Measurements","416","1","uint16","Internal heat demand - Power","Interne Wärmeanforderung - Leistung","internal_heat_demand_power","%","0-65535","mdi:fire","0.01","GTW-08 spec","R","R"
+"Appliance - Measurements","416","1","uint16","Internal heat demand - Power","Interne Wärmeanforderung - Leistung","internal_heat_demand_power","%","0-65535","mdi:fire","1","GTW-08 spec; live percentage validation 2026-10-16","R","R"
 "Appliance - Measurements","417","1","uint16","Internal heat demand - temperature setpoint","Interne Wärmeanforderung - Temperatursollwert","internal_heat_demand_temperature_setpoint","°C","0-65535","mdi:thermostat","0.01","GTW-08 spec","R","R"
 "Appliance - Measurements","418","1","uint16","Internal heat demand - heatdemandType","Interne Wärmeanforderung - Wärmeanforderungstyp","internal_heat_demand_type","","0-65535","mdi:fire","","GTW-08 spec","R","R"
 "Appliance - Measurements","419","2","uint32","Total starts","Erzeugerstarts gesamt","total_starts","","0-4294967295","mdi:counter","","GTW-08 spec","R","R"
