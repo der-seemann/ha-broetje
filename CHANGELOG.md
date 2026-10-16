@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.15.3-beta.0
+- Fix: GTW-08 register 416 internal heat demand is exposed as a percent value in the register itself; preserve the raw percentage instead of multiplying it by 0.01.
+
 ## v0.15.1
 - Fix: Setup- und Discovery-Reads werden jetzt gemeinsam serialisiert, damit config_flow.py nicht mehr am Coordinator-Lock vorbei liest.
 - Fix: async_shutdown() ist gegen einen `None`-Cleanup-Pfad abgesichert, damit Unload nicht mehr mit `TypeError: 'NoneType' object can't be awaited` crasht.

@@ -1951,7 +1951,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint16",
-        "scale": 0.01,
+        "scale": 1,
     },
     "internal_heat_demand_temperature_setpoint": {
         "address": 417,
