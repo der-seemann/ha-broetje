@@ -40,6 +40,8 @@ CONF_EXTERNAL_ROOM_SENSOR_ENTITY_IDS: Final = "entity_ids"
 CONF_EXTERNAL_ROOM_SENSOR_AGGREGATION: Final = "aggregation"
 CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL: Final = "write_interval_seconds"
 CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT: Final = "timeout_seconds"
+CONF_ARBEITSZAHL_ELECTRICAL_BASELINE: Final = "arbeitszahl_electrical_baseline_kwh"
+CONF_ARBEITSZAHL_THERMAL_BASELINE: Final = "arbeitszahl_thermal_baseline_kwh"
 
 EXTERNAL_ROOM_SENSOR_AGGREGATION_AVERAGE: Final = "average"
 EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN: Final = "min"
@@ -60,16 +62,25 @@ SUBDEV_SERVICE: Final = "service"
 SUBDEV_SOLAR: Final = "solar"
 SUBDEV_BUFFER_TANK: Final = "buffer_tank"
 SUBDEV_HYBRID: Final = "hybrid"
+SUBDEV_CASCADE: Final = "cascade"
+SUBDEV_THERMODYNAMIC_WATER_HEATER: Final = "thermodynamic_water_heater"
+SUBDEV_BMS: Final = "bms"
 
 FEATURE_HYBRID: Final = "hybrid"
 FEATURE_CASCADE: Final = "cascade"
 FEATURE_COOLING: Final = "cooling"
 FEATURE_BUFFER_TANK: Final = "buffer_tank"
+FEATURE_SOLAR: Final = "solar"
+FEATURE_THERMODYNAMIC_WATER_HEATER: Final = "thermodynamic_water_heater"
+FEATURE_BMS: Final = "bms"
 IWR_OPTIONAL_FEATURES: Final[tuple[str, ...]] = (
     FEATURE_HYBRID,
     FEATURE_CASCADE,
     FEATURE_COOLING,
     FEATURE_BUFFER_TANK,
+    FEATURE_SOLAR,
+    FEATURE_THERMODYNAMIC_WATER_HEATER,
+    FEATURE_BMS,
 )
 IWR_FEATURES_SOURCE_AUTO: Final = "auto"
 IWR_FEATURES_SOURCE_MANUAL: Final = "manual"
@@ -80,6 +91,9 @@ SUB_DEVICE_LABELS: Final[dict[str, str]] = {
     SUBDEV_SOLAR: "Solar",
     SUBDEV_BUFFER_TANK: "Buffer Tank",
     SUBDEV_HYBRID: "Hybrid",
+    SUBDEV_CASCADE: "Cascade",
+    SUBDEV_THERMODYNAMIC_WATER_HEATER: "Thermodynamic Water Heater",
+    SUBDEV_BMS: "BMS",
 }
 
 # Always-present sub-devices for IWR (created unconditionally)

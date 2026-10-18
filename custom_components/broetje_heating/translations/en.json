@@ -53,7 +53,10 @@
           "hybrid": "Hybrid function",
           "cascade": "Cascade operation",
           "cooling": "Cooling operation",
-          "buffer_tank": "Buffer tank"
+          "buffer_tank": "Buffer tank",
+          "solar": "Solar module",
+          "thermodynamic_water_heater": "Thermodynamic water heater (manual opt-in)",
+          "bms": "BMS module (manual opt-in)"
         },
         "data_description": {
           "zones": "Select only the zones that physically exist on this installation.",
@@ -71,7 +74,10 @@
           "hybrid": "Hybrid function",
           "cascade": "Cascade operation",
           "cooling": "Cooling operation",
-          "buffer_tank": "Buffer tank"
+          "buffer_tank": "Buffer tank",
+          "solar": "Solar module",
+          "thermodynamic_water_heater": "Thermodynamic water heater (manual opt-in)",
+          "bms": "BMS module (manual opt-in)"
         },
         "data_description": {
           "zones": "Only selected zones will be created. Unselected zones are removed from the integration registry on reload.",
@@ -207,7 +213,8 @@
         "menu_options": {
           "general": "Polling profiles",
           "zone_config": "Zones and feature groups",
-          "external_room_sensors": "External room sensors"
+          "external_room_sensors": "External room sensors",
+          "arbeitszahl": "Working ratio"
         }
       },
       "general": {
@@ -240,14 +247,20 @@
           "hybrid": "Hybrid function",
           "cascade": "Cascade operation",
           "cooling": "Cooling operation",
-          "buffer_tank": "Buffer tank"
+          "buffer_tank": "Buffer tank",
+          "solar": "Solar module",
+          "thermodynamic_water_heater": "Thermodynamic water heater (manual opt-in)",
+          "bms": "BMS module (manual opt-in)"
         },
         "data_description": {
           "zones": "Selected zones remain active after reload; deselected zones are removed.",
           "hybrid": "Creates or removes hybrid-related entities.",
           "cascade": "Creates or removes cascade-related entities.",
           "cooling": "Creates or removes cooling-related entities.",
-          "buffer_tank": "Creates or removes buffer tank related entities."
+          "buffer_tank": "Creates or removes buffer tank related entities.",
+          "solar": "Creates or removes solar entities; probing uses documented register 8114.",
+          "thermodynamic_water_heater": "Enables polling only when explicitly selected; no device probe is performed.",
+          "bms": "Enables polling only when explicitly selected; no device probe is performed."
         }
       },
       "zones_manual": {
@@ -258,14 +271,20 @@
           "hybrid": "Hybrid function",
           "cascade": "Cascade operation",
           "cooling": "Cooling operation",
-          "buffer_tank": "Buffer tank"
+          "buffer_tank": "Buffer tank",
+          "solar": "Solar module",
+          "thermodynamic_water_heater": "Thermodynamic water heater (manual opt-in)",
+          "bms": "BMS module (manual opt-in)"
         },
         "data_description": {
           "zones": "Only selected zones are kept active after reload.",
           "hybrid": "Enable only if the installation really uses hybrid registers.",
           "cascade": "Enable only for real cascade installations.",
           "cooling": "Enable only if cooling should be exposed in Home Assistant.",
-          "buffer_tank": "Enable only if a physical buffer tank is connected."
+          "buffer_tank": "Enable only if a physical buffer tank is connected.",
+          "solar": "Creates or removes solar entities; probing uses documented register 8114.",
+          "thermodynamic_water_heater": "Enables polling only when explicitly selected; no device probe is performed.",
+          "bms": "Enables polling only when explicitly selected; no device probe is performed."
         }
       },
       "external_room_sensors": {
@@ -375,7 +394,18 @@
           "zone_12_external_room_sensor_write_interval": "Zone 12 write interval (seconds)",
           "zone_12_external_room_sensor_timeout": "Zone 12 sensor timeout (seconds)"
         }
+      },
+      "arbeitszahl": {
+        "title": "Working ratio since baseline",
+        "description": "Local baselines for counters 439 and 443. Set both values or leave both empty.",
+        "data": {
+          "arbeitszahl_electrical_baseline_kwh": "Electrical counter 439 at baseline (kWh)",
+          "arbeitszahl_thermal_baseline_kwh": "Thermal counter 443 at baseline (kWh)"
+        }
       }
+    },
+    "error": {
+      "baseline_pair_required": "Both baseline values must be set together."
     }
   },
   "entity": {
@@ -2296,6 +2326,28 @@
           "storage_tank": "Storage tank"
         }
       },
+      "buffer_tank_requested_power": {
+        "name": "Buffer tank requested power"
+      },
+      "buffer_tank_requested_setpoint": {
+        "name": "Buffer tank requested setpoint"
+      },
+      "buffer_tank_heat_demand_type": {
+        "name": "Buffer tank heat demand type",
+        "state": {
+          "none": "None",
+          "dhw_primary": "Primary DHW",
+          "dhw_high_priority": "High priority DHW",
+          "process_heat": "Process heat",
+          "screed_drying": "Screed drying",
+          "dhw_medium_priority": "Medium priority DHW",
+          "dhw_low_priority": "Low priority DHW",
+          "central_heating": "Central heating",
+          "cooling": "Cooling",
+          "electrical_active": "Electrical active",
+          "electrical_reactive": "Electrical reactive"
+        }
+      },
       "zone_flow_temp": {
         "name": "Zone {zone} flow temperature"
       },
@@ -2548,6 +2600,312 @@
       },
       "low_noise_mode_state": {
         "name": "Low noise mode state"
+      },
+      "arbeitszahl_seit_nullpunkt": {
+        "name": "Working ratio since baseline"
+      },
+      "manufacturer_cascade_7000_raw": {
+        "name": "Cascade Appliance Number on cascade:"
+      },
+      "manufacturer_cascade_7001_np014": {
+        "name": "Cascade Mode on cascade"
+      },
+      "manufacturer_cascade_7002_np006": {
+        "name": "Cascade Type of Cascade :  Traditional or PARALLEL"
+      },
+      "manufacturer_cascade_7003_np005": {
+        "name": "Cascade This parameter is used to set the master boiler."
+      },
+      "manufacturer_cascade_7004_np009": {
+        "name": "Cascade Time delay for starting up or shutting down producers"
+      },
+      "manufacturer_cascade_7005_np007": {
+        "name": "Cascade Outside temperature triggering all stages in parallel mode"
+      },
+      "manufacturer_cascade_7006_np010": {
+        "name": "Cascade Outside temperature triggering all stages in parallel mode"
+      },
+      "manufacturer_cascade_7007_np012": {
+        "name": "Cascade Rise Time to Acheive Setpoint"
+      },
+      "manufacturer_cascade_7008_ap083": {
+        "name": "Cascade Enabled the master functionnality of this device one the S-Bus, If multople devices have this parameter all will be reset to 0 automatically,"
+      },
+      "manufacturer_cascade_7009_np011": {
+        "name": "Cascade choice of cascade algorithm type, power or temperature"
+      },
+      "manufacturer_cascade_7010_np289": {
+        "name": "Cascade The maximum flow temperature the système is allowed to produce"
+      },
+      "manufacturer_cascade_7011_np223": {
+        "name": "Cascade the type of start order permutation, to determine which producer to start first"
+      },
+      "manufacturer_cascade_7013_np224": {
+        "name": "Cascade Time delay for starting and shutting down producers, to prevent repeatedly turning on/off producers."
+      },
+      "manufacturer_cascade_7014_np225": {
+        "name": "Cascade Switching strategy for power control of the cascade."
+      },
+      "manufacturer_cascade_7015_np227": {
+        "name": "Cascade The preferred appliance for CH heat production"
+      },
+      "manufacturer_cascade_7016_np228": {
+        "name": "Cascade The non-preferred appliance for CH heat production"
+      },
+      "manufacturer_cascade_7017_np282": {
+        "name": "Cascade The power percentage for the late on strategy for activating the next appliance"
+      },
+      "manufacturer_cascade_7018_np283": {
+        "name": "Cascade The power percentage for the late off strategy for deactivating the last appliance"
+      },
+      "manufacturer_cascade_7019_np284": {
+        "name": "Cascade The power percentage for the early on strategy for activating the next appliance"
+      },
+      "manufacturer_cascade_7020_np285": {
+        "name": "Cascade The power percentage for the early off strategy for deactivating the last appliance"
+      },
+      "manufacturer_cascade_7021_np008": {
+        "name": "Cascade Minimum duration of post-operation of the generator pump"
+      },
+      "manufacturer_cascade_7022_np013": {
+        "name": "Cascade Force Primary Pump to Stop"
+      },
+      "manufacturer_cascade_7023_np287": {
+        "name": "Cascade The type of primary pump"
+      },
+      "manufacturer_cascade_7024_np288": {
+        "name": "Cascade The type of secondary pump"
+      },
+      "manufacturer_cascade_7200_np231": {
+        "name": "Cascade The order in which the producers are going to be activated"
+      },
+      "manufacturer_cascade_7201_raw": {
+        "name": "Cascade Raw producer identity and status value"
+      },
+      "manufacturer_cascade_7202_raw": {
+        "name": "Cascade Raw enum status code"
+      },
+      "manufacturer_cascade_7203_ep001": {
+        "name": "Cascade Raw power-rating/status value"
+      },
+      "manufacturer_cascade_7205_ep086": {
+        "name": "Cascade Raw power-rating/status value"
+      },
+      "manufacturer_cascade_7228_em228": {
+        "name": "Cascade The serial number of an appliance in the cascade system"
+      },
+      "manufacturer_solar_8112_sc129": {
+        "name": "Solar Signal for storing the total solar thermal energy collected for DHW and CH."
+      },
+      "manufacturer_solar_8114_sm020": {
+        "name": "Solar Signal for storing the actual status of the advanced solar range boiler"
+      },
+      "manufacturer_solar_8115_sm036": {
+        "name": "Solar Signal for storing the instantaneous mean rotation speed of the solar pumps."
+      },
+      "manufacturer_solar_8116_sm033": {
+        "name": "Solar Signal for storing the actual measured instantaneous value of the DHW tank low temperature sensor."
+      },
+      "manufacturer_solar_8117_sm034": {
+        "name": "Solar Signal for storing the actual measured instantaneous value of the CH tank low temperature sensor."
+      },
+      "manufacturer_solar_8118_sm023": {
+        "name": "Solar Signal for storing the instantaneous temperature of the heat conduct. medium at the solar collector. - collector 1"
+      },
+      "manufacturer_solar_8119_sm024": {
+        "name": "Solar Signal for storing the instantaneous temperature of the heat conduct. medium at the solar collector - collector 2"
+      },
+      "manufacturer_solar_8120_sm000": {
+        "name": "Solar Signal for storing the instantaneous status of each three way valve (ON or OFF). - valve 1"
+      },
+      "manufacturer_solar_8121_sm001": {
+        "name": "Solar Signal for storing the instantaneous status of each three way valve (ON or OFF). - valve 2"
+      },
+      "manufacturer_solar_8122_raw": {
+        "name": "Solar Reduction of the setpoint of the DHW primary based on the heat delivery of a solar collector (solar first)."
+      },
+      "manufacturer_solar_8123_raw": {
+        "name": "Solar Reduction of the setpoint of a buffered CH zone based on the heat delivery of a solar collector (solar first)."
+      },
+      "manufacturer_solar_8141_sp287": {
+        "name": "Solar Configuration of the solar hydraulics installation type."
+      },
+      "manufacturer_solar_8142_sp010": {
+        "name": "Solar Parameter to configure the mode of the advanced solar DHW and/or CH function group."
+      },
+      "manufacturer_solar_8143_sp044": {
+        "name": "Solar Parameter for nominal DHW tank T° setpoint."
+      },
+      "manufacturer_solar_8144_sp047": {
+        "name": "Solar Parameter for configuring the nominal setpoint to charge the CH tank with solar energy, possible values are within the range 8°C ~ 60°C"
+      },
+      "manufacturer_solar_8145_sp034": {
+        "name": "Solar Parameter for configuring the maximum allowed temperature temperature in the solar panel.- collector 1"
+      },
+      "manufacturer_solar_8146_sp035": {
+        "name": "Solar Parameter for configuring the maximum allowed temperature temperature in the solar panel - collector 2"
+      },
+      "manufacturer_solar_8147_sp045": {
+        "name": "Solar Parameter for maximal DHW tank T° setpoint."
+      },
+      "manufacturer_solar_8148_sp048": {
+        "name": "Solar Parameter for maximal CH tank T° setpoint."
+      },
+      "manufacturer_solar_8149_sp182": {
+        "name": "Solar Parameter for setting the minimal temperature rise corresponding to one step increase in pump speed."
+      },
+      "manufacturer_solar_8150_sp183": {
+        "name": "Solar Parameter for setting the minimal temperature rise corresponding to one step increase in pump speed."
+      },
+      "manufacturer_thermodynamic_water_heater_9001_ap055": {
+        "name": "Thermodynamic Water Heater PV function Active"
+      },
+      "manufacturer_thermodynamic_water_heater_9002_ap057": {
+        "name": "Thermodynamic Water Heater PV function Contact Logic"
+      },
+      "manufacturer_thermodynamic_water_heater_9003_dp512": {
+        "name": "Thermodynamic Water Heater Zone Dhw primary Boost PV Setpoint"
+      },
+      "manufacturer_thermodynamic_water_heater_9004_ap024": {
+        "name": "Thermodynamic Water Heater Peak/OffPeak Active"
+      },
+      "manufacturer_thermodynamic_water_heater_9005_ap047": {
+        "name": "Thermodynamic Water Heater Peak input contact logic configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9006_hp149": {
+        "name": "Thermodynamic Water Heater Max time BackUp off when peak mode enabled"
+      },
+      "manufacturer_thermodynamic_water_heater_9007_am034": {
+        "name": "Thermodynamic Water Heater S_PhotoVoltaicInputState"
+      },
+      "manufacturer_thermodynamic_water_heater_9008_am032": {
+        "name": "Thermodynamic Water Heater S_PeakOffPeakInputState"
+      },
+      "manufacturer_thermodynamic_water_heater_9009_hp059": {
+        "name": "Thermodynamic Water Heater Digital input 1 configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9010_hp076": {
+        "name": "Thermodynamic Water Heater Digital input 2 configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9011_hp077": {
+        "name": "Thermodynamic Water Heater digital input 1 contact logic configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9012_hp078": {
+        "name": "Thermodynamic Water Heater digital input 2 contact logic configuration"
+      },
+      "manufacturer_hybrid_9200_am016": {
+        "name": "Hybrid Flow temperature"
+      },
+      "manufacturer_hybrid_9201_am018": {
+        "name": "Hybrid Return temperature"
+      },
+      "manufacturer_hybrid_9202_am101": {
+        "name": "Hybrid Internal setpoint used for hot water production"
+      },
+      "manufacturer_hybrid_9203_am019": {
+        "name": "Hybrid actual Water pressure"
+      },
+      "manufacturer_hybrid_9204_am012": {
+        "name": "Hybrid Status of appliance"
+      },
+      "manufacturer_hybrid_9205_am014": {
+        "name": "Hybrid Sub Status of appliance"
+      },
+      "manufacturer_hybrid_9206_pc002": {
+        "name": "Hybrid Counter burner/compressor starts"
+      },
+      "manufacturer_hybrid_9208_pc003": {
+        "name": "Hybrid Counter Burning Hours"
+      },
+      "manufacturer_hybrid_9210_ac001": {
+        "name": "Hybrid Number of hours appliance was active"
+      },
+      "manufacturer_hybrid_9212_ac005": {
+        "name": "Hybrid NTotal energy consumed for production of central heat"
+      },
+      "manufacturer_hybrid_9214_ac006": {
+        "name": "Hybrid Total energy consumed for production of domestic hot water."
+      },
+      "manufacturer_hybrid_9216_hm003": {
+        "name": "Hybrid system flow temperature setpoint including backups"
+      },
+      "manufacturer_hybrid_9217_am010": {
+        "name": "Hybrid current pump speed"
+      },
+      "manufacturer_hybrid_9218_am047": {
+        "name": "Hybrid signal used to capture actual power calculation"
+      },
+      "manufacturer_hybrid_9220_am011": {
+        "name": "Hybrid Service is required"
+      },
+      "manufacturer_hybrid_9221_hp061": {
+        "name": "Hybrid Hybrid mode selected"
+      },
+      "manufacturer_hybrid_9222_hp062": {
+        "name": "Hybrid Hybrid Electricity cost in high tarif"
+      },
+      "manufacturer_hybrid_9223_hp063": {
+        "name": "Hybrid Hybrid Electricity cost in low tarif"
+      },
+      "manufacturer_hybrid_9224_hp064": {
+        "name": "Hybrid cost of ofssil energy (oil or gas) - piece per litre or peu m3"
+      },
+      "manufacturer_hybrid_9225_hp065": {
+        "name": "Hybrid Electrical CO2 emission in heating mode"
+      },
+      "manufacturer_hybrid_9226_hp066": {
+        "name": "Hybrid Electrical CO2 emission in DHW mode"
+      },
+      "manufacturer_hybrid_9227_hp067": {
+        "name": "Hybrid Gas or Oil CO2 emission"
+      },
+      "manufacturer_hybrid_9228_hp068": {
+        "name": "Hybrid Boiler in appliance efficiency"
+      },
+      "manufacturer_hybrid_9229_hp054": {
+        "name": "Hybrid COP threshold above which heat pump is authorized to operate when hybrid mode is primary energy"
+      },
+      "manufacturer_hybrid_9232_hp062": {
+        "name": "Hybrid Hybrid Electricity cost in high tarif accurate"
+      },
+      "manufacturer_hybrid_9233_hp063": {
+        "name": "Hybrid Hybrid Electricity cost in low tarif accurate"
+      },
+      "manufacturer_hybrid_9234_hp064": {
+        "name": "Hybrid cost of fossil energy (oil or gas) - piece per litre or per m3 accurate"
+      },
+      "manufacturer_bms_21020_raw": {
+        "name": "BMS The heat demand mode which is used in case of a communication error"
+      },
+      "manufacturer_bms_21021_raw": {
+        "name": "BMS Fallback strategy to apply"
+      },
+      "manufacturer_bms_21022_raw": {
+        "name": "BMS Number Of Minutes To Maintain Heat Demand in fallback mode"
+      },
+      "manufacturer_bms_21023_raw": {
+        "name": "BMS fallback power setpoint"
+      },
+      "manufacturer_bms_21024_raw": {
+        "name": "BMS fallback temperature setpoint"
+      },
+      "manufacturer_bms_21025_raw": {
+        "name": "BMS fallback heat demand type"
+      },
+      "manufacturer_bms_21026_ep014": {
+        "name": "BMS 0 - 10V input selection  (temperature or power setpoint)"
+      },
+      "manufacturer_bms_21027_em010": {
+        "name": "BMS Measure of the Voltage on the 0-10V Input"
+      },
+      "manufacturer_bms_21028_ap110": {
+        "name": "BMS Parameter to activate the 2nd return sensor"
+      },
+      "manufacturer_bms_21029_raw": {
+        "name": "BMS Second return temperature"
+      },
+      "manufacturer_bms_21030_gp017": {
+        "name": "BMS Absolute max boiler power in KW. This is the power the device can produce when burner parameters are set at maximum."
       }
     },
     "binary_sensor": {
@@ -2736,6 +3094,27 @@
       }
     },
     "number": {
+      "buffer_hysteresis_start": {
+        "name": "Buffer loading start hysteresis"
+      },
+      "buffer_hysteresis_stop": {
+        "name": "Buffer loading stop hysteresis"
+      },
+      "buffer_pump_post_run": {
+        "name": "Buffer tank pump post-run"
+      },
+      "buffer_fixed_setpoint_heating": {
+        "name": "Buffer tank fixed heating setpoint"
+      },
+      "buffer_fixed_setpoint_cooling": {
+        "name": "Buffer tank fixed cooling setpoint"
+      },
+      "buffer_slope": {
+        "name": "Buffer tank slope"
+      },
+      "buffer_setpoint_offset": {
+        "name": "Buffer tank setpoint offset"
+      },
       "hybrid_electricity_cost_high_tariff": {
         "name": "Hybrid electricity cost high tariff"
       },
@@ -2926,6 +3305,14 @@
       }
     },
     "select": {
+      "buffer_control_strategy": {
+        "name": "Buffer tank control strategy",
+        "state": {
+          "fixed_setpoint": "Fixed setpoint",
+          "calculated_setpoint": "Calculated setpoint",
+          "dedicated_slope": "Dedicated slope"
+        }
+      },
       "force_summer_mode": {
         "name": "Force summer mode",
         "state": {

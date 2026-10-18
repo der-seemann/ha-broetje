@@ -20,11 +20,11 @@ from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from .const import (
-    CONF_EXTERNAL_ROOM_SENSORS,
     CONF_EXTERNAL_ROOM_SENSOR_AGGREGATION,
     CONF_EXTERNAL_ROOM_SENSOR_ENTITY_IDS,
     CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT,
     CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+    CONF_EXTERNAL_ROOM_SENSORS,
     DEFAULT_EXTERNAL_ROOM_SENSOR_TIMEOUT,
     DEFAULT_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
     EXTERNAL_ROOM_SENSOR_AGGREGATION_AVERAGE,
@@ -257,7 +257,9 @@ class ExternalRoomSensorSync:
         return samples
 
     @staticmethod
-    def _aggregate(samples: list[dict[str, Any]], aggregation: str) -> tuple[float, str | None]:
+    def _aggregate(
+        samples: list[dict[str, Any]], aggregation: str
+    ) -> tuple[float, str | None]:
         """Aggregate multiple sensor values according to the selected strategy."""
         if aggregation == EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN:
             winner = min(samples, key=lambda sample: sample["value"])
@@ -369,16 +371,15 @@ class ExternalRoomSensorSync:
         aggregation = config[CONF_EXTERNAL_ROOM_SENSOR_AGGREGATION]
         timeout_seconds = int(config[CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT])
         samples = self._collect_samples(entity_ids, zone, timeout_seconds)
-        invalid_reason = self._invalid_reason(zone, samples, aggregation, timeout_seconds)
+        invalid_reason = self._invalid_reason(
+            zone, samples, aggregation, timeout_seconds
+        )
         if invalid_reason is not None:
             self._set_zone_status(
                 zone,
                 f"invalid:{invalid_reason}",
-                (
-                    "External room sensor sync paused for zone %s (%s). "
-                    "No write to %s; IWR can fall back to its internal strategy."
-                )
-                % (zone, invalid_reason, register_key),
+                f"External room sensor sync paused for zone {zone} ({invalid_reason}). "
+                f"No write to {register_key}; IWR can fall back to its internal strategy.",
                 "warning",
                 force_log=force_status_log,
             )
@@ -428,11 +429,8 @@ class ExternalRoomSensorSync:
                 self._set_zone_status(
                     zone,
                     "write_error",
-                    (
-                        "External room sensor sync write failed for zone %s -> %s. "
-                        "Writes paused until the next successful cycle."
-                    )
-                    % (zone, register_key),
+                    f"External room sensor sync write failed for zone {zone} -> {register_key}. "
+                    "Writes paused until the next successful cycle.",
                     "warning",
                     force_log=force_status_log,
                 )
@@ -447,11 +445,8 @@ class ExternalRoomSensorSync:
         self._set_zone_status(
             zone,
             "active",
-            (
-                "External room sensor sync active again for zone %s -> %s "
-                "(aggregation=%s, sources=%s)"
-            )
-            % (zone, register_key, aggregation, entity_ids),
+            f"External room sensor sync active again for zone {zone} -> {register_key} "
+            f"(aggregation={aggregation}, sources={entity_ids})",
             "info",
             force_log=force_status_log,
         )

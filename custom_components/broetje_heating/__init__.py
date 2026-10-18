@@ -7,18 +7,17 @@ import re
 from pathlib import Path
 
 from homeassistant.components.http import StaticPathConfig
-from pymodbus.client import AsyncModbusTcpClient
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
+from pymodbus.client import AsyncModbusTcpClient
 
 from .const import (
-    CONF_EXTERNAL_ROOM_SENSORS,
     CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT,
     CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+    CONF_EXTERNAL_ROOM_SENSORS,
     CONF_IWR_FEATURES,
     CONF_IWR_FEATURES_SOURCE,
     CONF_IWR_ZONE_DETAILS,
@@ -135,7 +134,9 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         }
         removed = 0
 
-        for entry in er.async_entries_for_config_entry(entity_registry, config_entry.entry_id):
+        for entry in er.async_entries_for_config_entry(
+            entity_registry, config_entry.entry_id
+        ):
             if (
                 entry.platform == DOMAIN
                 and entry.domain == Platform.BINARY_SENSOR
@@ -181,7 +182,9 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
             version=3,
             minor_version=4,
         )
-        _LOGGER.info("Migration to version 3.4 successful: setup-flow feature flags enabled")
+        _LOGGER.info(
+            "Migration to version 3.4 successful: setup-flow feature flags enabled"
+        )
 
     if config_entry.version == 3 and config_entry.minor_version < 5:
         hass.config_entries.async_update_entry(
@@ -219,7 +222,9 @@ def _remove_stale_rw_registry_entries(
     }
     removed = 0
 
-    for entry in er.async_entries_for_config_entry(entity_registry, config_entry.entry_id):
+    for entry in er.async_entries_for_config_entry(
+        entity_registry, config_entry.entry_id
+    ):
         if entry.platform != DOMAIN:
             continue
 
@@ -262,7 +267,10 @@ def _migrate_rw_entity_ids(
             if (
                 blocking_entry.platform == DOMAIN
                 and blocking_entry.config_entry_id == config_entry.entry_id
-                and (blocking_entry.disabled_by is not None or blocking_entry.hidden_by is not None)
+                and (
+                    blocking_entry.disabled_by is not None
+                    or blocking_entry.hidden_by is not None
+                )
             ):
                 entity_registry.async_remove(blocking_entry.entity_id)
             else:
@@ -357,10 +365,14 @@ def _cleanup_replaced_registry_entities(
     enabled = 0
     prefix = f"{unique_root}_"
     writable_keys = {
-        key for key, config in coordinator.register_map.items() if config.get("writable")
+        key
+        for key, config in coordinator.register_map.items()
+        if config.get("writable")
     }
 
-    for registry_entry in er.async_entries_for_config_entry(entity_registry, entry.entry_id):
+    for registry_entry in er.async_entries_for_config_entry(
+        entity_registry, entry.entry_id
+    ):
         if registry_entry.platform != DOMAIN:
             continue
         if not registry_entry.unique_id.startswith(prefix):
@@ -389,7 +401,9 @@ def _cleanup_replaced_registry_entities(
         removed += 1
 
     if removed:
-        _LOGGER.info("Removed %d stale registry entries replaced by RW entities", removed)
+        _LOGGER.info(
+            "Removed %d stale registry entries replaced by RW entities", removed
+        )
     if enabled:
         _LOGGER.info("Enabled %d writable RW registry entries", enabled)
 
@@ -421,7 +435,9 @@ def _cleanup_inactive_subdevice_registry_entities(
 
     removed = 0
     prefix = f"{unique_root}_"
-    for registry_entry in er.async_entries_for_config_entry(entity_registry, entry.entry_id):
+    for registry_entry in er.async_entries_for_config_entry(
+        entity_registry, entry.entry_id
+    ):
         if registry_entry.platform != DOMAIN:
             continue
         if not registry_entry.unique_id.startswith(prefix):

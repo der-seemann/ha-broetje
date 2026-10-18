@@ -6,7 +6,6 @@ import logging
 from typing import Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -18,18 +17,24 @@ from homeassistant.helpers.selector import (
     EntityFilterSelectorConfig,
     EntitySelector,
     EntitySelectorConfig,
+    NumberSelector,
+    NumberSelectorConfig,
+    NumberSelectorMode,
     SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
 )
 
+from .arbeitszahl import valid_baseline_pair
 from .const import (
-    CONF_EXTERNAL_ROOM_SENSORS,
+    CONF_ARBEITSZAHL_ELECTRICAL_BASELINE,
+    CONF_ARBEITSZAHL_THERMAL_BASELINE,
     CONF_EXTERNAL_ROOM_SENSOR_AGGREGATION,
     CONF_EXTERNAL_ROOM_SENSOR_ENTITY_IDS,
     CONF_EXTERNAL_ROOM_SENSOR_TIMEOUT,
     CONF_EXTERNAL_ROOM_SENSOR_WRITE_INTERVAL,
+    CONF_EXTERNAL_ROOM_SENSORS,
     CONF_IWR_FEATURES,
     CONF_IWR_FEATURES_SOURCE,
     CONF_IWR_ZONE_DETAILS,
@@ -50,17 +55,23 @@ from .const import (
     EXTERNAL_ROOM_SENSOR_AGGREGATION_AVERAGE,
     EXTERNAL_ROOM_SENSOR_AGGREGATION_MAX,
     EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN,
+    FEATURE_BMS,
     FEATURE_BUFFER_TANK,
     FEATURE_CASCADE,
     FEATURE_COOLING,
     FEATURE_HYBRID,
+    FEATURE_SOLAR,
+    FEATURE_THERMODYNAMIC_WATER_HEATER,
     IWR_FEATURES_SOURCE_MANUAL,
     MODBUS_REQUEST_RETRIES,
     MODBUS_REQUEST_TIMEOUT_SECONDS,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType
-from .iwr_setup import SerializedModbusDiscoveryReader, ZONE_ROLE_HEATING
-from .iwr_setup import detect_iwr_setup
+from .iwr_setup import (
+    ZONE_ROLE_HEATING,
+    SerializedModbusDiscoveryReader,
+    detect_iwr_setup,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -71,6 +82,7 @@ STEP_CONNECTION_DATA_SCHEMA = vol.Schema(
         vol.Required(CONF_UNIT_ID, default=DEFAULT_UNIT_ID): int,
     }
 )
+
 
 class CannotConnect(Exception):
     """Error to indicate we cannot connect."""
@@ -86,6 +98,11 @@ def _normalize_feature_selection(
         FEATURE_CASCADE: bool(selected.get(FEATURE_CASCADE, False)),
         FEATURE_COOLING: bool(selected.get(FEATURE_COOLING, False)),
         FEATURE_BUFFER_TANK: bool(selected.get(FEATURE_BUFFER_TANK, False)),
+        FEATURE_SOLAR: bool(selected.get(FEATURE_SOLAR, False)),
+        FEATURE_THERMODYNAMIC_WATER_HEATER: bool(
+            selected.get(FEATURE_THERMODYNAMIC_WATER_HEATER, False)
+        ),
+        FEATURE_BMS: bool(selected.get(FEATURE_BMS, False)),
     }
 
 
@@ -117,6 +134,11 @@ def _build_iwr_setup_schema(
                 FEATURE_BUFFER_TANK,
                 default=features.get(FEATURE_BUFFER_TANK, False),
             ): bool,
+            vol.Required(
+                FEATURE_THERMODYNAMIC_WATER_HEATER,
+                default=features.get(FEATURE_THERMODYNAMIC_WATER_HEATER, False),
+            ): bool,
+            vol.Required(FEATURE_BMS, default=features.get(FEATURE_BMS, False)): bool,
         }
     )
 
@@ -318,7 +340,12 @@ class BroetjeOptionsFlow(OptionsFlow):
         if device_type == DeviceType.IWR.value:
             return self.async_show_menu(
                 step_id="init",
-                menu_options=["general", "zone_config", "external_room_sensors"],
+                menu_options=[
+                    "general",
+                    "zone_config",
+                    "external_room_sensors",
+                    "arbeitszahl",
+                ],
             )
         return await self.async_step_general(user_input)
 
@@ -348,19 +375,13 @@ class BroetjeOptionsFlow(OptionsFlow):
                 {
                     vol.Required(
                         CONF_SCAN_INTERVAL_FAST, default=fast_interval
-                    ): vol.All(
-                        int, vol.Range(min=10, max=3600)
-                    ),
+                    ): vol.All(int, vol.Range(min=10, max=3600)),
                     vol.Required(
                         CONF_SCAN_INTERVAL_NORMAL, default=normal_interval
-                    ): vol.All(
-                        int, vol.Range(min=10, max=3600)
-                    ),
+                    ): vol.All(int, vol.Range(min=10, max=3600)),
                     vol.Required(
                         CONF_SCAN_INTERVAL_SLOW, default=slow_interval
-                    ): vol.All(
-                        int, vol.Range(min=10, max=3600)
-                    ),
+                    ): vol.All(int, vol.Range(min=10, max=3600)),
                 }
             ),
         )
@@ -418,7 +439,9 @@ class BroetjeOptionsFlow(OptionsFlow):
                 "zone_details": self.config_entry.data.get(CONF_IWR_ZONE_DETAILS, {}),
             }
 
-        current_zones = self.config_entry.data.get(CONF_ZONES, self._detected_setup[CONF_ZONES])
+        current_zones = self.config_entry.data.get(
+            CONF_ZONES, self._detected_setup[CONF_ZONES]
+        )
         self._zone_options = [
             SelectOptionDict(value=str(z), label=f"Zone {z}") for z in range(1, 13)
         ]
@@ -500,6 +523,58 @@ class BroetjeOptionsFlow(OptionsFlow):
         return self.async_show_form(
             step_id="external_room_sensors",
             data_schema=_build_external_room_sensor_schema(zones, configured),
+        )
+
+    async def async_step_arbeitszahl(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Configure local counter baselines for the cumulative working ratio."""
+        if user_input is not None:
+            electrical = user_input.get(CONF_ARBEITSZAHL_ELECTRICAL_BASELINE)
+            thermal = user_input.get(CONF_ARBEITSZAHL_THERMAL_BASELINE)
+            if not valid_baseline_pair(electrical, thermal):
+                return self.async_show_form(
+                    step_id="arbeitszahl",
+                    data_schema=self._arbeitszahl_schema(),
+                    errors={"base": "baseline_pair_required"},
+                )
+            new_options = {
+                **self.config_entry.options,
+                CONF_ARBEITSZAHL_ELECTRICAL_BASELINE: electrical,
+                CONF_ARBEITSZAHL_THERMAL_BASELINE: thermal,
+            }
+            self.hass.config_entries.async_update_entry(
+                self.config_entry, options=new_options
+            )
+            self.hass.async_create_task(
+                self.hass.config_entries.async_reload(self.config_entry.entry_id)
+            )
+            return self.async_create_entry(data=new_options)
+
+        return self.async_show_form(
+            step_id="arbeitszahl", data_schema=self._arbeitszahl_schema()
+        )
+
+    def _arbeitszahl_schema(self) -> vol.Schema:
+        """Build optional baseline fields; both must be set or both omitted."""
+        number_selector = NumberSelector(
+            NumberSelectorConfig(min=0, step=0.01, mode=NumberSelectorMode.BOX)
+        )
+        return vol.Schema(
+            {
+                vol.Optional(
+                    CONF_ARBEITSZAHL_ELECTRICAL_BASELINE,
+                    default=self.config_entry.options.get(
+                        CONF_ARBEITSZAHL_ELECTRICAL_BASELINE
+                    ),
+                ): vol.Any(None, number_selector),
+                vol.Optional(
+                    CONF_ARBEITSZAHL_THERMAL_BASELINE,
+                    default=self.config_entry.options.get(
+                        CONF_ARBEITSZAHL_THERMAL_BASELINE
+                    ),
+                ): vol.Any(None, number_selector),
+            }
         )
 
 
@@ -603,9 +678,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
                 user_input
             )
-            self._connection_data[CONF_IWR_FEATURES_SOURCE] = (
-                IWR_FEATURES_SOURCE_MANUAL
-            )
+            self._connection_data[CONF_IWR_FEATURES_SOURCE] = IWR_FEATURES_SOURCE_MANUAL
             if self._detected_setup is not None:
                 self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[
                     "zone_details"
@@ -656,9 +729,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
             self._connection_data[CONF_IWR_FEATURES] = _normalize_feature_selection(
                 user_input
             )
-            self._connection_data[CONF_IWR_FEATURES_SOURCE] = (
-                IWR_FEATURES_SOURCE_MANUAL
-            )
+            self._connection_data[CONF_IWR_FEATURES_SOURCE] = IWR_FEATURES_SOURCE_MANUAL
             if self._detected_setup is not None:
                 self._connection_data[CONF_IWR_ZONE_DETAILS] = self._detected_setup[
                     "zone_details"
@@ -719,9 +790,7 @@ class BroetjeHeatpumpConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="iwr_external_room_sensors",
-            data_schema=_build_external_room_sensor_schema(
-                heating_zones, configured
-            ),
+            data_schema=_build_external_room_sensor_schema(heating_zones, configured),
         )
 
     async def _async_create_entry(

@@ -1,13 +1,19 @@
 {
   "domain": "broetje_heating",
   "name": "Brötje Heating Systems",
-  "codeowners": ["@der-seemann"],
+  "codeowners": [
+    "@der-seemann"
+  ],
   "config_flow": true,
-  "dependencies": [],
+  "dependencies": [
+    "http"
+  ],
   "documentation": "https://github.com/der-seemann/ha-broetje",
   "integration_type": "device",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/der-seemann/ha-broetje/issues",
-  "requirements": ["pymodbus>=3.11.0"],
-  "version": "0.15.3-beta.0"
+  "requirements": [
+    "pymodbus>=3.11.0"
+  ],
+  "version": "0.16.0-beta.0"
 }

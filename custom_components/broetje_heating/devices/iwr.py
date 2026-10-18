@@ -8,16 +8,24 @@ from __future__ import annotations
 from typing import Any, Final
 
 from ..const import (
+    FEATURE_BMS,
     FEATURE_BUFFER_TANK,
     FEATURE_CASCADE,
     FEATURE_COOLING,
     FEATURE_HYBRID,
+    FEATURE_SOLAR,
+    FEATURE_THERMODYNAMIC_WATER_HEATER,
     REG_HOLDING,
+    SUBDEV_BMS,
     SUBDEV_BOILER,
     SUBDEV_BUFFER_TANK,
+    SUBDEV_CASCADE,
     SUBDEV_HYBRID,
     SUBDEV_SERVICE,
+    SUBDEV_SOLAR,
+    SUBDEV_THERMODYNAMIC_WATER_HEATER,
 )
+from .iwr_optional import build_optional_iwr_maps
 
 ZONE_ADDR_OFFSET: Final = 512
 ZONE_TYPE_BASE_ADDR: Final = 640
@@ -318,6 +326,9 @@ IWR_STATIC_ENTITY_CLASSIFICATION: Final[dict[str, tuple[str | None, bool]]] = {
     "buffer_tank_temperature_top": ("diagnostic", True),
     "buffer_tank_pump_state": ("diagnostic", True),
     "buffer_tank_mode": ("diagnostic", True),
+    "buffer_tank_requested_power": ("diagnostic", True),
+    "buffer_tank_requested_setpoint": ("diagnostic", True),
+    "buffer_tank_heat_demand_type": ("diagnostic", True),
 }
 
 # Zone entity classification keyed by translation_key (zone-number-agnostic).
@@ -744,6 +755,26 @@ IWR_BUFFER_TANK_MODE: Final = {
     1: "storage_tank",
 }
 
+IWR_BUFFER_HEAT_DEMAND_TYPE: Final = {
+    0: "none",
+    1: "dhw_primary",
+    2: "dhw_high_priority",
+    3: "process_heat",
+    4: "screed_drying",
+    5: "dhw_medium_priority",
+    6: "dhw_low_priority",
+    7: "central_heating",
+    8: "cooling",
+    9: "electrical_active",
+    10: "electrical_reactive",
+}
+
+IWR_BUFFER_CONTROL_STRATEGY: Final = {
+    0: "fixed_setpoint",
+    1: "calculated_setpoint",
+    2: "dedicated_slope",
+}
+
 IWR_NO_YES: Final = {
     0: "no",
     1: "yes",
@@ -821,6 +852,8 @@ IWR_ENUM_MAPS: Final = {
     "iwr_blocking_input_setting": IWR_BLOCKING_INPUT_SETTING,
     "iwr_low_noise_mode_state": IWR_LOW_NOISE_MODE_STATE,
     "iwr_buffer_tank_mode": IWR_BUFFER_TANK_MODE,
+    "iwr_buffer_heat_demand_type": IWR_BUFFER_HEAT_DEMAND_TYPE,
+    "iwr_buffer_control_strategy": IWR_BUFFER_CONTROL_STRATEGY,
     "iwr_no_yes": IWR_NO_YES,
     "iwr_cascade_system_state": IWR_CASCADE_SYSTEM_STATE,
     "iwr_cascade_role": IWR_CASCADE_ROLE,
@@ -1910,6 +1943,99 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "data_type": "uint16",
         "scale": 1,
     },
+    # BP014/BP019/BP015/BP002/BP003/BP004/BP005/BP013 (GTW-08 BufferTank, R/W)
+    "buffer_hysteresis_start": {
+        "address": 7500,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
+        "writable": True,
+    },
+    "buffer_hysteresis_stop": {
+        "address": 7501,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
+        "writable": True,
+    },
+    "buffer_pump_post_run": {
+        "address": 7502,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+        "writable": True,
+        "min": 0,
+        "max": 255,
+    },
+    "buffer_control_strategy": {
+        "address": 7503,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 1,
+        "writable": True,
+        "min": 0,
+        "max": 2,
+    },
+    "buffer_fixed_setpoint_heating": {
+        "address": 7504,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": IWR_SCALE_TEMP,
+        "writable": True,
+    },
+    "buffer_fixed_setpoint_cooling": {
+        "address": 7505,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": IWR_SCALE_TEMP,
+        "writable": True,
+    },
+    "buffer_slope": {
+        "address": 7506,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": 0.1,
+        "writable": True,
+        "min": 0,
+        "max": 25.5,
+    },
+    "buffer_setpoint_offset": {
+        "address": 7507,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint16",
+        "scale": IWR_SCALE_TEMP,
+        "writable": True,
+    },
+    # BM winning heat-demand request (GTW-08 BufferTank, R)
+    "buffer_tank_requested_power": {
+        "address": 7604,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint8",
+        "scale": 0.01,
+    },
+    "buffer_tank_requested_setpoint": {
+        "address": 7605,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "int16",
+        "scale": IWR_SCALE_TEMP,
+    },
+    "buffer_tank_heat_demand_type": {
+        "address": 7606,
+        "type": REG_HOLDING,
+        "count": 1,
+        "data_type": "uint8",
+        "scale": 1,
+    },
     "board3_error_code": {
         "address": 536,
         "type": REG_HOLDING,
@@ -2765,7 +2891,6 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "data_type": "int16",
         "scale": IWR_SCALE_TEMP,
     },
-
 }
 
 _IWR_STATIC_WRITABLE_UPDATES: Final[dict[str, dict[str, Any]]] = {
@@ -5191,6 +5316,32 @@ _IWR_STATIC_SENSORS: Final = {
         "enum_map": "iwr_buffer_tank_mode",
         "sub_device": SUBDEV_BUFFER_TANK,
     },
+    "buffer_tank_requested_power": {
+        "register": "buffer_tank_requested_power",
+        "translation_key": "buffer_tank_requested_power",
+        "device_class": None,
+        "state_class": "measurement",
+        "icon": "mdi:gauge",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_tank_requested_setpoint": {
+        "register": "buffer_tank_requested_setpoint",
+        "translation_key": "buffer_tank_requested_setpoint",
+        "device_class": "temperature",
+        "unit": "°C",
+        "state_class": "measurement",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_tank_heat_demand_type": {
+        "register": "buffer_tank_heat_demand_type",
+        "translation_key": "buffer_tank_heat_demand_type",
+        "device_class": "enum",
+        "unit": None,
+        "state_class": None,
+        "icon": "mdi:fire-circle",
+        "enum_map": "iwr_buffer_heat_demand_type",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
 }
 
 # ===== Static Binary Sensor Definitions =====
@@ -7071,6 +7222,62 @@ def _build_zone_numbers(zones: list[int]) -> dict[str, Any]:
 
 # Static (non-zone) number entities for the IWR device.
 _IWR_STATIC_NUMBERS: Final[dict[str, Any]] = {
+    # BP014/BP019 and BP015/BP003/BP004/BP005/BP013 (BufferTank, R/W).
+    "buffer_hysteresis_start": {
+        "register": "buffer_hysteresis_start",
+        "translation_key": "buffer_hysteresis_start",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_hysteresis_stop": {
+        "register": "buffer_hysteresis_stop",
+        "translation_key": "buffer_hysteresis_stop",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_pump_post_run": {
+        "register": "buffer_pump_post_run",
+        "translation_key": "buffer_pump_post_run",
+        "unit": "min",
+        "mode": "box",
+        "icon": "mdi:pump",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_fixed_setpoint_heating": {
+        "register": "buffer_fixed_setpoint_heating",
+        "translation_key": "buffer_fixed_setpoint_heating",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_fixed_setpoint_cooling": {
+        "register": "buffer_fixed_setpoint_cooling",
+        "translation_key": "buffer_fixed_setpoint_cooling",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_slope": {
+        "register": "buffer_slope",
+        "translation_key": "buffer_slope",
+        "mode": "box",
+        "icon": "mdi:chart-line",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
+    "buffer_setpoint_offset": {
+        "register": "buffer_setpoint_offset",
+        "translation_key": "buffer_setpoint_offset",
+        "device_class": "temperature",
+        "unit": "°C",
+        "mode": "box",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
     # Boiler / hybrid settings and operating limits.
     "hybrid_electricity_cost_high_tariff": {
         "register": "hybrid_electricity_cost_high_tariff",
@@ -7273,6 +7480,13 @@ _IWR_STATIC_TIMES: Final[dict[str, Any]] = {
 
 # Static (non-zone) select entities for the IWR device.
 _IWR_STATIC_SELECTS: Final[dict[str, Any]] = {
+    "buffer_control_strategy": {
+        "register": "buffer_control_strategy",
+        "translation_key": "buffer_control_strategy",
+        "enum_map": "iwr_buffer_control_strategy",
+        "icon": "mdi:tune-variant",
+        "sub_device": SUBDEV_BUFFER_TANK,
+    },
     # DP051 - DHW ECO or COMFORT setting (register 479, R/W)
     # Only relevant for hybrid systems that have a backup boiler.
     "dhw_eco_comfort_mode": {
@@ -7580,7 +7794,9 @@ def _is_zone_key_allowed(
     return True
 
 
-def _feature_for_register(entity_key: str, register_config: dict[str, Any]) -> str | None:
+def _feature_for_register(
+    entity_key: str, register_config: dict[str, Any]
+) -> str | None:
     """Map a register definition to an optional feature group."""
     address = int(register_config.get("address", -1))
     sub_device = register_config.get("sub_device")
@@ -7589,8 +7805,28 @@ def _feature_for_register(entity_key: str, register_config: dict[str, Any]) -> s
         return FEATURE_HYBRID
     if entity_key.startswith("cascade_"):
         return FEATURE_CASCADE
+    if sub_device == SUBDEV_CASCADE or entity_key.startswith("manufacturer_cascade_"):
+        return FEATURE_CASCADE
     if sub_device == SUBDEV_BUFFER_TANK or 7600 <= address <= 7699:
         return FEATURE_BUFFER_TANK
+    if (
+        sub_device == SUBDEV_SOLAR
+        or entity_key.startswith("manufacturer_solar_")
+        or 8112 <= address <= 8150
+    ):
+        return FEATURE_SOLAR
+    if (
+        sub_device == SUBDEV_THERMODYNAMIC_WATER_HEATER
+        or entity_key.startswith("manufacturer_thermodynamic_water_heater_")
+        or 9001 <= address <= 9012
+    ):
+        return FEATURE_THERMODYNAMIC_WATER_HEATER
+    if (
+        sub_device == SUBDEV_BMS
+        or entity_key.startswith("manufacturer_bms_")
+        or 21020 <= address <= 21030
+    ):
+        return FEATURE_BMS
     if sub_device == SUBDEV_HYBRID or 464 <= address <= 486:
         return FEATURE_HYBRID
     if "cooling" in entity_key:
@@ -7676,6 +7912,8 @@ def _build_entity_classification(
             classification[entity_key] = IWR_STATIC_ENTITY_CLASSIFICATION[entity_key]
         elif translation_key in IWR_ZONE_ENTITY_CLASSIFICATION:
             classification[entity_key] = IWR_ZONE_ENTITY_CLASSIFICATION[translation_key]
+        elif entity_key.startswith("manufacturer_"):
+            classification[entity_key] = ("diagnostic", False)
         elif translation_key.startswith("board_"):
             classification[entity_key] = IWR_BOARD_ENTITY_CLASSIFICATION
         # else: defaults to (None, True) at lookup time
@@ -7697,15 +7935,22 @@ def get_iwr_device_config(
             FEATURE_CASCADE: True,
             FEATURE_COOLING: True,
             FEATURE_BUFFER_TANK: True,
+            FEATURE_SOLAR: False,
+            FEATURE_THERMODYNAMIC_WATER_HEATER: False,
+            FEATURE_BMS: False,
         }
+    optional_registers, optional_sensors, optional_enum_maps = build_optional_iwr_maps()
+
     # Merge static + dynamic registers
     register_map = {
         **_IWR_STATIC_REGISTER_MAP,
+        **optional_registers,
         **_build_zone_registers(zones),
         **_build_board_registers(),
     }
     sensors = {
         **_IWR_STATIC_SENSORS,
+        **optional_sensors,
         **_build_zone_sensors(zones),
         **_build_board_sensors(),
     }
@@ -7740,7 +7985,7 @@ def get_iwr_device_config(
         "selects": selects,
         "times": times,
         "climates": climates,
-        "enum_maps": IWR_ENUM_MAPS,
+        "enum_maps": {**IWR_ENUM_MAPS, **optional_enum_maps},
         "entity_classification": _build_entity_classification(
             sensors, binary_sensors, numbers, selects, times
         ),
