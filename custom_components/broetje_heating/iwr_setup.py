@@ -61,6 +61,7 @@ _RAW_SENTINELS_32: Final[frozenset[int]] = frozenset({0xFFFFFFFF, 0x80000000})
 
 ReadRegistersFn = Callable[[int, int, str], Awaitable[list[int] | None]]
 
+
 async def _read_registers(
     reader: Any,
     unit_id: int,
@@ -209,7 +210,9 @@ async def detect_zones(read_registers: ReadRegistersFn) -> list[dict[str, Any]]:
     return results
 
 
-def _zone_details_from_zone_info(zone_info: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+def _zone_details_from_zone_info(
+    zone_info: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
     """Return persistent per-zone details keyed by zone number string."""
     return {
         str(item["zone"]): {

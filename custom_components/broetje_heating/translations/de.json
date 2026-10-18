@@ -53,7 +53,10 @@
           "hybrid": "Hybridfunktion",
           "cascade": "Kaskadenbetrieb",
           "cooling": "Kühlbetrieb",
-          "buffer_tank": "Pufferspeicher"
+          "buffer_tank": "Pufferspeicher",
+          "solar": "Solarmodul",
+          "thermodynamic_water_heater": "Thermodynamischer Warmwasserbereiter (manuelle Aktivierung)",
+          "bms": "BMS-Modul (manuelle Aktivierung)"
         },
         "data_description": {
           "zones": "Wählen Sie nur die Zonen aus, die auf dieser Anlage physisch vorhanden sind.",
@@ -71,7 +74,10 @@
           "hybrid": "Hybridfunktion",
           "cascade": "Kaskadenbetrieb",
           "cooling": "Kühlbetrieb",
-          "buffer_tank": "Pufferspeicher"
+          "buffer_tank": "Pufferspeicher",
+          "solar": "Solarmodul",
+          "thermodynamic_water_heater": "Thermodynamischer Warmwasserbereiter (manuelle Aktivierung)",
+          "bms": "BMS-Modul (manuelle Aktivierung)"
         },
         "data_description": {
           "zones": "Nur ausgewählte Zonen werden angelegt. Nicht ausgewählte Zonen werden beim Reload aus der Integration entfernt.",
@@ -207,7 +213,8 @@
         "menu_options": {
           "general": "Poll-Profile",
           "zone_config": "Zonen und Funktionsgruppen",
-          "external_room_sensors": "Externe Raumfühler"
+          "external_room_sensors": "Externe Raumfühler",
+          "arbeitszahl": "Arbeitszahl seit Nullpunkt"
         }
       },
       "general": {
@@ -240,14 +247,20 @@
           "hybrid": "Hybridfunktion",
           "cascade": "Kaskadenbetrieb",
           "cooling": "Kühlbetrieb",
-          "buffer_tank": "Pufferspeicher"
+          "buffer_tank": "Pufferspeicher",
+          "solar": "Solarmodul",
+          "thermodynamic_water_heater": "Thermodynamischer Warmwasserbereiter (manuelle Aktivierung)",
+          "bms": "BMS-Modul (manuelle Aktivierung)"
         },
         "data_description": {
           "zones": "Ausgewählte Zonen bleiben nach dem Reload aktiv; abgewählte Zonen werden entfernt.",
           "hybrid": "Erzeugt oder entfernt hybridbezogene Entities.",
           "cascade": "Erzeugt oder entfernt kaskadenbezogene Entities.",
           "cooling": "Erzeugt oder entfernt kühlbezogene Entities.",
-          "buffer_tank": "Erzeugt oder entfernt pufferspeicherbezogene Entities."
+          "buffer_tank": "Erzeugt oder entfernt pufferspeicherbezogene Entities.",
+          "solar": "Erzeugt oder entfernt Solar-Entities; die Erkennung nutzt das dokumentierte Register 8114.",
+          "thermodynamic_water_heater": "Aktiviert das Polling nur nach ausdrücklicher Auswahl; es wird keine Geräteerkennung abgefragt.",
+          "bms": "Aktiviert das Polling nur nach ausdrücklicher Auswahl; es wird keine Geräteerkennung abgefragt."
         }
       },
       "zones_manual": {
@@ -258,14 +271,20 @@
           "hybrid": "Hybridfunktion",
           "cascade": "Kaskadenbetrieb",
           "cooling": "Kühlbetrieb",
-          "buffer_tank": "Pufferspeicher"
+          "buffer_tank": "Pufferspeicher",
+          "solar": "Solarmodul",
+          "thermodynamic_water_heater": "Thermodynamischer Warmwasserbereiter (manuelle Aktivierung)",
+          "bms": "BMS-Modul (manuelle Aktivierung)"
         },
         "data_description": {
           "zones": "Nur ausgewählte Zonen bleiben nach dem Reload aktiv.",
           "hybrid": "Nur aktivieren, wenn die Anlage wirklich Hybridregister nutzt.",
           "cascade": "Nur aktivieren, wenn eine echte Erzeugerkaskade vorhanden ist.",
           "cooling": "Nur aktivieren, wenn Kühlbetrieb in Home Assistant sichtbar sein soll.",
-          "buffer_tank": "Nur aktivieren, wenn ein physischer Pufferspeicher angeschlossen ist."
+          "buffer_tank": "Nur aktivieren, wenn ein physischer Pufferspeicher angeschlossen ist.",
+          "solar": "Erzeugt oder entfernt Solar-Entities; die Erkennung nutzt das dokumentierte Register 8114.",
+          "thermodynamic_water_heater": "Aktiviert das Polling nur nach ausdrücklicher Auswahl; es wird keine Geräteerkennung abgefragt.",
+          "bms": "Aktiviert das Polling nur nach ausdrücklicher Auswahl; es wird keine Geräteerkennung abgefragt."
         }
       },
       "external_room_sensors": {
@@ -374,6 +393,17 @@
           "zone_12_external_room_sensor_aggregation": "Aggregation Zone 12",
           "zone_12_external_room_sensor_write_interval": "Schreibintervall Zone 12 (Sekunden)",
           "zone_12_external_room_sensor_timeout": "Sensor-Timeout Zone 12 (Sekunden)"
+        }
+      },
+      "arbeitszahl": {
+        "title": "Arbeitszahl seit Nullpunkt",
+        "description": "Lokale Zählerstände 439 und 443 zum gewählten Nullpunkt. Beide Werte setzen oder beide leer lassen.",
+        "data": {
+          "arbeitszahl_electrical_baseline_kwh": "Stromzähler 439 am Nullpunkt (kWh)",
+          "arbeitszahl_thermal_baseline_kwh": "Wärmezähler 443 am Nullpunkt (kWh)"
+        },
+        "error": {
+          "baseline_pair_required": "Beide Nullpunktwerte müssen gemeinsam gesetzt werden."
         }
       }
     }
@@ -2296,6 +2326,28 @@
           "storage_tank": "Speicher"
         }
       },
+      "buffer_tank_requested_power": {
+        "name": "Angeforderte Leistung des Pufferspeichers"
+      },
+      "buffer_tank_requested_setpoint": {
+        "name": "Angeforderter Puffersollwert"
+      },
+      "buffer_tank_heat_demand_type": {
+        "name": "Wärmeanforderung Pufferspeicher",
+        "state": {
+          "none": "Keine",
+          "dhw_primary": "Primäres Warmwasser",
+          "dhw_high_priority": "Warmwasser hohe Priorität",
+          "process_heat": "Prozesswärme",
+          "screed_drying": "Estrichtrocknung",
+          "dhw_medium_priority": "Warmwasser mittlere Priorität",
+          "dhw_low_priority": "Warmwasser niedrige Priorität",
+          "central_heating": "Heizung",
+          "cooling": "Kühlung",
+          "electrical_active": "Elektrisch aktiv",
+          "electrical_reactive": "Elektrisch reaktiv"
+        }
+      },
       "zone_flow_temp": {
         "name": "Heizkreis {zone} Vorlauftemperatur"
       },
@@ -2548,6 +2600,312 @@
       },
       "low_noise_mode_state": {
         "name": "Status Leisebetrieb"
+      },
+      "arbeitszahl_seit_nullpunkt": {
+        "name": "Arbeitszahl seit Nullpunkt"
+      },
+      "manufacturer_cascade_7000_raw": {
+        "name": "Kaskade Appliance Number on cascade:"
+      },
+      "manufacturer_cascade_7001_np014": {
+        "name": "Kaskade Mode on cascade"
+      },
+      "manufacturer_cascade_7002_np006": {
+        "name": "Kaskade Type of Cascade :  Traditional or PARALLEL"
+      },
+      "manufacturer_cascade_7003_np005": {
+        "name": "Kaskade This parameter is used to set the master boiler."
+      },
+      "manufacturer_cascade_7004_np009": {
+        "name": "Kaskade Time delay for starting up or shutting down producers"
+      },
+      "manufacturer_cascade_7005_np007": {
+        "name": "Kaskade Outside temperature triggering all stages in parallel mode"
+      },
+      "manufacturer_cascade_7006_np010": {
+        "name": "Kaskade Outside temperature triggering all stages in parallel mode"
+      },
+      "manufacturer_cascade_7007_np012": {
+        "name": "Kaskade Rise Time to Acheive Setpoint"
+      },
+      "manufacturer_cascade_7008_ap083": {
+        "name": "Kaskade Enabled the master functionnality of this device one the S-Bus, If multople devices have this parameter all will be reset to 0 automatically,"
+      },
+      "manufacturer_cascade_7009_np011": {
+        "name": "Kaskade choice of cascade algorithm type, power or temperature"
+      },
+      "manufacturer_cascade_7010_np289": {
+        "name": "Kaskade The maximum flow temperature the système is allowed to produce"
+      },
+      "manufacturer_cascade_7011_np223": {
+        "name": "Kaskade the type of start order permutation, to determine which producer to start first"
+      },
+      "manufacturer_cascade_7013_np224": {
+        "name": "Kaskade Time delay for starting and shutting down producers, to prevent repeatedly turning on/off producers."
+      },
+      "manufacturer_cascade_7014_np225": {
+        "name": "Kaskade Switching strategy for power control of the cascade."
+      },
+      "manufacturer_cascade_7015_np227": {
+        "name": "Kaskade The preferred appliance for CH heat production"
+      },
+      "manufacturer_cascade_7016_np228": {
+        "name": "Kaskade The non-preferred appliance for CH heat production"
+      },
+      "manufacturer_cascade_7017_np282": {
+        "name": "Kaskade The power percentage for the late on strategy for activating the next appliance"
+      },
+      "manufacturer_cascade_7018_np283": {
+        "name": "Kaskade The power percentage for the late off strategy for deactivating the last appliance"
+      },
+      "manufacturer_cascade_7019_np284": {
+        "name": "Kaskade The power percentage for the early on strategy for activating the next appliance"
+      },
+      "manufacturer_cascade_7020_np285": {
+        "name": "Kaskade The power percentage for the early off strategy for deactivating the last appliance"
+      },
+      "manufacturer_cascade_7021_np008": {
+        "name": "Kaskade Minimum duration of post-operation of the generator pump"
+      },
+      "manufacturer_cascade_7022_np013": {
+        "name": "Kaskade Force Primary Pump to Stop"
+      },
+      "manufacturer_cascade_7023_np287": {
+        "name": "Kaskade The type of primary pump"
+      },
+      "manufacturer_cascade_7024_np288": {
+        "name": "Kaskade The type of secondary pump"
+      },
+      "manufacturer_cascade_7200_np231": {
+        "name": "Kaskade The order in which the producers are going to be activated"
+      },
+      "manufacturer_cascade_7201_raw": {
+        "name": "Kaskade Raw producer identity and status value"
+      },
+      "manufacturer_cascade_7202_raw": {
+        "name": "Kaskade Raw enum status code"
+      },
+      "manufacturer_cascade_7203_ep001": {
+        "name": "Kaskade Raw power-rating/status value"
+      },
+      "manufacturer_cascade_7205_ep086": {
+        "name": "Kaskade Raw power-rating/status value"
+      },
+      "manufacturer_cascade_7228_em228": {
+        "name": "Kaskade The serial number of an appliance in the cascade system"
+      },
+      "manufacturer_solar_8112_sc129": {
+        "name": "Solarertrag für Warmwasser und Heizung"
+      },
+      "manufacturer_solar_8114_sm020": {
+        "name": "Status der erweiterten Solaranlage"
+      },
+      "manufacturer_solar_8115_sm036": {
+        "name": "Drehzahl der Solarpumpen"
+      },
+      "manufacturer_solar_8116_sm033": {
+        "name": "Temperatur am unteren Warmwasserspeicher"
+      },
+      "manufacturer_solar_8117_sm034": {
+        "name": "Temperatur am unteren Heizspeicher"
+      },
+      "manufacturer_solar_8118_sm023": {
+        "name": "Temperatur des Wärmeträgers an Kollektor 1"
+      },
+      "manufacturer_solar_8119_sm024": {
+        "name": "Temperatur des Wärmeträgers an Kollektor 2"
+      },
+      "manufacturer_solar_8120_sm000": {
+        "name": "Stellung des Dreiwegeventils 1"
+      },
+      "manufacturer_solar_8121_sm001": {
+        "name": "Stellung des Dreiwegeventils 2"
+      },
+      "manufacturer_solar_8122_raw": {
+        "name": "Absenkung des Warmwasser-Sollwerts durch Solarertrag"
+      },
+      "manufacturer_solar_8123_raw": {
+        "name": "Absenkung des Heizkreis-Sollwerts durch Solarertrag"
+      },
+      "manufacturer_solar_8141_sp287": {
+        "name": "Art der Solarhydraulik"
+      },
+      "manufacturer_solar_8142_sp010": {
+        "name": "Betriebsart der erweiterten Solar-Warmwasser-/Heizungsfunktion"
+      },
+      "manufacturer_solar_8143_sp044": {
+        "name": "Solltemperatur des Warmwasserspeichers"
+      },
+      "manufacturer_solar_8144_sp047": {
+        "name": "Solltemperatur zum solaren Laden des Heizspeichers"
+      },
+      "manufacturer_solar_8145_sp034": {
+        "name": "Maximaltemperatur Solarkollektor 1"
+      },
+      "manufacturer_solar_8146_sp035": {
+        "name": "Maximaltemperatur Solarkollektor 2"
+      },
+      "manufacturer_solar_8147_sp045": {
+        "name": "Maximale Warmwasser-Solltemperatur"
+      },
+      "manufacturer_solar_8148_sp048": {
+        "name": "Maximale Heizkreis-Solltemperatur"
+      },
+      "manufacturer_solar_8149_sp182": {
+        "name": "Mindest-Temperaturanstieg je Pumpenstufe (Kollektor 1)"
+      },
+      "manufacturer_solar_8150_sp183": {
+        "name": "Mindest-Temperaturanstieg je Pumpenstufe (Kollektor 2)"
+      },
+      "manufacturer_thermodynamic_water_heater_9001_ap055": {
+        "name": "Thermodynamischer Warmwasserbereiter PV function Active"
+      },
+      "manufacturer_thermodynamic_water_heater_9002_ap057": {
+        "name": "Thermodynamischer Warmwasserbereiter PV function Contact Logic"
+      },
+      "manufacturer_thermodynamic_water_heater_9003_dp512": {
+        "name": "Thermodynamischer Warmwasserbereiter Zone Dhw primary Boost PV Setpoint"
+      },
+      "manufacturer_thermodynamic_water_heater_9004_ap024": {
+        "name": "Thermodynamischer Warmwasserbereiter Peak/OffPeak Active"
+      },
+      "manufacturer_thermodynamic_water_heater_9005_ap047": {
+        "name": "Thermodynamischer Warmwasserbereiter Peak input contact logic configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9006_hp149": {
+        "name": "Thermodynamischer Warmwasserbereiter Max time BackUp off when peak mode enabled"
+      },
+      "manufacturer_thermodynamic_water_heater_9007_am034": {
+        "name": "Thermodynamischer Warmwasserbereiter S_PhotoVoltaicInputState"
+      },
+      "manufacturer_thermodynamic_water_heater_9008_am032": {
+        "name": "Thermodynamischer Warmwasserbereiter S_PeakOffPeakInputState"
+      },
+      "manufacturer_thermodynamic_water_heater_9009_hp059": {
+        "name": "Thermodynamischer Warmwasserbereiter Digital input 1 configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9010_hp076": {
+        "name": "Thermodynamischer Warmwasserbereiter Digital input 2 configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9011_hp077": {
+        "name": "Thermodynamischer Warmwasserbereiter digital input 1 contact logic configuration"
+      },
+      "manufacturer_thermodynamic_water_heater_9012_hp078": {
+        "name": "Thermodynamischer Warmwasserbereiter digital input 2 contact logic configuration"
+      },
+      "manufacturer_hybrid_9200_am016": {
+        "name": "Vorlauftemperatur"
+      },
+      "manufacturer_hybrid_9201_am018": {
+        "name": "Rücklauftemperatur"
+      },
+      "manufacturer_hybrid_9202_am101": {
+        "name": "Interner Sollwert für Warmwasserbereitung"
+      },
+      "manufacturer_hybrid_9203_am019": {
+        "name": "Wasserdruck"
+      },
+      "manufacturer_hybrid_9204_am012": {
+        "name": "Gerätestatus"
+      },
+      "manufacturer_hybrid_9205_am014": {
+        "name": "Geräte-Unterstatus"
+      },
+      "manufacturer_hybrid_9206_pc002": {
+        "name": "Brenner-/Kompressorstarts"
+      },
+      "manufacturer_hybrid_9208_pc003": {
+        "name": "Brennerbetriebsstunden"
+      },
+      "manufacturer_hybrid_9210_ac001": {
+        "name": "Betriebsstunden des Geräts"
+      },
+      "manufacturer_hybrid_9212_ac005": {
+        "name": "Energieverbrauch für Heizung"
+      },
+      "manufacturer_hybrid_9214_ac006": {
+        "name": "Energieverbrauch für Warmwasser"
+      },
+      "manufacturer_hybrid_9216_hm003": {
+        "name": "System-Vorlauf-Solltemperatur einschließlich Zusatzheizung"
+      },
+      "manufacturer_hybrid_9217_am010": {
+        "name": "Aktuelle Pumpendrehzahl"
+      },
+      "manufacturer_hybrid_9218_am047": {
+        "name": "Signal zur Berechnung der aktuellen Leistung"
+      },
+      "manufacturer_hybrid_9220_am011": {
+        "name": "Wartung erforderlich"
+      },
+      "manufacturer_hybrid_9221_hp061": {
+        "name": "Ausgewählte Hybrid-Betriebsart"
+      },
+      "manufacturer_hybrid_9222_hp062": {
+        "name": "Strompreis Hochtarif"
+      },
+      "manufacturer_hybrid_9223_hp063": {
+        "name": "Strompreis Niedertarif"
+      },
+      "manufacturer_hybrid_9224_hp064": {
+        "name": "Preis fossiler Energie (Öl oder Gas)"
+      },
+      "manufacturer_hybrid_9225_hp065": {
+        "name": "CO₂-Emission Strom im Heizbetrieb"
+      },
+      "manufacturer_hybrid_9226_hp066": {
+        "name": "CO₂-Emission Strom bei Warmwasserbereitung"
+      },
+      "manufacturer_hybrid_9227_hp067": {
+        "name": "CO₂-Emission Gas oder Öl"
+      },
+      "manufacturer_hybrid_9228_hp068": {
+        "name": "Wirkungsgrad des Kessels"
+      },
+      "manufacturer_hybrid_9229_hp054": {
+        "name": "COP-Schwelle für die Freigabe der Wärmepumpe im Hybridbetrieb"
+      },
+      "manufacturer_hybrid_9232_hp062": {
+        "name": "Strompreis Hochtarif (präziser Wert)"
+      },
+      "manufacturer_hybrid_9233_hp063": {
+        "name": "Strompreis Niedertarif (präziser Wert)"
+      },
+      "manufacturer_hybrid_9234_hp064": {
+        "name": "Preis fossiler Energie (Öl oder Gas, präziser Wert)"
+      },
+      "manufacturer_bms_21020_raw": {
+        "name": "Wärmeanforderungsmodus bei Kommunikationsfehler"
+      },
+      "manufacturer_bms_21021_raw": {
+        "name": "Ersatzstrategie bei Kommunikationsfehler"
+      },
+      "manufacturer_bms_21022_raw": {
+        "name": "Dauer der Wärmeanforderung im Ersatzbetrieb"
+      },
+      "manufacturer_bms_21023_raw": {
+        "name": "Ersatz-Leistungssollwert"
+      },
+      "manufacturer_bms_21024_raw": {
+        "name": "Ersatz-Temperatursollwert"
+      },
+      "manufacturer_bms_21025_raw": {
+        "name": "Ersatz-Wärmeanforderungstyp"
+      },
+      "manufacturer_bms_21026_ep014": {
+        "name": "0–10-V-Eingang: Temperatur- oder Leistungssollwert"
+      },
+      "manufacturer_bms_21027_em010": {
+        "name": "Spannung am 0–10-V-Eingang"
+      },
+      "manufacturer_bms_21028_ap110": {
+        "name": "Zweiten Rücklauffühler aktivieren"
+      },
+      "manufacturer_bms_21029_raw": {
+        "name": "Temperatur am zweiten Rücklauffühler"
+      },
+      "manufacturer_bms_21030_gp017": {
+        "name": "Maximale Kesselleistung bei maximalen Brennereinstellungen"
       }
     },
     "binary_sensor": {
@@ -2736,6 +3094,27 @@
       }
     },
     "number": {
+      "buffer_hysteresis_start": {
+        "name": "Hysterese zum Starten der Pufferspeicherladung"
+      },
+      "buffer_hysteresis_stop": {
+        "name": "Hysterese zum Beenden der Pufferspeicherladung"
+      },
+      "buffer_pump_post_run": {
+        "name": "Pumpennachlaufzeit Pufferspeicher"
+      },
+      "buffer_fixed_setpoint_heating": {
+        "name": "Fester Puffersollwert Heizen"
+      },
+      "buffer_fixed_setpoint_cooling": {
+        "name": "Fester Puffersollwert Kühlen"
+      },
+      "buffer_slope": {
+        "name": "Pufferspeicher Steigung"
+      },
+      "buffer_setpoint_offset": {
+        "name": "Pufferspeicher Sollwert-Offset"
+      },
       "hybrid_electricity_cost_high_tariff": {
         "name": "Hybrid-Strompreis Hochtarif"
       },
@@ -2926,6 +3305,14 @@
       }
     },
     "select": {
+      "buffer_control_strategy": {
+        "name": "Pufferspeicher Regelstrategie",
+        "state": {
+          "fixed_setpoint": "Fester Sollwert",
+          "calculated_setpoint": "Berechneter Sollwert",
+          "dedicated_slope": "Eigene Steigung"
+        }
+      },
       "force_summer_mode": {
         "name": "Sommermodus erzwingen",
         "state": {

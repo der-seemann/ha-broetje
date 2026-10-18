@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.16.0-beta.0
+- Feat: Add the missing BufferTank controls 7500–7507 and read-only diagnostics 7604–7606, plus 101 documented read-only entities across Cascade, Hybrid, Solar, Thermodynamic Water Heater and BMS. Optional module polling remains feature-gated; Solar retains automatic detection at register 8114, while TWH/BMS are opt-in and default off.
+- Feat: Restore the historical internal working ratio as the native “Arbeitszahl seit Nullpunkt” sensor using paired, instance-local baselines for registers 439/443, with persisted reset guards and OptionsFlow validation. No seasonal COP is inferred.
+- Docs: Add a row-by-row manufacturer workbook/PDF coverage matrix and behavior-based Henry comparison, including unresolved/opaque/reserved exclusions and live-verification limits.
+
 ## v0.15.3-beta.0
 - Fix: GTW-08 register 416 internal heat demand is exposed as a percent value in the register itself; preserve the raw percentage instead of multiplying it by 0.01.
 

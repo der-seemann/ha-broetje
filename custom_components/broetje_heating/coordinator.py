@@ -6,10 +6,7 @@ import asyncio
 import logging
 import time
 from datetime import date, timedelta
-from typing import Any
-
-from pymodbus.client import AsyncModbusTcpClient
-from pymodbus.exceptions import ModbusException
+from typing import Any, ClassVar
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_PORT, Platform
@@ -17,16 +14,18 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from pymodbus.client import AsyncModbusTcpClient
+from pymodbus.exceptions import ModbusException
 
 from .const import (
     ALWAYS_PRESENT_SUBDEVICES,
     CONF_IWR_FEATURES,
+    CONF_IWR_ZONE_DETAILS,
     CONF_SCAN_INTERVAL,
     CONF_SCAN_INTERVAL_FAST,
     CONF_SCAN_INTERVAL_NORMAL,
     CONF_SCAN_INTERVAL_SLOW,
     CONF_UNIT_ID,
-    CONF_IWR_ZONE_DETAILS,
     CONF_ZONES,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL_FAST,
@@ -34,23 +33,30 @@ from .const import (
     DEFAULT_SCAN_INTERVAL_SLOW,
     DEFAULT_UNIT_ID,
     DOMAIN,
-    EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD,
     EXCEPTION_CODE3_BACKOFF_SECONDS,
     EXCEPTION_CODE3_BACKOFF_THRESHOLD,
+    EXCEPTION_CODE10_AUTO_DISABLE_THRESHOLD,
+    FEATURE_BMS,
     FEATURE_BUFFER_TANK,
+    FEATURE_CASCADE,
     FEATURE_HYBRID,
+    FEATURE_SOLAR,
+    FEATURE_THERMODYNAMIC_WATER_HEATER,
     MANUFACTURER,
-    REG_HOLDING,
-    REG_INPUT,
     MODBUS_REGISTER_WRITE_MIN_INTERVAL_SECONDS,
     MODBUS_REQUEST_MIN_PAUSE_SECONDS,
     MODBUS_REQUEST_RETRIES,
     MODBUS_REQUEST_TIMEOUT_SECONDS,
+    REG_HOLDING,
+    REG_INPUT,
     SENTINEL_AUTO_DISABLE_THRESHOLD,
     SENTINEL_RETRY_INTERVAL_SECONDS,
+    SUBDEV_BMS,
     SUBDEV_BUFFER_TANK,
+    SUBDEV_CASCADE,
     SUBDEV_HYBRID,
     SUBDEV_SOLAR,
+    SUBDEV_THERMODYNAMIC_WATER_HEATER,
 )
 from .devices import CONF_DEVICE_TYPE, DEVICE_MODELS, DeviceType, get_device_config
 from .iwr_setup import detect_iwr_features, detect_iwr_setup
@@ -160,6 +166,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             features=self.selected_features,
             zone_details=self.zone_details,
         )
+        self._apply_device_config(device_config)
+
+    def _apply_device_config(self, device_config: dict[str, Any]) -> None:
+        """Apply filtered device maps before polling and entity construction."""
         self.register_map: dict[str, Any] = device_config["register_map"]
         self.sensors: dict[str, Any] = device_config["sensors"]
         self.binary_sensors: dict[str, Any] = device_config["binary_sensors"]
@@ -257,7 +267,6 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Read device identification information."""
         # TODO: Implement reading device info from Modbus registers
         # This will be populated once we have the register addresses from the PDF
-        pass
 
     async def _detect_sub_devices(self) -> None:
         """Detect which optional sub-devices are present on this installation.
@@ -275,10 +284,19 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         features = await detect_iwr_features(self._read_registers)
 
-        # Solar remains autodetected only; it is not exposed as a user-togglable group.
+        # Solar retains its existing automatic detection at documented register
+        # 8114. Only a positive probe adds the feature maps before polling starts.
         result = await self._read_registers(8114, 1, REG_HOLDING)
         if result is not None and result[0] not in {0x00FF, 0xFFFF}:
             self.active_sub_devices.add(SUBDEV_SOLAR)
+            self.selected_features[FEATURE_SOLAR] = True
+            device_config = get_device_config(
+                self._device_type,
+                zones=self.entry.data.get(CONF_ZONES, [1]),
+                features=self.selected_features,
+                zone_details=self.zone_details,
+            )
+            self._apply_device_config(device_config)
             _LOGGER.debug("Sub-device detected: Solar (reg 8114 = 0x%X)", result[0])
 
         if features.get(FEATURE_BUFFER_TANK, False) and self.selected_features.get(
@@ -290,6 +308,16 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             FEATURE_HYBRID, True
         ):
             self.active_sub_devices.add(SUBDEV_HYBRID)
+
+        if features.get(FEATURE_CASCADE, False) and self.selected_features.get(
+            FEATURE_CASCADE, True
+        ):
+            self.active_sub_devices.add(SUBDEV_CASCADE)
+
+        if self.selected_features.get(FEATURE_THERMODYNAMIC_WATER_HEATER, False):
+            self.active_sub_devices.add(SUBDEV_THERMODYNAMIC_WATER_HEATER)
+        if self.selected_features.get(FEATURE_BMS, False):
+            self.active_sub_devices.add(SUBDEV_BMS)
 
         _LOGGER.info("Active sub-devices: %s", sorted(self.active_sub_devices))
 
@@ -601,7 +629,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             filtered_registers.add(register_key)
 
         for register_key in skipped_registers:
-            self.last_read_details[register_key] = self._build_disabled_detail(register_key)
+            self.last_read_details[register_key] = self._build_disabled_detail(
+                register_key
+            )
 
         return self._get_due_registers(filtered_registers)
 
@@ -657,7 +687,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return False
 
         for entity_key in entity_keys:
-            category, _enabled = self.entity_classification.get(entity_key, (None, True))
+            category, _enabled = self.entity_classification.get(
+                entity_key, (None, True)
+            )
             if category != "diagnostic":
                 return False
         return True
@@ -792,7 +824,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Return register address and related entity keys for logging."""
         reg_config = self.register_map.get(register_key, {})
         address = reg_config.get("address")
-        entity_keys = ", ".join(self._register_entities.get(register_key, [register_key]))
+        entity_keys = ", ".join(
+            self._register_entities.get(register_key, [register_key])
+        )
         return address, entity_keys
 
     def _log_register_auto_disable(
@@ -922,7 +956,9 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "reprobe_attempted": permanent,
         }
         if not permanent:
-            state["retry_at_monotonic"] = time.monotonic() + SENTINEL_RETRY_INTERVAL_SECONDS
+            state["retry_at_monotonic"] = (
+                time.monotonic() + SENTINEL_RETRY_INTERVAL_SECONDS
+            )
         self._register_poll_state[register_key] = state
         self._log_register_auto_disable(
             register_key,
@@ -1002,7 +1038,10 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return
 
         self._sentinel_fail_counts.pop(register_key, None)
-        if state is not None and state.get("mode") in {"sentinel_temp", "exception3_backoff"}:
+        if state is not None and state.get("mode") in {
+            "sentinel_temp",
+            "exception3_backoff",
+        }:
             self._register_poll_state.pop(register_key, None)
 
     def _handle_failed_register_read(
@@ -1293,10 +1332,11 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     # Standard Modbus sentinel values indicating "not available" / "no data".
     # These are checked against the raw decoded value BEFORE scaling.
-    _SENTINEL_VALUES: dict[str, set[int]] = {
+    _SENTINEL_VALUES: ClassVar[dict[str, set[int]]] = {
         # 8-bit values arrive in one 16-bit Modbus register. No-data shows up as
         # either 0x00FF (actual 8-bit max) or 0xFFFF depending on device/bridge.
         "uint8": {0x00FF, 0xFFFF},
+        "int8": {-1, -128},
         "enum8": {0x00FF, 0xFFFF},
         # GTW-08 returns both 0xFFFF and 0x8000 for signed "no data" registers.
         "int16": {-1, -32768},
@@ -1370,6 +1410,12 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if data_type in {"uint8", "enum8"}:
             return registers[0] in sentinels
 
+        if data_type == "int8":
+            value = registers[0] & 0x00FF
+            if value >= 128:
+                value -= 256
+            return value in sentinels
+
         if data_type == "int16":
             value = registers[0]
             if value >= 32768:
@@ -1420,6 +1466,14 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if raw_word in self._get_sentinel_values(config, data_type):
                 return None
             return (raw_word & 0x00FF) * scale
+
+        if data_type == "int8":
+            value = registers[0] & 0x00FF
+            if value >= 128:
+                value -= 256
+            if value in self._get_sentinel_values(config, data_type):
+                return None
+            return value * scale
 
         if data_type == "int16":
             value = registers[0]
@@ -1502,7 +1556,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return [value & 0xFFFF]
 
-    async def async_write_register(self, register_key: str, value: float | int) -> None:
+    async def async_write_register(self, register_key: str, value: float) -> None:
         """Write a value to a writable register.
 
         Validates the writable flag and bounds, applies reverse scaling,
@@ -1543,7 +1597,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         # Reverse scaling: convert user-facing value to raw register value
         scale = config.get("scale", 1.0)
-        raw_value = int(round(value / scale)) if scale != 1 else int(value)
+        raw_value = round(value / scale) if scale != 1 else int(value)
 
         # Encode to register word(s)
         data_type = config.get("data_type", "uint16")

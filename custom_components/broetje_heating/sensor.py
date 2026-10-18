@@ -16,9 +16,20 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.storage import Store
 
+from .arbeitszahl import (
+    ArbeitszahlTracker,
+    async_restore_tracker,
+    async_save_tracker,
+    source_values_available,
+)
+from .const import (
+    CONF_ARBEITSZAHL_ELECTRICAL_BASELINE,
+    CONF_ARBEITSZAHL_THERMAL_BASELINE,
+)
 from .coordinator import BroetjeModbusCoordinator
 from .entity import BroetjeEntity
 
@@ -72,6 +83,12 @@ async def async_setup_entry(
                 sensor_config=sensor_config,
             )
         )
+
+    if {
+        "total_energy_consumed",
+        "total_thermal_delivered",
+    }.issubset(coordinator.register_map):
+        entities.append(ArbeitszahlSensor(coordinator))
 
     async_add_entities(entities)
 
@@ -226,3 +243,77 @@ class BroetjeSensor(BroetjeEntity, SensorEntity):
             return round(value, 2)
 
         return value
+
+
+class ArbeitszahlSensor(BroetjeEntity, SensorEntity):
+    """Cumulative working ratio since a locally configured counter baseline."""
+
+    _attr_icon = "mdi:chart-line"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: BroetjeModbusCoordinator) -> None:
+        super().__init__(coordinator, "arbeitszahl_seit_nullpunkt")
+        self._attr_translation_key = "arbeitszahl_seit_nullpunkt"
+        entry = coordinator.config_entry
+        self._tracker = ArbeitszahlTracker(
+            entry.options.get(CONF_ARBEITSZAHL_ELECTRICAL_BASELINE),
+            entry.options.get(CONF_ARBEITSZAHL_THERMAL_BASELINE),
+        )
+        self._store = Store(
+            coordinator.hass,
+            1,
+            f"{entry.domain}.{entry.entry_id}.arbeitszahl",
+        )
+        self._restore_done = False
+
+    @property
+    def available(self) -> bool:
+        return (
+            super().available
+            and self._tracker.baseline_valid
+            and self.native_value is not None
+        )
+
+    @property
+    def native_value(self) -> float | None:
+        data = self.coordinator.data
+        if not self._restore_done or data is None or not self._sources_available():
+            return None
+        # observe() is idempotent for unchanged coordinator values and keeps the
+        # reset guard active even when the sensor is disabled in the registry.
+        return self._tracker.observe(
+            data.get("total_energy_consumed"), data.get("total_thermal_delivered")
+        )
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        await async_restore_tracker(self._store, self._tracker)
+        self._restore_done = True
+        self._observe_and_save()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self._observe_and_save()
+        super()._handle_coordinator_update()
+
+    @callback
+    def _observe_and_save(self) -> None:
+        if (
+            not self._restore_done
+            or not self._tracker.baseline_valid
+            or self.coordinator.data is None
+            or not self._sources_available()
+        ):
+            return
+        self._tracker.observe(
+            self.coordinator.data.get("total_energy_consumed"),
+            self.coordinator.data.get("total_thermal_delivered"),
+        )
+        self.hass.async_create_task(async_save_tracker(self._store, self._tracker))
+
+    def _sources_available(self) -> bool:
+        details = self.coordinator.last_read_details
+        return source_values_available(
+            details.get("total_energy_consumed"),
+            details.get("total_thermal_delivered"),
+        )
