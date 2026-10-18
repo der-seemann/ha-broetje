@@ -401,11 +401,11 @@
         "data": {
           "arbeitszahl_electrical_baseline_kwh": "Electrical counter 439 at baseline (kWh)",
           "arbeitszahl_thermal_baseline_kwh": "Thermal counter 443 at baseline (kWh)"
-        },
-        "error": {
-          "baseline_pair_required": "Both baseline values must be set together."
         }
       }
+    },
+    "error": {
+      "baseline_pair_required": "Both baseline values must be set together."
     }
   },
   "entity": {

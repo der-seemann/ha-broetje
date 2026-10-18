@@ -401,11 +401,11 @@
         "data": {
           "arbeitszahl_electrical_baseline_kwh": "Stromzähler 439 am Nullpunkt (kWh)",
           "arbeitszahl_thermal_baseline_kwh": "Wärmezähler 443 am Nullpunkt (kWh)"
-        },
-        "error": {
-          "baseline_pair_required": "Beide Nullpunktwerte müssen gemeinsam gesetzt werden."
         }
       }
+    },
+    "error": {
+      "baseline_pair_required": "Beide Nullpunktwerte müssen gemeinsam gesetzt werden."
     }
   },
   "entity": {
