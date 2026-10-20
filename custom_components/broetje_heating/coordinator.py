@@ -1038,11 +1038,50 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return
 
         self._sentinel_fail_counts.pop(register_key, None)
-        if state is not None and state.get("mode") in {
-            "sentinel_temp",
-            "exception3_backoff",
-        }:
+        if state is not None:
             self._register_poll_state.pop(register_key, None)
+            if state.get("mode") in {
+                "sentinel_temp",
+                "sentinel_permanent",
+                "exception10_permanent",
+                "exception3_backoff",
+            }:
+                self._enable_registry_entities_after_register_recovery(register_key)
+
+    def _enable_registry_entities_after_register_recovery(
+        self, register_key: str
+    ) -> int:
+        """Re-enable only integration-disabled entities after this register reads validly."""
+        entity_keys = self._register_entities.get(register_key, [])
+        if not entity_keys:
+            return 0
+
+        entity_registry = er.async_get(self.hass)
+        unique_root = self.config_entry.unique_id or self.config_entry.entry_id
+        enabled = 0
+        for registry_entry in er.async_entries_for_config_entry(
+            entity_registry, self.config_entry.entry_id
+        ):
+            if registry_entry.platform != DOMAIN:
+                continue
+            if not registry_entry.unique_id.startswith(f"{unique_root}_"):
+                continue
+            entity_key = registry_entry.unique_id[len(unique_root) + 1 :]
+            if entity_key not in entity_keys:
+                continue
+            if registry_entry.disabled_by != er.RegistryEntryDisabler.INTEGRATION:
+                continue
+            entity_registry.async_update_entity(
+                registry_entry.entity_id,
+                disabled_by=None,
+            )
+            enabled += 1
+            _LOGGER.info(
+                "Re-enabled entity registry entry %s after register %s recovered",
+                registry_entry.entity_id,
+                register_key,
+            )
+        return enabled
 
     def _handle_failed_register_read(
         self,
@@ -1693,6 +1732,13 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     register_words,
                     readback_words,
                 )
+            elif not self._is_sentinel_value(
+                readback, config.get("data_type", "int16"), config
+            ):
+                # A verified readback is health evidence for this exact register
+                # only. In particular, it cannot clear another room-temperature
+                # register's sentinel state.
+                self._handle_successful_register_read(register_key, readback, config)
 
             # Push the verified read-back value into coordinator state immediately
             # so writable config entities do not stay stale until their next

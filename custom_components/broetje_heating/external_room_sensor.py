@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import math
 import time
 from collections.abc import Callable
 from datetime import timedelta
@@ -242,8 +243,19 @@ class ExternalRoomSensorSync:
                     raw_state,
                 )
                 continue
-            age_seconds = (now - state.last_updated).total_seconds()
-            if age_seconds > timeout_seconds:
+            if not math.isfinite(value):
+                _LOGGER.debug(
+                    "Ignoring non-finite external room sensor state for zone %s from %s",
+                    zone,
+                    entity_id,
+                )
+                continue
+            # HA can retain last_changed for a stable temperature while still
+            # receiving fresh reports. Prefer last_reported when supported;
+            # older HA State objects fall back to last_updated.
+            reported_at = getattr(state, "last_reported", None) or state.last_updated
+            age_seconds = (now - reported_at).total_seconds()
+            if age_seconds < 0 or age_seconds > timeout_seconds:
                 continue
             samples.append(
                 {
@@ -251,6 +263,7 @@ class ExternalRoomSensorSync:
                     "value": value,
                     "last_changed": state.last_changed,
                     "last_updated": state.last_updated,
+                    "last_reported": reported_at,
                     "age_seconds": age_seconds,
                 }
             )
@@ -280,6 +293,16 @@ class ExternalRoomSensorSync:
         if not samples:
             return "timeout_or_all_sources_invalid"
 
+        return None
+
+    def _aggregation_suspect_reason(
+        self,
+        samples: list[dict[str, Any]],
+        aggregation: str,
+        timeout_seconds: int,
+    ) -> str | None:
+        """Return a diagnostic when an unchanged winner differs from peers."""
+
         if aggregation not in {
             EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN,
             EXTERNAL_ROOM_SENSOR_AGGREGATION_MAX,
@@ -302,7 +325,7 @@ class ExternalRoomSensorSync:
         stale_winner_seconds = (
             dt_util.utcnow() - winner["last_changed"]
         ).total_seconds()
-        if stale_winner_seconds >= max(timeout_seconds / 2, 1800):
+        if stale_winner_seconds >= timeout_seconds:
             return (
                 f"aggregation_suspect:{winner['entity_id']}:"
                 f"unchanged_for={int(stale_winner_seconds)}s:spread={spread:.2f}"
@@ -384,6 +407,18 @@ class ExternalRoomSensorSync:
                 force_log=force_status_log,
             )
             return
+
+        suspect_reason = self._aggregation_suspect_reason(
+            samples, aggregation, timeout_seconds
+        )
+        if suspect_reason is not None:
+            _LOGGER.warning(
+                "External room sensor sync for zone %s has a fresh unchanged aggregate winner (%s); "
+                "continuing configured aggregation and write to %s",
+                zone,
+                suspect_reason,
+                register_key,
+            )
 
         value, _ = self._aggregate(samples, aggregation)
         value = round(value, 1)
