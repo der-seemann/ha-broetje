@@ -322,7 +322,9 @@ class ExternalRoomSensorSync:
             if aggregation == EXTERNAL_ROOM_SENSOR_AGGREGATION_MIN
             else max(samples, key=lambda sample: sample["value"])
         )
-        stale_winner_seconds = (dt_util.utcnow() - winner["last_changed"]).total_seconds()
+        stale_winner_seconds = (
+            dt_util.utcnow() - winner["last_changed"]
+        ).total_seconds()
         if stale_winner_seconds >= timeout_seconds:
             return (
                 f"aggregation_suspect:{winner['entity_id']}:"

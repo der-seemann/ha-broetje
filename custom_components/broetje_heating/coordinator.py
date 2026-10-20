@@ -1738,9 +1738,7 @@ class BroetjeModbusCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 # A verified readback is health evidence for this exact register
                 # only. In particular, it cannot clear another room-temperature
                 # register's sentinel state.
-                self._handle_successful_register_read(
-                    register_key, readback, config
-                )
+                self._handle_successful_register_read(register_key, readback, config)
 
             # Push the verified read-back value into coordinator state immediately
             # so writable config entities do not stay stale until their next
