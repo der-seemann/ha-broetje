@@ -183,6 +183,7 @@ Die schreibbaren Register `Raumtemperatur gemessen` können für Heizkreise von 
 - Aggregationsmodi: `average`, `min`, `max`
 - Standard-Sensor-Timeout: 90 Minuten
 - Standard-Schreibintervall: 60 Sekunden
+- Die konfigurierte Frischefrist ist die einzige Altersgrenze. Ein unveränderter Temperaturwert wird weiter verwendet, solange Home Assistant frische Reports (`last_reported`, falls verfügbar, sonst `last_updated`) meldet; veraltete, zukünftige, nicht endliche, unbekannte oder ungültige Quellen werden weiterhin ausgeschlossen.
 - Sind alle Quellen veraltet oder ungültig, stoppt die Integration die Writes und die Anlage kann auf ihre eigene Innen-/Außentemperaturstrategie zurückfallen
 - Der Watchdog-Pause-/Aktiv-Zustand wird über Home-Assistant-Core-Restarts hinweg persistiert und beim Start neu bewertet
 - Der Auswahl-Flow bietet Raum-Vorfilter + Text-Vorfilter vor der eigentlichen Entity-Liste

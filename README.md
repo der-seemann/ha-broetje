@@ -183,6 +183,7 @@ The writable `room temperature measured` registers can be driven from Home Assis
 - Aggregation modes: `average`, `min`, `max`
 - Default source timeout: 90 minutes
 - Default write interval: 60 seconds
+- The configured freshness timeout is the sole age limit. An unchanged temperature remains eligible while Home Assistant reports it as fresh (`last_reported` when available, otherwise `last_updated`); stale, future-dated, non-finite, unknown, and invalid sources remain excluded.
 - If all sources are stale/invalid, writes stop and the appliance can fall back to its own internal/outdoor-temperature strategy
 - The watchdog pause/active state is persisted and re-evaluated on Home Assistant Core restart
 - The selector flow supports room prefilter + text prefilter before showing the final entity list

@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.16.0-beta.1
+- Fix: External room sensors remain eligible while their configured Home Assistant report freshness is within the configured timeout, even when the temperature itself remains unchanged. Stale, future-dated, non-finite, unknown, and invalid sources remain excluded.
+- Fix: A valid exact register readback clears auto-disabled polling state only for that register; recovery re-enables only matching integration-disabled registry entries and preserves user-disabled entries.
+- Docs/Tests: Document freshness behavior and cover timeout filtering, stable `min` aggregation, per-register recovery, readback mismatch/sentinel handling, and registry ownership.
+
 ## v0.16.0-beta.0
 - Feat: Add the missing BufferTank controls 7500–7507 and read-only diagnostics 7604–7606, plus 101 documented read-only entities across Cascade, Hybrid, Solar, Thermodynamic Water Heater and BMS. Optional module polling remains feature-gated; Solar retains automatic detection at register 8114, while TWH/BMS are opt-in and default off.
 - Feat: Restore the historical internal working ratio as the native “Arbeitszahl seit Nullpunkt” sensor using paired, instance-local baselines for registers 439/443, with persisted reset guards and OptionsFlow validation. No seasonal COP is inferred.
