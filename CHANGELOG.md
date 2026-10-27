@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.16.0-beta.2
+- Fix: GTW-08 heat pump defrost register 481 remains available when the optional hybrid feature is not detected.
+
 ## v0.16.0-beta.1
 - Fix: External room sensors remain eligible while their configured Home Assistant report freshness is within the configured timeout, even when the temperature itself remains unchanged. Stale, future-dated, non-finite, unknown, and invalid sources remain excluded.
 - Fix: A valid exact register readback clears auto-disabled polling state only for that register; recovery re-enables only matching integration-disabled registry entries and preserves user-disabled entries.
