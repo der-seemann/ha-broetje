@@ -7827,7 +7827,9 @@ def _feature_for_register(
         or 21020 <= address <= 21030
     ):
         return FEATURE_BMS
-    if sub_device == SUBDEV_HYBRID or 464 <= address <= 486:
+    if sub_device == SUBDEV_HYBRID or (
+        464 <= address <= 486 and entity_key != "heat_pump_defrost"
+    ):
         return FEATURE_HYBRID
     if "cooling" in entity_key:
         return FEATURE_COOLING
