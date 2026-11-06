@@ -2020,7 +2020,7 @@ _IWR_STATIC_REGISTER_MAP: Final = {
         "type": REG_HOLDING,
         "count": 1,
         "data_type": "uint8",
-        "scale": 0.01,
+        "scale": 1,
     },
     "buffer_tank_requested_setpoint": {
         "address": 7605,
@@ -5320,6 +5320,7 @@ _IWR_STATIC_SENSORS: Final = {
         "register": "buffer_tank_requested_power",
         "translation_key": "buffer_tank_requested_power",
         "device_class": None,
+        "unit": "%",
         "state_class": "measurement",
         "icon": "mdi:gauge",
         "sub_device": SUBDEV_BUFFER_TANK,
@@ -7827,7 +7828,9 @@ def _feature_for_register(
         or 21020 <= address <= 21030
     ):
         return FEATURE_BMS
-    if sub_device == SUBDEV_HYBRID or 464 <= address <= 486:
+    if sub_device == SUBDEV_HYBRID or (
+        464 <= address <= 486 and entity_key != "heat_pump_defrost"
+    ):
         return FEATURE_HYBRID
     if "cooling" in entity_key:
         return FEATURE_COOLING

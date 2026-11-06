@@ -112,6 +112,66 @@ def test_optional_features_are_filtered_independently() -> None:
         assert set(filter_map(fixtures, {feature: True}, None)) == {key}
 
 
+def _load_iwr_module():
+    package_name = PACKAGE
+    package = types.ModuleType(package_name)
+    package.__path__ = [str(ROOT / "custom_components/broetje_heating")]
+    sys.modules[package_name] = package
+    devices = types.ModuleType(f"{package_name}.devices")
+    devices.__path__ = [str(ROOT / "custom_components/broetje_heating/devices")]
+    sys.modules[devices.__name__] = devices
+
+    const_spec = importlib.util.spec_from_file_location(
+        f"{package_name}.const", ROOT / "custom_components/broetje_heating/const.py"
+    )
+    assert const_spec and const_spec.loader
+    const_module = importlib.util.module_from_spec(const_spec)
+    sys.modules[const_spec.name] = const_module
+    const_spec.loader.exec_module(const_module)
+
+    optional_spec = importlib.util.spec_from_file_location(
+        f"{package_name}.devices.iwr_optional",
+        ROOT / "custom_components/broetje_heating/devices/iwr_optional.py",
+    )
+    assert optional_spec and optional_spec.loader
+    optional_module = importlib.util.module_from_spec(optional_spec)
+    sys.modules[optional_spec.name] = optional_module
+    optional_spec.loader.exec_module(optional_module)
+
+    iwr_spec = importlib.util.spec_from_file_location(
+        f"{package_name}.devices.iwr",
+        ROOT / "custom_components/broetje_heating/devices/iwr.py",
+    )
+    assert iwr_spec and iwr_spec.loader
+    iwr_module = importlib.util.module_from_spec(iwr_spec)
+    sys.modules[iwr_spec.name] = iwr_module
+    iwr_spec.loader.exec_module(iwr_module)
+    return iwr_module
+
+
+def test_defrost_sensor_is_independent_of_hybrid_feature_gate() -> None:
+    module = _load_iwr_module()
+    hybrid_entities = {
+        "sensors": {"hybrid_cop", "hybrid_cop_threshold"},
+        "selects": {"hybrid_mode_selected"},
+        "numbers": {"hybrid_electricity_cost_high_tariff"},
+    }
+
+    without_hybrid = module.get_iwr_device_config(zones=[], features={"hybrid": False})
+    assert "heat_pump_defrost" in without_hybrid["register_map"]
+    assert "heat_pump_defrost" in without_hybrid["sensors"]
+    hybrid_registers = set().union(*hybrid_entities.values())
+    assert not (hybrid_registers & without_hybrid["register_map"].keys())
+    for entity_type, keys in hybrid_entities.items():
+        assert not (keys & without_hybrid[entity_type].keys())
+
+    with_hybrid = module.get_iwr_device_config(zones=[], features={"hybrid": True})
+    assert "heat_pump_defrost" in with_hybrid["sensors"]
+    assert hybrid_registers <= with_hybrid["register_map"].keys()
+    for entity_type, keys in hybrid_entities.items():
+        assert keys <= with_hybrid[entity_type].keys()
+
+
 def test_optional_default_features_and_solar_autodetection_gate() -> None:
     iwr_tree = ast.parse(
         (ROOT / "custom_components/broetje_heating/devices/iwr.py").read_text()

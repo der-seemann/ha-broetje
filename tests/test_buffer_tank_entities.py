@@ -2,6 +2,7 @@
 
 import ast
 import csv
+import __future__
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,6 +66,39 @@ def _mapping_entry(tree: ast.Module, mapping_name: str, wanted: str) -> dict:
     raise AssertionError(f"{mapping_name}[{wanted!r}] not found")
 
 
+def _source_register_decoder():
+    tree = ast.parse(COORDINATOR_PATH.read_text())
+    method = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "_process_register_value"
+    )
+    stub = ast.parse(
+        "def _get_sentinel_values(self, config, data_type):\n    return set()\n"
+    ).body[0]
+    decoder = ast.ClassDef(
+        name="SourceRegisterDecoder",
+        bases=[],
+        keywords=[],
+        body=[stub, method],
+        decorator_list=[],
+    )
+    module = ast.Module(body=[decoder], type_ignores=[])
+    ast.fix_missing_locations(module)
+    namespace: dict = {}
+    exec(
+        compile(
+            module,
+            str(COORDINATOR_PATH),
+            "exec",
+            flags=__future__.annotations.compiler_flag,
+        ),
+        namespace,
+    )
+    return namespace["SourceRegisterDecoder"]()
+
+
 def test_all_buffer_controls_and_diagnostics_are_generated() -> None:
     tree = ast.parse(IWR_PATH.read_text())
     assert NUMBER_KEYS <= _mapping_keys(tree, "_IWR_STATIC_NUMBERS")
@@ -85,7 +119,7 @@ def test_all_buffer_controls_and_diagnostics_are_generated() -> None:
     )
 
     expected_sensors = {
-        "buffer_tank_requested_power": (7604, "uint8", 0.01),
+        "buffer_tank_requested_power": (7604, "uint8", 1),
         "buffer_tank_requested_setpoint": (7605, "int16", 0.01),
         "buffer_tank_heat_demand_type": (7606, "uint8", 1),
     }
@@ -100,6 +134,23 @@ def test_all_buffer_controls_and_diagnostics_are_generated() -> None:
             _mapping_entry(tree, "_IWR_STATIC_SENSORS", key)["sub_device"]
             == "buffer_tank"
         )
+
+    power_register = _mapping_entry(
+        tree, "_IWR_STATIC_REGISTER_MAP", "buffer_tank_requested_power"
+    )
+    power_sensor = _mapping_entry(
+        tree, "_IWR_STATIC_SENSORS", "buffer_tank_requested_power"
+    )
+    assert 20 * power_register["scale"] == 20
+    assert power_sensor["unit"] == "%"
+
+
+def test_buffer_requested_power_raw_value_decodes_as_percent() -> None:
+    tree = ast.parse(IWR_PATH.read_text())
+    register = _mapping_entry(tree, "_IWR_STATIC_REGISTER_MAP", "buffer_tank_requested_power")
+    decoder = _source_register_decoder()
+    assert decoder._process_register_value([20], register) == 20
+    assert decoder._process_register_value([20], {**register, "scale": 0.01}) == 0.2
 
 
 def test_buffer_register_metadata_matches_documented_ranges_and_access() -> None:
@@ -116,7 +167,7 @@ def test_buffer_register_metadata_matches_documented_ranges_and_access() -> None
         "7505": ("uint16", "0.01", "RW", "°C"),
         "7506": ("uint8", "0.1", "RW", ""),
         "7507": ("uint16", "0.01", "RW", "°C"),
-        "7604": ("uint8", "0.01", "R", ""),
+        "7604": ("uint8", "1", "R", "%"),
         "7605": ("int16", "0.01", "R", "°C"),
         "7606": ("enum8", "", "R", ""),
     }
